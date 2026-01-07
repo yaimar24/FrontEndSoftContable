@@ -1,6 +1,6 @@
-import type { ChangeEvent } from 'react';
-import { Lock, Mail, ShieldCheck, Upload } from 'lucide-react';
-import InputField from './InputField';
+import { useState, type ChangeEvent } from 'react';
+import { Lock, ShieldCheck, Upload } from 'lucide-react';
+import InputField from '../../InputField';
 
 interface Step3Props {
   formData: {
@@ -8,37 +8,58 @@ interface Step3Props {
     password: string;
     confirmPassword: string;
     planSeleccionado: string;
-    logo?: File; // Nuevo campo
+    logo?: File;
   };
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   prevStep: () => void;
+  onSubmit: () => void; // callback del form padre
 }
 
-const Step3Account: React.FC<Step3Props> = ({ formData, handleChange, prevStep }) => {
+const Step3Account: React.FC<Step3Props> = ({ formData, handleChange, prevStep, onSubmit }) => {
+  const [error, setError] = useState<string>('');
+
   const logoPreview = formData.logo ? URL.createObjectURL(formData.logo) : null;
+
+const handleFinalSubmit = () => {
+  if (formData.password !== formData.confirmPassword) {
+    setError('Las contraseñas no coinciden');
+    console.log(formData.password, formData.confirmPassword)
+    return;
+  }
+  setError('');
+  onSubmit(); // ahora sí se llama correctamente
+};
+
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-
       {/* Header */}
       <div className="flex items-center space-x-3">
         <div className="bg-amber-100 p-3 rounded-xl text-amber-700">
           <Lock size={24} />
         </div>
-        <h2 className="text-2xl font-bold border-b-2 border-amber-500 pr-6 italic">Acceso al Sistema</h2>
+        <h2 className="text-2xl font-bold border-b-2 border-amber-500 pr-6 italic">
+          Acceso al Sistema
+        </h2>
       </div>
 
       {/* Plan */}
       <div className="p-6 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 shadow-md mb-6">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Plan de Suscripción</span>
-          <span className="bg-[#1e3a8a] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase">{formData.planSeleccionado}</span>
+          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+            Plan de Suscripción
+          </span>
+          <span className="bg-[#1e3a8a] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase">
+            {formData.planSeleccionado}
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <ShieldCheck className="text-[#10b981]" size={36} />
           <div>
             <p className="font-bold text-slate-800 text-sm">Suscripción Activada</p>
-            <p className="text-xs text-slate-500">Módulo contable completo + Facturación ilimitada</p>
+            <p className="text-xs text-slate-500">
+              Módulo contable completo + Facturación ilimitada
+            </p>
           </div>
         </div>
       </div>
@@ -52,19 +73,43 @@ const Step3Account: React.FC<Step3Props> = ({ formData, handleChange, prevStep }
           value={formData.email}
           onChange={handleChange}
           placeholder="admin@colegio.com"
-          icon={Mail}
+          required
         />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputField label="Contraseña" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" />
-          <InputField label="Confirmar Contraseña" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" />
+          <InputField
+            label="Contraseña"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            required
+          />
+          <InputField
+            label="Confirmar Contraseña"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="••••••••"
+            required
+            error={error} // mostramos el error si no coinciden
+          />
         </div>
 
-        {/* Logo del Colegio */}
+        {/* Logo */}
         <div className="flex flex-col items-center">
-          <label className="mb-2 text-xs font-black text-slate-500 uppercase tracking-widest">Logo del Colegio</label>
+          <label className="mb-2 text-xs font-black text-slate-500 uppercase tracking-widest">
+            Logo del Colegio
+          </label>
           <div className="relative w-40 h-40 rounded-xl border-2 border-dashed border-slate-300 bg-white shadow-md overflow-hidden hover:border-[#1e3a8a] transition-all flex items-center justify-center cursor-pointer group">
             {logoPreview ? (
-              <img src={logoPreview} alt="Logo Colegio" className="object-contain w-full h-full p-2" />
+              <img
+                src={logoPreview}
+                alt="Logo Colegio"
+                className="object-contain w-full h-full p-2"
+              />
             ) : (
               <div className="flex flex-col items-center text-slate-400">
                 <Upload size={32} />
@@ -92,7 +137,8 @@ const Step3Account: React.FC<Step3Props> = ({ formData, handleChange, prevStep }
           Atrás
         </button>
         <button
-          type="submit"
+          type="button"
+          onClick={handleFinalSubmit} // validación antes de enviar
           className="flex-[2] bg-[#1e3a8a] text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl uppercase text-sm tracking-widest"
         >
           Finalizar Registro
