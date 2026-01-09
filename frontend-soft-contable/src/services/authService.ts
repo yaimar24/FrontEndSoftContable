@@ -1,18 +1,24 @@
 import type { LoginData, LoginRequest } from "../models/Auth";
 import type { ApiResponse } from "../models/types/ApiResponse";
 
-
-const API_URL = 'https://localhost:7260/api/Colegio/login';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const login = async (payload: LoginRequest): Promise<ApiResponse<LoginData>> => {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/Colegio/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-  if (!res.ok) throw new Error('Error en la petición de login');
+    const data: ApiResponse<LoginData> = await res.json();
 
-  const data: ApiResponse<LoginData> = await res.json();
-  return data;
+    return data;
+
+  } catch (err) {
+    return {
+      success: false,
+      message: (err as Error).message || "Error de conexión al servidor",
+    };
+  }
 };

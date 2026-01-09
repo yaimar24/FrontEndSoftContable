@@ -1,41 +1,29 @@
-import React, { type JSX } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Dashboard from "../components/pages/Dashboard";
 import LoginForm from "../components/login/LoginForm";
-import Dashboard from "../components/dashboard/Dashboard";
 import { RegisterForm } from "../components/register/RegisterForm";
-
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" />;
-};
+import PerfilForm from "../components/dashboard/perfil"; // Importa el index.tsx del perfil
 
 const AppRoutes = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<LoginForm />} />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        }
-      />
-
-      <Route
-        path="/register"
-        element={
-          <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
-            <RegisterForm />
+      <Route path="/register" element={<RegisterForm />} />
+      
+      {/* RUTAS DEL DASHBOARD ANIDADAS */}
+      <Route path="/dashboard" element={<Dashboard />}>
+        {/* Contenido por defecto en /dashboard */}
+        <Route index element={
+          <div className="flex flex-col items-center justify-center h-full text-slate-400">
+            <h2 className="text-2xl font-black uppercase tracking-widest">Bienvenido</h2>
+            <p className="text-sm font-bold">Selecciona una opción en el menú lateral</p>
           </div>
-        }
-      />
+        } />
+        
+        {/* Contenido en /dashboard/perfil */}
+        <Route path="perfil" element={<PerfilForm />} />
+      </Route>
+
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   </Router>

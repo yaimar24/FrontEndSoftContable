@@ -1,21 +1,12 @@
-import { useState } from 'react';
-import type { AuthResponse, LoginData } from '../models/Auth';
-import { login as loginAPI } from '../services/authService';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 
 export const useAuth = () => {
-  const [user, setUser] = useState<AuthResponse | null>(null);
-
-  const login = async (data: LoginData) => {
-    const res = await loginAPI(data);
-    setUser(res);
-    localStorage.setItem('token', res.token);
-    return res;
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('token');
-  };
-
-  return { user, login, logout };
+  const context = useContext(AuthContext);
+  
+  if (!context) {
+    throw new Error('useAuth debe ser utilizado dentro de un AuthProvider');
+  }
+  
+  return context;
 };

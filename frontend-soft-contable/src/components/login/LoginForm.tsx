@@ -1,70 +1,141 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login  as apiLogin } from '../../services/authService';
-import { useAuth } from '../../context/AuthContext';
-import type { LoginRequest } from '../../models/Auth';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
+import InputField from '../InputField';
+import StatusModal from '../SuccessModal';
+import { login as loginApi } from '../../services/authService';
+import type { LoginRequest, LoginResponse } from '../../models/Auth';
+import { useAuth } from '../../hooks/useAuth';
 
 const LoginForm = () => {
-  const [form, setForm] = useState<LoginRequest>({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
+  const [formData, setFormData] = useState({ email: '', password: '', rememberMe: false });
+  const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState({ show: false, success: false, message: '' });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setIsLoading(true);
+
+    const payload: LoginRequest = { email: formData.email, password: formData.password };
 
     try {
-      const response = await apiLogin(form);
-      if (response.success && response.data) {
-        login(response.data.token, response.data.expiration);
-        navigate('/dashboard');
+      const res: LoginResponse = await loginApi(payload);
+
+      if (res.success && res.data?.token && res.data.expiration) {
+        // Guardamos token en el AuthContext
+        authLogin(res.data.token, res.data.expiration);
+
+        setModal({
+          show: true,
+          success: true,
+          message: '¡Login exitoso! Redirigiendo al panel...',
+        });
+
+        // Redirigir al dashboard después de 1.5s para mostrar modal
+        setTimeout(() => navigate('/dashboard'), 1500);
+
       } else {
-        setError(response.message);
+        // Error del backend (email/contraseña incorrectos)
+        setModal({
+          show: true,
+          success: false,
+          message: res.message || 'Error desconocido en login',
+        });
       }
+
     } catch (err) {
       console.error(err);
-      setError('Error al iniciar sesión');
+      setModal({
+        show: true,
+        success: false,
+        message: (err as Error).message || 'Error de conexión al servidor',
+      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-20 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Iniciar Sesión</h2>
-      <input
-        type="email"
-        name="email"
-        placeholder="Correo"
-        value={form.email}
-        onChange={handleChange}
-        className="w-full p-3 mb-4 border rounded"
-        required
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans p-4">
+      <div className="bg-white rounded-3xl shadow-2xl border-t-[6px] border-[#1e3a8a] w-full max-w-md overflow-hidden">
+        
+        {/* Logo */}
+        <div className="p-8 text-center bg-white border-b border-slate-100">
+          <img src="/sicpie.png" alt="Logo SICPIE" className="h-20 mx-auto mb-4" />
+          <h1 className="text-2xl font-black text-slate-900 uppercase">Iniciar Sesión SICPIE</h1>
+        </div>
+
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <InputField
+            label="Correo Electrónico"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="ejemplo@colegio.edu.co"
+            icon={Mail}
+            required
+          />
+
+          <InputField
+            label="Contraseña"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            icon={Lock}
+            required
+          />
+
+          {/* Botón Login */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full flex items-center justify-center gap-3 bg-[#1e3a8a] hover:bg-black text-white font-black py-5 rounded-2xl transition-all shadow-xl transform active:scale-[0.98] uppercase tracking-[0.2em] text-xs ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <>
+                Entrar al Sistema
+                <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 text-center space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            ¿No tienes cuenta?
+          </p>
+          <button
+            onClick={() => navigate('/register')}
+            className="text-sm font-black text-[#1e3a8a] hover:text-emerald-600 transition-colors uppercase"
+          >
+            Regístrate ahora
+          </button>
+    
+        </div>
+      </div>
+
+      {/* Modal de estado */}
+      <StatusModal
+        show={modal.show}
+        success={modal.success}
+        message={modal.message}
+        onClose={() => setModal(prev => ({ ...prev, show: false }))}
       />
-      <input
-        type="password"
-        name="password"
-        placeholder="Contraseña"
-        value={form.password}
-        onChange={handleChange}
-        className="w-full p-3 mb-4 border rounded"
-        required
-      />
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full p-3 bg-blue-800 text-white font-bold rounded hover:bg-black transition"
-      >
-        {loading ? 'Cargando...' : 'Login'}
-      </button>
-    </form>
+    </div>
   );
 };
 

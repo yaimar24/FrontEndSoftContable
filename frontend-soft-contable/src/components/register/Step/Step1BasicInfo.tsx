@@ -1,48 +1,153 @@
-import type { ChangeEvent } from 'react';
-import { School, MapPin } from 'lucide-react';
-import InputField from '../../InputField';
-import React from 'react';
+import React, { useState } from "react";
+import { School, MapPin, Phone } from "lucide-react";
+import InputField from "../../InputField";
+import SelectField from "../../SelectField";
+import { validators } from "../../../utils/validators";
+import { validateForm } from "../../../utils/validateForm";
+import type { Colegio } from "../../../models/Colegio";
 
-interface Step1Props {
-  formData: {
-    nombreColegio: string;
-    nit: string;
-    direccion: string;
-  };
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  nextStep: () => void;
+// Interfaces Locales
+interface Ciudad {
+  id: number;
+  nombre: string;
 }
 
-const Step1BasicInfo: React.FC<Step1Props> = ({ formData, handleChange, nextStep }) => {
-  const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
+interface ActividadEconomica {
+  id: number;
+  codigo: string;
+  descripcion: string;
+}
+
+interface Step1Props {
+  formData: Partial<Colegio>;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  nextStep: () => void;
+  ciudades: Ciudad[];
+  actividadesEconomicas: ActividadEconomica[];
+}
+
+const Step1BasicInfo: React.FC<Step1Props> = ({
+  formData,
+  handleChange,
+  nextStep,
+  ciudades,
+  actividadesEconomicas,
+}) => {
+  // Tipamos el estado de errores explícitamente
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const schema = {
+    nombreColegio: [validators.required()],
+    nit: [
+      validators.required(),
+      validators.onlyNumbers(),
+      validators.minLength(9),
+    ],
+    direccion: [validators.required()],
+    telefono: [
+      validators.required(),
+      validators.onlyNumbers(),
+      validators.minLength(7),
+    ],
+    ciudadId: [validators.requiredSelect()],
+    actividadEconomicaId: [validators.requiredSelect()],
+  };
 
   const handleNext = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.nombreColegio) newErrors.nombreColegio = 'Campo obligatorio';
-    if (!formData.nit) newErrors.nit = 'Campo obligatorio';
-    if (!formData.direccion) newErrors.direccion = 'Campo obligatorio';
+    // Asumimos que validateForm devuelve Record<string, string>
+    const validationErrors = validateForm(formData, schema) as Record<string, string>;
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-    } else {
+    if (Object.keys(validationErrors).length === 0) {
       nextStep();
+    } else {
+      setErrors(validationErrors);
     }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
+      {/* Header */}
       <div className="flex items-center space-x-3">
-        <div className="bg-blue-100 p-2.5 rounded-xl text-[#1e3a8a]"><School size={22} /></div>
-        <h2 className="text-xl font-bold border-b-2 border-blue-500 pr-6 italic">Información de Identidad</h2>
+        <div className="bg-blue-100 p-2.5 rounded-xl text-[#1e3a8a]">
+          <School size={22} />
+        </div>
+        <h2 className="text-xl font-bold border-b-2 border-blue-500 pr-6 italic">
+          Información Institucional
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <InputField label="Nombre de la Institución" name="nombreColegio" value={formData.nombreColegio} onChange={handleChange} placeholder="Ej: Liceo Moderno" required error={errors.nombreColegio} />
-        <InputField label="NIT / ID Fiscal" name="nit" value={formData.nit} onChange={handleChange} placeholder="800.000.000-0" required error={errors.nit} />
-        <InputField label="Dirección Física" name="direccion" value={formData.direccion} onChange={handleChange} placeholder="Dirección completa del plantel" icon={MapPin} required error={errors.direccion} />
+        <InputField
+          label="Nombre de la Institución"
+          name="nombreColegio"
+          value={formData.nombreColegio || ""}
+          onChange={handleChange}
+          required
+          error={errors.nombreColegio}
+        />
+
+        <InputField
+          label="NIT"
+          name="nit"
+          value={formData.nit || ""}
+          onChange={handleChange}
+          required
+          error={errors.nit}
+          onlyNumbers
+          maxLength={10}
+        />
+
+        <InputField
+          label="Dirección"
+          name="direccion"
+          value={formData.direccion || ""}
+          onChange={handleChange}
+          required
+          error={errors.direccion}
+          icon={MapPin}
+        />
+
+        <InputField
+          label="Teléfono"
+          name="telefono"
+          value={formData.telefono || ""}
+          onChange={handleChange}
+          required
+          error={errors.telefono}
+          icon={Phone}
+          onlyNumbers
+          maxLength={10}
+        />
+
+        <SelectField
+          label="Ciudad"
+          name="ciudadId"
+          value={formData.ciudadId || ""}
+          onChange={handleChange}
+          options={ciudades}
+          placeholder="Selecciona Ciudad"
+          error={errors.ciudadId}
+          displayExpr={(c: Ciudad) => c.nombre} // Tipado en la expresión
+        />
+
+        <SelectField
+          label="Actividad Económica (CIIU)"
+          name="actividadEconomicaId"
+          value={formData.actividadEconomicaId || ""}
+          onChange={handleChange}
+          options={actividadesEconomicas}
+          placeholder="Selecciona Actividad"
+          error={errors.actividadEconomicaId}
+          displayExpr={(a: ActividadEconomica) =>
+            `${a.codigo} - ${a.descripcion?.substring(0, 40)}...`
+          }
+        />
       </div>
 
-      <button type="button" onClick={handleNext} className="w-full mt-6 bg-[#1e3a8a] hover:bg-[#152a61] text-white font-black py-5 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl uppercase tracking-widest text-sm">
+      <button
+        onClick={handleNext}
+        className="w-full bg-[#1e3a8a] text-white font-black py-5 rounded-2xl shadow-xl uppercase text-sm tracking-widest transition-transform hover:scale-[1.01] active:scale-[0.99]"
+      >
         Siguiente: Datos Legales
       </button>
     </div>

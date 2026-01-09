@@ -1,35 +1,67 @@
-import { useState, type ChangeEvent } from 'react';
-import { Lock, ShieldCheck, Upload } from 'lucide-react';
-import InputField from '../../InputField';
+import React, { useState, type ChangeEvent } from "react";
+import { Lock, ShieldCheck, Upload, Mail } from "lucide-react";
+import InputField from "../../InputField";
+import { validators } from "../../../utils/validators";
+import { validateForm } from "../../../utils/validateForm";
+import type { Colegio } from "../../../models/Colegio";
 
-interface Step3Props {
-  formData: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    planSeleccionado: string;
-    logo?: File;
-  };
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  prevStep: () => void;
-  onSubmit: () => void; // callback del form padre
+/**
+ * Extendemos Colegio para el flujo de registro.
+ * Agregamos campos que no están en el modelo de base de datos
+ * pero son necesarios para la validación del formulario.
+ */
+interface RegistroFormData extends Partial<Colegio> {
+  // Campos para la cuenta de usuario inicial
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  // Campos auxiliares para UI
+  logo?: File;
+  // Mapeo temporal si no estás usando el array de representantesLegales aún
+  nombreRepresentante?: string; 
+  numeroIdentificacionRepresentante?: string;
 }
 
-const Step3Account: React.FC<Step3Props> = ({ formData, handleChange, prevStep, onSubmit }) => {
-  const [error, setError] = useState<string>('');
+interface Step3Props {
+  formData: RegistroFormData;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  prevStep: () => void;
+  onSubmit: () => void;
+}
 
-  const logoPreview = formData.logo ? URL.createObjectURL(formData.logo) : null;
+const Step3Account: React.FC<Step3Props> = ({
+  formData,
+  handleChange,
+  prevStep,
+  onSubmit,
+}) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPass, setShowPass] = useState(false);
 
-const handleFinalSubmit = () => {
-  if (formData.password !== formData.confirmPassword) {
-    setError('Las contraseñas no coinciden');
-    console.log(formData.password, formData.confirmPassword)
-    return;
-  }
-  setError('');
-  onSubmit(); // ahora sí se llama correctamente
-};
+  const logoPreview = formData.logo instanceof File
+    ? URL.createObjectURL(formData.logo)
+    : null;
 
+  const passwordsMatch = () => (_value: string | undefined, form: RegistroFormData) =>
+    form.password !== form.confirmPassword
+      ? "Las contraseñas no coinciden"
+      : null;
+
+  const schema = {
+    email: [validators.required(), validators.email?.() || ((v: string) => !v.includes('@') ? 'Email inválido' : null)],
+    password: [validators.required(), validators.minLength(6)],
+    confirmPassword: [validators.required(), passwordsMatch()],
+  };
+
+  const handleFinalSubmit = () => {
+    const validationErrors = validateForm(formData, schema) as Record<string, string>;
+
+    if (Object.keys(validationErrors).length === 0) {
+      onSubmit();
+    } else {
+      setErrors(validationErrors);
+    }
+  };
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -43,37 +75,37 @@ const handleFinalSubmit = () => {
         </h2>
       </div>
 
-      {/* Plan */}
-      <div className="p-6 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 shadow-md mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-            Plan de Suscripción
-          </span>
-          <span className="bg-[#1e3a8a] text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase">
-            {formData.planSeleccionado}
+      {/* Card de Resumen con datos del Colegio */}
+      <div className="p-6 bg-slate-50 rounded-[2.5rem] border-2 border-slate-100 shadow-sm">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</p>
+            <p className="font-bold text-slate-700">{formData.nombreColegio || 'No definido'}</p>
+          </div>
+          <span className="bg-[#1e3a8a] text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase">
+            Plan {formData.planSeleccionado}
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <ShieldCheck className="text-[#10b981]" size={36} />
-          <div>
-            <p className="font-bold text-slate-800 text-sm">Suscripción Activada</p>
-            <p className="text-xs text-slate-500">
-              Módulo contable completo + Facturación ilimitada
-            </p>
-          </div>
+        
+        <div className="flex items-center gap-3 pt-3 border-t border-slate-200">
+          <ShieldCheck className="text-emerald-500" size={20} />
+          <p className="text-[11px] text-slate-500 font-medium">
+            Al finalizar, se creará el perfil para el NIT: <span className="font-bold text-slate-700">{formData.nit}</span>
+          </p>
         </div>
       </div>
 
-      {/* Inputs */}
       <div className="grid grid-cols-1 gap-6">
         <InputField
-          label="Correo Electrónico Administrador"
+          label="Email del Administrador"
           type="email"
           name="email"
-          value={formData.email}
+          value={formData.email || ""}
           onChange={handleChange}
-          placeholder="admin@colegio.com"
+          icon={Mail}
+          placeholder="ejemplo@colegio.edu.co"
           required
+          error={errors.email}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -81,65 +113,66 @@ const handleFinalSubmit = () => {
             label="Contraseña"
             type="password"
             name="password"
-            value={formData.password}
+            value={formData.password || ""}
             onChange={handleChange}
             placeholder="••••••••"
             required
+            showToggle
+            showPassword={showPass}
+            setShowPassword={setShowPass}
+            error={errors.password}
           />
+
           <InputField
-            label="Confirmar Contraseña"
+            label="Confirmar"
             type="password"
             name="confirmPassword"
-            value={formData.confirmPassword}
+            value={formData.confirmPassword || ""}
             onChange={handleChange}
             placeholder="••••••••"
             required
-            error={error} // mostramos el error si no coinciden
+            showToggle
+            showPassword={showPass}
+            setShowPassword={setShowPass}
+            error={errors.confirmPassword}
           />
         </div>
 
-        {/* Logo */}
-        <div className="flex flex-col items-center">
-          <label className="mb-2 text-xs font-black text-slate-500 uppercase tracking-widest">
-            Logo del Colegio
-          </label>
-          <div className="relative w-40 h-40 rounded-xl border-2 border-dashed border-slate-300 bg-white shadow-md overflow-hidden hover:border-[#1e3a8a] transition-all flex items-center justify-center cursor-pointer group">
-            {logoPreview ? (
-              <img
-                src={logoPreview}
-                alt="Logo Colegio"
-                className="object-contain w-full h-full p-2"
+        {/* Logo con manejo de interfaz */}
+        <div className="flex flex-col items-center pt-2">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Logo Institucional</span>
+          <div className="relative group">
+            <div className="w-40 h-40 rounded-[2.5rem] border-4 border-white shadow-xl overflow-hidden bg-slate-50 flex items-center justify-center transition-transform hover:scale-105">
+              {logoPreview ? (
+                <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-4" />
+              ) : (
+                <Upload size={40} className="text-slate-300 group-hover:text-[#1e3a8a] transition-colors" />
+              )}
+              <input 
+                type="file" 
+                name="logo" 
+                onChange={handleChange} 
+                className="absolute inset-0 opacity-0 cursor-pointer" 
+                accept="image/*"
               />
-            ) : (
-              <div className="flex flex-col items-center text-slate-400">
-                <Upload size={32} />
-                <span className="text-sm mt-2">Sube tu logo</span>
-              </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              name="logo"
-              onChange={handleChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="flex gap-4 pt-6">
+      <div className="flex gap-4 pt-4">
         <button
           type="button"
           onClick={prevStep}
-          className="flex-1 bg-slate-100 text-slate-600 font-bold py-5 rounded-2xl hover:bg-slate-200 transition-all uppercase text-xs tracking-widest"
+          className="flex-1 bg-slate-100 text-slate-500 font-black py-5 rounded-2xl hover:bg-slate-200 uppercase text-[10px] tracking-widest transition-all"
         >
           Atrás
         </button>
+
         <button
           type="button"
-          onClick={handleFinalSubmit} // validación antes de enviar
-          className="flex-[2] bg-[#1e3a8a] text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-xl uppercase text-sm tracking-widest"
+          onClick={handleFinalSubmit}
+          className="flex-[2] bg-[#1e3a8a] text-white font-black py-5 rounded-2xl hover:bg-black shadow-2xl shadow-blue-200 uppercase text-xs tracking-[0.15em] transition-all"
         >
           Finalizar Registro
         </button>
