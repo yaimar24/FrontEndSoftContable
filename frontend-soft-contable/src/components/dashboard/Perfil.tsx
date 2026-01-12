@@ -33,40 +33,15 @@ const PerfilForm = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<Colegio>>({});
   const [parametros, setParametros] = useState<ParametrosSistema | null>(null);
-const [showConfirm, setShowConfirm] = useState(false);
-
-const [resultModal, setResultModal] = useState({
-  show: false,
-  success: false,
-  message: ''
-});
-  const [modalConfig, setModalConfig] = useState({
+  
+  // Estados para Modales
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [resultModal, setResultModal] = useState({
     show: false,
     success: false,
     message: ''
   });
-const handleSaveClick = () => {
-  setShowConfirm(true); 
-};
 
-// PASO 2: Al hacer clic en "Confirmar" dentro del modal
-const handleConfirmSave = async () => {
-  setShowConfirm(false); // Cerramos el de pregunta
-  setIsSaving(true);
-  
-  try {
-    const result = await updateColegio(colegioId, formData);
-    setResultModal({
-      show: true,
-      success: result.success,
-      message: result.success ? "Cambios guardados." : result.message
-    });
-  } catch (error) {
-    setResultModal({ show: true, success: false, message: "Error de red." });
-  } finally {
-    setIsSaving(false);
-  }
-};
   useEffect(() => {
     if (colegioId) {
       Promise.all([
@@ -101,25 +76,38 @@ const handleConfirmSave = async () => {
     });
   };
 
-  const handleSave = async () => {
-    if (!colegioId) return;
-    
+  const handleSaveClick = () => {
+    setShowConfirm(true); 
+  };
+
+  const handleConfirmSave = async () => {
+    // FIX: Validación de nulidad para evitar error TS2345
+    if (!colegioId) {
+      setResultModal({
+        show: true,
+        success: false,
+        message: "No se pudo identificar la institución. Por favor, reincie sesión."
+      });
+      return;
+    }
+
+    setShowConfirm(false);
     setIsSaving(true);
+    
     try {
       const result = await updateColegio(colegioId, formData);
-      
-      setModalConfig({
+      setResultModal({
         show: true,
         success: result.success,
         message: result.success 
-          ? "La información institucional ha sido actualizada correctamente en el sistema."
-          : result.message || "Ocurrió un problema al intentar guardar los cambios."
+          ? "La información institucional ha sido actualizada correctamente." 
+          : (result.message || "Ocurrió un problema al guardar.")
       });
     } catch (error) {
-      setModalConfig({
-        show: true,
-        success: false,
-        message: "Error de comunicación con el servidor. Intente de nuevo."
+      setResultModal({ 
+        show: true, 
+        success: false, 
+        message: "Error de comunicación con el servidor." 
       });
     } finally {
       setIsSaving(false);
@@ -135,11 +123,23 @@ const handleConfirmSave = async () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
       
+      {/* MODAL DE CONFIRMACIÓN */}
       <StatusModal 
-        show={modalConfig.show}
-        success={modalConfig.success}
-        message={modalConfig.message}
-        onClose={() => setModalConfig(prev => ({ ...prev, show: false }))}
+        show={showConfirm}
+        type="confirm"
+        message="¿Deseas aplicar los cambios en el perfil institucional?"
+        onConfirm={handleConfirmSave}
+        onClose={() => setShowConfirm(false)}
+        confirmText="Sí, guardar"
+        cancelText="Cancelar"
+      />
+
+      {/* MODAL DE RESULTADO */}
+      <StatusModal 
+        show={resultModal.show}
+        success={resultModal.success}
+        message={resultModal.message}
+        onClose={() => setResultModal(prev => ({ ...prev, show: false }))}
       />
 
       {/* HEADER ACCIÓN */}
@@ -147,33 +147,14 @@ const handleConfirmSave = async () => {
         <div>
           <h1 className="text-xl font-black text-slate-800 uppercase tracking-tighter">Perfil Institucional</h1>
           <p className="text-[10px] text-blue-500 font-black uppercase tracking-widest">
-            ID: {colegioId}
+            ID: {colegioId || 'N/A'}
           </p>
         </div>
-  <div className="flex-shrink-0">
-<StatusModal 
-    show={showConfirm}
-    type="confirm"
-    message="¿Deseas aplicar los cambios en el perfil institucional?"
-    onConfirm={handleConfirmSave} // Aquí ejecuta la API
-    onClose={() => setShowConfirm(false)}
-    confirmText="Sí, guardar"
-    cancelText="Cancelar"
-  />
-
-  {/* MODAL DE RESULTADO (Feedback) */}
-  <StatusModal 
-    show={resultModal.show}
-    success={resultModal.success}
-    message={resultModal.message}
-    onClose={() => setResultModal(prev => ({ ...prev, show: false }))}
-  />
-
-  {/* Tu botón de Guardar ahora llama a handleSaveClick */}
-  <Button onClick={handleSaveClick} icon={Save} isLoading={isSaving}>
-    Guardar
-  </Button>
-</div>
+        <div className="flex-shrink-0">
+          <Button onClick={handleSaveClick} icon={Save} isLoading={isSaving}>
+            Guardar Cambios
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -229,7 +210,8 @@ const handleConfirmSave = async () => {
                     label="Tipo Doc."
                     name={`rep_tipo_${index}`}
                     value={rep.tipoIdentificacionId}
-                    onChange={(e) => handleRepChange(index, 'tipoIdentificacionId', e.target.value)}
+                    // FIX: Tipado del evento (e)
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleRepChange(index, 'tipoIdentificacionId', e.target.value)}
                     options={parametros?.tiposIdentificacion || []}
                     displayExpr={(t) => t.nombre}
                     placeholder="Tipo..."
@@ -307,10 +289,7 @@ const handleConfirmSave = async () => {
           </div>
         </section>
       </div>
-
     </div>
-
-    
   );
 };
 
