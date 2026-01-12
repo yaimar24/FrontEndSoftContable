@@ -74,6 +74,8 @@ export interface Colegio {
   usuarios?: User[];
   actividadEconomicaId?: string;
   representantesLegales: RepresentanteLegal[];
+      rolesId:number;
+
 }
 export interface RepresentanteLegal {
   id: number;

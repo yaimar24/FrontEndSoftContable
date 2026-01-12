@@ -1,32 +1,16 @@
-import React, { useState, type ChangeEvent } from "react";
-import { Lock, ShieldCheck, Upload, Mail } from "lucide-react";
-import InputField from "../../InputField";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { Lock, ShieldCheck, Upload } from "lucide-react";
+import InputField from "../../common/InputField";
 import { validators } from "../../../utils/validators";
 import { validateForm } from "../../../utils/validateForm";
-import type { Colegio } from "../../../models/Colegio";
-
-/**
- * Extendemos Colegio para el flujo de registro.
- * Agregamos campos que no están en el modelo de base de datos
- * pero son necesarios para la validación del formulario.
- */
-interface RegistroFormData extends Partial<Colegio> {
-  // Campos para la cuenta de usuario inicial
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  // Campos auxiliares para UI
-  logo?: File;
-  // Mapeo temporal si no estás usando el array de representantesLegales aún
-  nombreRepresentante?: string; 
-  numeroIdentificacionRepresentante?: string;
-}
+import type { RegistroFormData } from "../RegisterForm";
+import Button from "../../common/Button";
 
 interface Step3Props {
   formData: RegistroFormData;
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void; // Parent change
   prevStep: () => void;
-  onSubmit: () => void;
+  onSubmit: (data: RegistroFormData) => void;
 }
 
 const Step3Account: React.FC<Step3Props> = ({
@@ -35,75 +19,110 @@ const Step3Account: React.FC<Step3Props> = ({
   prevStep,
   onSubmit,
 }) => {
+  // Estado local para inputs controlados
+  const [localFormData, setLocalFormData] = useState<RegistroFormData>({
+    email: formData.email || "",
+    password: formData.password || "",
+    confirmPassword: formData.confirmPassword || "",
+    logo: formData.logo || undefined,
+    planSeleccionado: formData.planSeleccionado || "",
+  });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showPass, setShowPass] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const logoPreview = formData.logo instanceof File
-    ? URL.createObjectURL(formData.logo)
-    : null;
+  // Previsualización del logo
+  const logoPreview =
+    localFormData.logo instanceof File
+      ? URL.createObjectURL(localFormData.logo)
+      : null;
 
-  const passwordsMatch = () => (_value: string | undefined, form: RegistroFormData) =>
+  // Validación de contraseñas
+  const passwordsMatch = () => (_value: string, form: RegistroFormData) =>
     form.password !== form.confirmPassword
       ? "Las contraseñas no coinciden"
       : null;
 
   const schema = {
-    email: [validators.required(), validators.email?.() || ((v: string) => !v.includes('@') ? 'Email inválido' : null)],
+    email: [validators.required()],
     password: [validators.required(), validators.minLength(6)],
     confirmPassword: [validators.required(), passwordsMatch()],
   };
 
-  const handleFinalSubmit = () => {
-    const validationErrors = validateForm(formData, schema) as Record<string, string>;
+  // Manejar cambios locales
+  const handleLocalChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked, files } = e.target;
+
+    const fieldValue =
+      type === "checkbox" ? checked : type === "file" ? files?.[0] : value;
+
+    setLocalFormData((prev) => ({ ...prev, [name]: fieldValue }));
+
+    // También propagar al parent si es necesario
+    handleChange(e);
+  };
+
+  // Manejar submit
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const validationErrors = validateForm(localFormData, schema);
 
     if (Object.keys(validationErrors).length === 0) {
-      onSubmit();
+      onSubmit(localFormData); // Enviar datos al parent
     } else {
       setErrors(validationErrors);
     }
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500"
+    >
       {/* Header */}
       <div className="flex items-center space-x-3">
-        <div className="bg-amber-100 p-3 rounded-xl text-amber-700">
+        <div className="bg-amber-100 p-3 rounded-xl text-amber-700 shadow-sm">
           <Lock size={24} />
         </div>
-        <h2 className="text-2xl font-bold border-b-2 border-amber-500 pr-6 italic">
+        <h2 className="text-2xl font-bold border-b-2 border-amber-500 pr-6 italic text-slate-800">
           Acceso al Sistema
         </h2>
       </div>
 
-      {/* Card de Resumen con datos del Colegio */}
-      <div className="p-6 bg-slate-50 rounded-[2.5rem] border-2 border-slate-100 shadow-sm">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</p>
-            <p className="font-bold text-slate-700">{formData.nombreColegio || 'No definido'}</p>
-          </div>
-          <span className="bg-[#1e3a8a] text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase">
-            Plan {formData.planSeleccionado}
+      {/* Tarjeta de Plan */}
+      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-[2.5rem] border-2 border-dashed border-slate-200 shadow-inner">
+        {/*   <div className="flex justify-between items-center mb-4">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
+            Plan de Suscripción
           </span>
-        </div>
-        
-        <div className="flex items-center gap-3 pt-3 border-t border-slate-200">
-          <ShieldCheck className="text-emerald-500" size={20} />
-          <p className="text-[11px] text-slate-500 font-medium">
-            Al finalizar, se creará el perfil para el NIT: <span className="font-bold text-slate-700">{formData.nit}</span>
-          </p>
+          <span className="bg-[#1e3a8a] text-white text-[10px] font-black px-5 py-1.5 rounded-full uppercase shadow-lg shadow-blue-900/20">
+            {localFormData.planSeleccionado}
+          </span>
+        </div> */}
+        <div className="flex items-center gap-5">
+          <div className="bg-white p-3 rounded-2xl shadow-sm">
+            <ShieldCheck className="text-emerald-500" size={32} />
+          </div>
+          <div>
+            <p className="font-bold text-slate-800 text-base">
+              Suscripción Activada
+            </p>
+            <p className="text-xs text-slate-500 font-medium">
+              Módulo contable completo + Facturación ilimitada
+            </p>
+          </div>
         </div>
       </div>
 
+      {/* Inputs */}
       <div className="grid grid-cols-1 gap-6">
         <InputField
-          label="Email del Administrador"
+          label="Correo Electrónico Administrador"
           type="email"
           name="email"
-          value={formData.email || ""}
-          onChange={handleChange}
-          icon={Mail}
-          placeholder="ejemplo@colegio.edu.co"
+          value={localFormData.email ?? ""}
+          onChange={handleLocalChange}
+          placeholder="admin@colegio.com"
           required
           error={errors.email}
         />
@@ -113,71 +132,88 @@ const Step3Account: React.FC<Step3Props> = ({
             label="Contraseña"
             type="password"
             name="password"
-            value={formData.password || ""}
-            onChange={handleChange}
+            value={localFormData.password ?? ""}
+            onChange={handleLocalChange}
             placeholder="••••••••"
             required
             showToggle
-            showPassword={showPass}
-            setShowPassword={setShowPass}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
             error={errors.password}
           />
 
           <InputField
-            label="Confirmar"
+            label="Confirmar Contraseña"
             type="password"
             name="confirmPassword"
-            value={formData.confirmPassword || ""}
-            onChange={handleChange}
+            value={localFormData.confirmPassword ?? ""}
+            onChange={handleLocalChange}
             placeholder="••••••••"
             required
             showToggle
-            showPassword={showPass}
-            setShowPassword={setShowPass}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
             error={errors.confirmPassword}
           />
         </div>
 
-        {/* Logo con manejo de interfaz */}
-        <div className="flex flex-col items-center pt-2">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Logo Institucional</span>
-          <div className="relative group">
-            <div className="w-40 h-40 rounded-[2.5rem] border-4 border-white shadow-xl overflow-hidden bg-slate-50 flex items-center justify-center transition-transform hover:scale-105">
-              {logoPreview ? (
-                <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-4" />
-              ) : (
-                <Upload size={40} className="text-slate-300 group-hover:text-[#1e3a8a] transition-colors" />
-              )}
-              <input 
-                type="file" 
-                name="logo" 
-                onChange={handleChange} 
-                className="absolute inset-0 opacity-0 cursor-pointer" 
-                accept="image/*"
-              />
-            </div>
+        {/* Logo */}
+        <div className="flex flex-col items-center pt-4">
+          <label className="mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+            Identidad Institucional (Logo)
+          </label>
+          <div className="relative w-44 h-44 rounded-[2.5rem] border-2 border-dashed border-slate-300 bg-white shadow-xl overflow-hidden hover:border-[#1e3a8a] transition-all flex items-center justify-center cursor-pointer group">
+            {logoPreview ? (
+              <div className="relative w-full h-full p-4 animate-in zoom-in-95 duration-300">
+                <img
+                  src={logoPreview}
+                  alt="Logo Colegio"
+                  className="object-contain w-full h-full drop-shadow-md"
+                  onLoad={() => {
+                    if (logoPreview) URL.revokeObjectURL(logoPreview);
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Upload className="text-white" size={24} />
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center text-slate-400">
+                <Upload size={32} />
+                <span className="text-[10px] font-black mt-2">SUBIR LOGO</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              name="logo"
+              onChange={handleLocalChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4 pt-4">
-        <button
+      {/* Botones */}
+      <div className="flex flex-col md:flex-row gap-4 pt-6">
+     <Button
           type="button"
+          variant="secondary"
           onClick={prevStep}
-          className="flex-1 bg-slate-100 text-slate-500 font-black py-5 rounded-2xl hover:bg-slate-200 uppercase text-[10px] tracking-widest transition-all"
+          className="order-2 md:order-1 py-5"
         >
           Atrás
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={handleFinalSubmit}
-          className="flex-[2] bg-[#1e3a8a] text-white font-black py-5 rounded-2xl hover:bg-black shadow-2xl shadow-blue-200 uppercase text-xs tracking-[0.15em] transition-all"
+        <Button
+          type="submit"
+          variant="primary"
+          className="flex-[2] order-1 md:order-2 py-5 text-sm tracking-[0.2em]"
         >
           Finalizar Registro
-        </button>
+        </Button>
       </div>
-    </div>
+    </form>
   );
 };
 

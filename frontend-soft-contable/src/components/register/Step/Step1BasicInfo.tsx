@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { School, MapPin, Phone } from "lucide-react";
-import InputField from "../../InputField";
-import SelectField from "../../SelectField";
+import InputField from "../../common/InputField";
+import SelectField from "../../common/SelectField";
 import { validators } from "../../../utils/validators";
 import { validateForm } from "../../../utils/validateForm";
 import type { Colegio } from "../../../models/Colegio";
+import Button from "../../common/Button";
 
 // Interfaces Locales
 interface Ciudad {
@@ -144,12 +145,13 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
         />
       </div>
 
-      <button
-        onClick={handleNext}
-        className="w-full bg-[#1e3a8a] text-white font-black py-5 rounded-2xl shadow-xl uppercase text-sm tracking-widest transition-transform hover:scale-[1.01] active:scale-[0.99]"
+   <Button 
+        onClick={handleNext} 
+        fullWidth 
+        className="py-5 shadow-xl"
       >
         Siguiente: Datos Legales
-      </button>
+      </Button>
     </div>
   );
 };
