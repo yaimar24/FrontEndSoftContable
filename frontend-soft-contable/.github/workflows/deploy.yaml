@@ -1,0 +1,46 @@
+name: Deploy React Frontend
+
+on:
+  push:
+    branches:
+      - main  # o master según tu repo
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x' # la versión que estás usando en el VPS
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Copy files to VPS
+      uses: appleboy/scp-action@v0.1.5
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_KEY }}
+        port: 22
+        source: "dist/*"
+        target: "/var/www/react-frontend/frontend-soft-contable/frontend-soft-contable/dist/"
+
+    - name: Reload Nginx
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_KEY }}
+        port: 22
+        script: |
+          sudo systemctl reload nginx
