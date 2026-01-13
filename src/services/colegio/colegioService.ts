@@ -13,7 +13,7 @@ export const registerColegio = async (data: Colegio): Promise<ApiResponse<Colegi
 };
 
 export const getColegioById = async (id: string): Promise<Colegio> => {
-  return apiClient(`/Colegio/${id}/detalle`);
+  return apiClient(`/api/Colegio/${id}/detalle`);
 };
 
 export const updateColegio = async (id: string, data: Partial<Colegio>): Promise<ApiResponse<Colegio>> => {
@@ -40,7 +40,7 @@ export const updateColegio = async (id: string, data: Partial<Colegio>): Promise
     }
   });
 
-  return apiClient(`/Colegio/${id}`, {
+  return apiClient(`/api/Colegio/${id}`, {
     method: 'PUT',
     body
   });
