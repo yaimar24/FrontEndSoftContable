@@ -5,7 +5,7 @@ import { toFormData } from '../../utils/toFormData';
 
 export const registerColegio = async (data: Colegio): Promise<ApiResponse<Colegio>> => {
   // El registro no necesita Token (useAuth: false)
-  return apiClient('/Colegio/register', {
+  return apiClient('/api/Colegio/register', {
     method: 'POST',
     body: toFormData(data),
     useAuth: false
