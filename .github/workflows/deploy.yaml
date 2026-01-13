@@ -21,8 +21,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # Instalamos las dependencias nativas de Linux para Rollup y LightningCSS
-        npm install @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
+        # Instalamos TODAS las dependencias nativas de Linux que requieren Vite, Rollup y Tailwind v4
+        npm install @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu
         npm install
     - name: Build React app
       run: npm run build
