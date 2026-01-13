@@ -21,8 +21,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # Forzamos la instalación de la dependencia nativa de Linux que falta
-        npm install @rollup/rollup-linux-x64-gnu
+        # Instalamos las dependencias nativas de Linux para Rollup y LightningCSS
+        npm install @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu
         npm install
     - name: Build React app
       run: npm run build
