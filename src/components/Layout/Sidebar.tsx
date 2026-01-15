@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, User, LogOut, 
-  ChevronLeft, ChevronRight, GraduationCap 
+  ChevronLeft, ChevronRight, GraduationCap, 
+  FolderTree
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../common/Button';
@@ -75,6 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
   const menuItems = [
     { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard },
     { path: "/dashboard/perfil", name: "Perfil", icon: User },
+    { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
   ];
 
   return (

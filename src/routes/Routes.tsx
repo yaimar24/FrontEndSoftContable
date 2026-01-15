@@ -3,7 +3,8 @@ import Dashboard from "../components/pages/Dashboard";
 import LoginForm from "../components/login/LoginForm";
 import { RegisterForm } from "../components/register/RegisterForm";
 import ProtectedRoute from "./ProtectedRoute"; // Importa el protector
-import PerfilForm from "../components/dashboard/Perfil";
+import PerfilForm from "../components/pages/dashboard/Perfil";
+import PucPage from "../components/pages/dashboard/PucPage";
 
 const AppRoutes = () => (
   <Router>
@@ -22,6 +23,7 @@ const AppRoutes = () => (
               <p className="text-sm font-bold">Selecciona una opción en el menú lateral</p>
             </div>
           } />
+          <Route path="puc" element={<PucPage />} />
           <Route path="perfil" element={<PerfilForm />} />
         </Route>
       </Route>

@@ -3,18 +3,18 @@ import {
   Save, Building2, ShieldCheck, UserCheck, MapPin, 
   Phone, Hash, Percent
 } from 'lucide-react';
-import { getColegioIdFromToken } from '../../utils/jwt';
-import { getColegioById, updateColegio } from '../../services/colegio/colegioService';
-import { getParametros } from '../../services/colegio/parametrosService';
+import { getColegioIdFromToken } from '../../../utils/jwt';
+import { getColegioById, updateColegio } from '../../../services/colegio/colegioService';
+import { getParametros } from '../../../services/colegio/parametrosService';
 import type { 
   Colegio, Ciudad, ActividadEconomica, TipoIdentificacion, 
   RegimenIva, Tributo, ResponsabilidadFiscal 
-} from '../../models/Colegio';
-import InputField from '../common/InputField';
-import SelectField from '../common/SelectField';
-import { useAuth } from '../../hooks/useAuth';
-import StatusModal from '../common/StatusModal';
-import Button from '../common/Button';
+} from '../../../models/Colegio';
+import InputField from '../../common/InputField';
+import SelectField from '../../common/SelectField';
+import { useAuth } from '../../../hooks/useAuth';
+import StatusModal from '../../common/StatusModal';
+import Button from '../../common/Button';
 
 interface ParametrosSistema {
   ciudades: Ciudad[];
