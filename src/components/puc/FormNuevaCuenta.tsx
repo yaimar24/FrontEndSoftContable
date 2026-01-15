@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
-import { Save, X, Search } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 import { buscarEnPucMaestro, createCuentaContable } from '../../services/puc/pucService';
 
 interface Props {
