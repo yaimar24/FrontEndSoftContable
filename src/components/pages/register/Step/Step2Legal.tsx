@@ -1,11 +1,11 @@
 import React, { useState, type ChangeEvent } from "react";
 import { FileText, UserCheck, CreditCard } from "lucide-react";
-import InputField from "../../common/InputField";
-import SelectField from "../../common/SelectField";
-import { validators } from "../../../utils/validators";
-import { validateForm } from "../../../utils/validateForm";
+import InputField from "../../../common/InputField";
+import SelectField from "../../../common/SelectField";
+import { validators } from "../../../../utils/validators";
+import { validateForm } from "../../../../utils/validateForm";
 import type { RegistroFormData, ParametrosSistema } from "../RegisterForm";
-import Button from "../../common/Button";
+import Button from "../../../common/Button";
 
 interface Step2Props {
   formData: RegistroFormData;

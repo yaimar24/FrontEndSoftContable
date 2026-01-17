@@ -1,13 +1,6 @@
 import { apiClient } from '../../api/apiClient';
+import type { PucNodo } from '../../models/puc';
 
-export interface PucNodo {
-  codigo: string;
-  nombre: string;
-  nivel: number;
-  esDetalle: boolean;
-  naturaleza: string;
-  hijos: PucNodo[];
-}
 
 export const getPucTree = async (): Promise<PucNodo[]> => {
   return apiClient('/api/Puc/tree');

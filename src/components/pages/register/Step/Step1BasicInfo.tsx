@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { School, MapPin, Phone } from "lucide-react";
-import InputField from "../../common/InputField";
-import SelectField from "../../common/SelectField";
-import { validators } from "../../../utils/validators";
-import { validateForm } from "../../../utils/validateForm";
-import type { Colegio } from "../../../models/Colegio";
-import Button from "../../common/Button";
+import InputField from "../../../common/InputField";
+import SelectField from "../../../common/SelectField";
+import { validators } from "../../../../utils/validators";
+import { validateForm } from "../../../../utils/validateForm";
+import type { Colegio } from "../../../../models/Colegio";
+import Button from "../../../common/Button";
 
 // Interfaces Locales
 interface Ciudad {

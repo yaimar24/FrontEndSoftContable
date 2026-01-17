@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail, ArrowRight } from "lucide-react";
-import InputField from "../common/InputField";
-import StatusModal from "../common/StatusModal";
-import { login as loginApi } from "../../services/auth/authService";
-import type { LoginRequest, LoginResponse } from "../../models/Auth";
-import { useAuth } from "../../hooks/useAuth";
-import Button from "../common/Button";
+import InputField from "../../common/InputField";
+import StatusModal from "../../common/StatusModal";
+import { login as loginApi } from "../../../services/auth/authService";
+import type { LoginRequest, LoginResponse } from "../../../models/Auth";
+import { useAuth } from "../../../hooks/useAuth";
+import Button from "../../common/Button";
 
 const LoginForm = () => {
   const navigate = useNavigate();

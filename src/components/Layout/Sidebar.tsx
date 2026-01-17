@@ -1,14 +1,19 @@
-import React, { useState, useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, User, LogOut, 
-  ChevronLeft, ChevronRight, GraduationCap, 
-  FolderTree
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from '../common/Button';
-import AuthContext from '../../context/AuthContext'; 
-import StatusModal from '../common/StatusModal';
+import React, { useState, useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  User,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  GraduationCap,
+  FolderTree,
+  Users,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Button from "../common/Button";
+import AuthContext from "../../context/AuthContext";
+import StatusModal from "../common/StatusModal";
 
 interface SidebarProps {
   nombreColegio: string | null;
@@ -21,12 +26,12 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
   const [isManuallyClosed, setIsManuallyClosed] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  
+
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
   // --- LÓGICA DE EXPANSIÓN POR HOVER ---
-  
+
   const handleMouseEnter = () => {
     // Si estaba colapsado (ya sea manual o por defecto), lo abrimos al entrar
     if (isCollapsed) {
@@ -56,43 +61,44 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
   const handleConfirmLogout = () => {
     setShowConfirmModal(false);
     setIsLoggingOut(true);
-    
+
     if (auth) {
       auth.logout();
     }
-    
+
     setTimeout(() => {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
     }, 800);
   };
 
-  const linkClass = ({ isActive }: { isActive: boolean }) => 
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-3 rounded-2xl font-bold transition-all relative group ${
-      isActive 
-        ? 'bg-blue-50 text-[#1e3a8a]' 
-        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+      isActive
+        ? "bg-blue-50 text-[#1e3a8a]"
+        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
     }`;
 
   const menuItems = [
     { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard },
     { path: "/dashboard/perfil", name: "Perfil", icon: User },
+    { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
     { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
   ];
 
   return (
     <>
-      <motion.aside 
+      <motion.aside
         initial={false}
-        animate={{ 
+        animate={{
           width: isCollapsed ? 85 : 280,
-          transition: { type: 'spring', stiffness: 300, damping: 30 } 
+          transition: { type: "spring", stiffness: 300, damping: 30 },
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className="h-screen bg-white border-r border-slate-100 flex flex-col sticky top-0 z-30 shadow-sm"
       >
         {/* BOTÓN COLAPSAR (MANUAL) */}
-        <button 
+        <button
           onClick={toggleCollapse}
           className="absolute -right-3 top-12 bg-white border border-slate-100 rounded-full p-1.5 shadow-md hover:scale-110 transition-transform text-slate-400 hover:text-blue-600 z-50"
         >
@@ -101,28 +107,35 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
 
         {/* HEADER: LOGO */}
         <div className="p-6 flex flex-col items-center">
-          <motion.div 
+          <motion.div
             layout
             className="bg-gradient-to-br from-[#1e3a8a] to-blue-600 text-white rounded-[1.5rem] flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-100"
-            style={{ width: isCollapsed ? 45 : 64, height: isCollapsed ? 45 : 64 }}
+            style={{
+              width: isCollapsed ? 45 : 64,
+              height: isCollapsed ? 45 : 64,
+            }}
           >
-            {nombreColegio?.charAt(0).toUpperCase() || <GraduationCap size={isCollapsed ? 20 : 32} />}
+            {nombreColegio?.charAt(0).toUpperCase() || (
+              <GraduationCap size={isCollapsed ? 20 : 32} />
+            )}
           </motion.div>
-          
+
           <AnimatePresence>
             {!isCollapsed && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 5 }}
                 className="mt-4 text-center overflow-hidden"
               >
                 <h2 className="text-sm font-black text-slate-800 truncate w-48 px-2 uppercase tracking-tight">
-                  {nombreColegio || 'Institución'}
+                  {nombreColegio || "Institución"}
                 </h2>
                 <div className="flex items-center justify-center gap-1.5 mt-1">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">En línea</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    En línea
+                  </span>
                 </div>
               </motion.div>
             )}
@@ -132,12 +145,17 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
         {/* NAVEGACIÓN */}
         <nav className="flex-1 px-4 py-4 space-y-1">
           {menuItems.map((item) => (
-            <NavLink key={item.path} to={item.path} end={item.path === "/dashboard"} className={linkClass}>
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === "/dashboard"}
+              className={linkClass}
+            >
               {({ isActive }) => (
                 <>
                   <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                   {!isCollapsed && (
-                    <motion.span 
+                    <motion.span
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="text-[13px] whitespace-nowrap"
@@ -146,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
                     </motion.span>
                   )}
                   {isActive && (
-                    <motion.div 
+                    <motion.div
                       layoutId="activeTab"
                       className="absolute left-0 w-1 h-6 bg-[#1e3a8a] rounded-r-full"
                     />
@@ -180,12 +198,12 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
       </motion.aside>
 
       {/* MODAL DE CONFIRMACIÓN */}
-      <StatusModal 
+      <StatusModal
         show={showConfirmModal}
-        type="confirm" 
+        type="confirm"
         message="¿Estás seguro de que deseas cerrar tu sesión? Tendrás que ingresar tus credenciales nuevamente."
-        onConfirm={handleConfirmLogout} 
-        onClose={() => setShowConfirmModal(false)} 
+        onConfirm={handleConfirmLogout}
+        onClose={() => setShowConfirmModal(false)}
         confirmText="Sí, salir ahora"
         cancelText="No, continuar trabajando"
       />

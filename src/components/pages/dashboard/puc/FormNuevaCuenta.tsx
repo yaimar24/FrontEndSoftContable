@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Button from '../common/Button';
+import Button from '../../../common/Button';
 import { Save, X } from 'lucide-react';
-import { buscarEnPucMaestro, createCuentaContable } from '../../services/puc/pucService';
+import { buscarEnPucMaestro, createCuentaContable } from '../../../../services/puc/pucService';
 
 interface Props {
   padre?: { codigo: string; nombre: string };

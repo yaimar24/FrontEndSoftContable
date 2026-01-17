@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Lock, ShieldCheck, Upload } from "lucide-react";
-import InputField from "../../common/InputField";
-import { validators } from "../../../utils/validators";
-import { validateForm } from "../../../utils/validateForm";
+import InputField from "../../../common/InputField";
+import { validators } from "../../../../utils/validators";
+import { validateForm } from "../../../../utils/validateForm";
 import type { RegistroFormData } from "../RegisterForm";
-import Button from "../../common/Button";
+import Button from "../../../common/Button";
 
 interface Step3Props {
   formData: RegistroFormData;

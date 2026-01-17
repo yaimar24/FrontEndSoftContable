@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { useRegisterForm } from "../../hooks/useRegisterForm";
+import { useRegisterForm } from "../../../hooks/useRegisterForm";
 import Step1BasicInfo from "./Step/Step1BasicInfo";
 import Step2Legal from "./Step/Step2Legal";
 import Step3Account from "./Step/Step3Account";
-import StatusModal from "../common/StatusModal";
-import LoadingOverlay from "../shared/LoadingOverlay";
-import { registerColegio } from "../../services/colegio/colegioService";
-import { getParametros } from "../../services/colegio/parametrosService";
+import StatusModal from "../../common/StatusModal";
+import LoadingOverlay from "../../shared/LoadingOverlay";
+import { registerColegio } from "../../../services/colegio/colegioService";
+import { getParametros } from "../../../services/colegio/parametrosService";
 import type { 
   Colegio, Ciudad, ActividadEconomica, TipoIdentificacion, 
   RegimenIva, Tributo, ResponsabilidadFiscal 
-} from "../../models/Colegio";
+} from "../../../models/Colegio";
 
 export interface ParametrosSistema {
   ciudades: Ciudad[];

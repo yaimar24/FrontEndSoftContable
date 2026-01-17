@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import { getEmailFromToken } from '../../utils/jwt';
-import Sidebar from '../Layout/Sidebar';
-import { useAuth } from '../../hooks/useAuth';
+import { getEmailFromToken } from '../../../utils/jwt';
+import Sidebar from '../../Layout/Sidebar';
+import { useAuth } from '../../../hooks/useAuth';
 
 const Dashboard = () => {
   const { token } = useAuth();
