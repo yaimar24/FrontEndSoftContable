@@ -4,8 +4,8 @@ import LoginForm from "../components/pages/login/LoginForm";
 import ProtectedRoute from "./ProtectedRoute"; // Importa el protector
 import PerfilForm from "../components/pages/dashboard/perfil/PerfilPage";
 import PucPage from "../components/pages/dashboard/puc/PucPage";
-import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
 import { RegisterForm } from "../components/pages/register/RegisterForm";
+import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
 
 const AppRoutes = () => (
   <Router>

@@ -1,9 +1,7 @@
 import { apiClient } from '../../api/apiClient';
 import type { TerceroCreateDTO } from '../../models/Tercero';
+import type { ApiResponse } from '../../models/types/ApiResponse';
 
-/**
- * Registra un tercero globalmente y lo vincula al colegio actual
- */
 export const vincularTercero = async (data: TerceroCreateDTO): Promise<any> => {
   return apiClient('/api/Tercero/vincular', {
     method: 'POST',
@@ -11,15 +9,13 @@ export const vincularTercero = async (data: TerceroCreateDTO): Promise<any> => {
   });
 };
 
-/**
- * Obtiene la lista de terceros vinculados a un colegio específico
- */
+export const getTercerosByColegio = async (): Promise<ApiResponse<any[]>> => {
+  return apiClient('/api/Tercero');
+};
 
-
-/**
- * Busca si un tercero ya existe en la base de datos global por su identificación
- * Útil para autocompletar datos si ya existe en otro colegio
- */
-export const buscarTerceroGlobal = async (identificacion: string): Promise<any> => {
-  return apiClient(`/api/Tercero/buscar/${identificacion}`);
+export const updateTercero = async (id: string | number, data: any): Promise<ApiResponse<string>> => {
+  return apiClient(`/api/Tercero/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
 };
