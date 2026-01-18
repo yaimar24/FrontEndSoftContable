@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Edit3, Trash2, Mail, Phone, Building2, User } from 'lucide-react';
+import { Search, Filter, Edit3, Mail, Phone, Building2, User } from 'lucide-react';
 import { Table } from '../../../../common/Table';
 
 interface TercerosListProps {
