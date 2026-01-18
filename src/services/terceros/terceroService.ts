@@ -19,3 +19,8 @@ export const updateTercero = async (id: string | number, data: any): Promise<Api
     body: JSON.stringify(data),
   });
 };
+export const desvincularTercero = async (terceroId: string): Promise<ApiResponse<string>> => {
+  return apiClient(`/api/Tercero/desvincular/${terceroId}`, {
+    method: 'PUT',
+  });
+};
