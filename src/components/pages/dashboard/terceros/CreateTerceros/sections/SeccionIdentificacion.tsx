@@ -3,10 +3,11 @@ import { ShieldCheck, Hash } from 'lucide-react';
 import type { TerceroCreateDTO } from '../../../../../../models/Tercero';
 import SelectField from '../../../../../common/SelectField';
 import InputField from '../../../../../common/InputField';
+import type { ParametrosSistema } from '../../../../../../models/parametros';
 
 interface Props {
   formData: TerceroCreateDTO;
-  parametros: any;
+  parametros: ParametrosSistema;
   errors: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }

@@ -3,10 +3,12 @@ import { Globe, Mail, ShieldCheck } from 'lucide-react';
 import type { TerceroCreateDTO } from '../../../../../../models/Tercero';
 import InputField from '../../../../../common/InputField';
 import SelectField from '../../../../../common/SelectField';
+import type { ParametrosSistema } from '../../../../../../models/parametros';
+import type { ResponsabilidadFiscal } from '../../../../../../models/Colegio';
 
 interface Props {
   formData: TerceroCreateDTO;
-  parametros: any;
+  parametros: ParametrosSistema;
   errors: Record<string, string>;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onCheckboxChange: (id: number) => void;
@@ -82,7 +84,7 @@ export const SeccionFiscal: React.FC<Props> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {parametros?.responsabilidadesFiscales?.map((resp: any) => {
+          {parametros?.responsabilidadesFiscales?.map((resp: ResponsabilidadFiscal) => {
             const isChecked = selectedIds.includes(resp.id);
             
             return (

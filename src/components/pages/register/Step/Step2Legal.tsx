@@ -4,8 +4,9 @@ import InputField from "../../../common/InputField";
 import SelectField from "../../../common/SelectField";
 import { validators } from "../../../../utils/validators";
 import { validateForm } from "../../../../utils/validateForm";
-import type { RegistroFormData, ParametrosSistema } from "../RegisterForm";
+import type { RegistroFormData } from "../RegisterForm";
 import Button from "../../../common/Button";
+import type { ParametrosSistema } from "../../../../models/parametros";
 
 interface Step2Props {
   formData: RegistroFormData;

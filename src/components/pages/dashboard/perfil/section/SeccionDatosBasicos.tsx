@@ -1,6 +1,7 @@
 import { Building2, MapPin, Phone, Hash } from 'lucide-react';
 import InputField from '../../../../common/InputField';
 import SelectField from '../../../../common/SelectField';
+import type { Ciudad } from '../../../../../models/Colegio';
 
 export const SeccionDatosBasicos = ({ formData, ciudades, onChange }: any) => (
   <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-6 shadow-sm">
@@ -15,7 +16,7 @@ export const SeccionDatosBasicos = ({ formData, ciudades, onChange }: any) => (
     <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={onChange} icon={MapPin} />
     <SelectField 
       label="Ciudad" name="ciudadId" value={formData.ciudadId} onChange={onChange}
-      options={ciudades || []} displayExpr={(c: any) => c.nombre} placeholder="Seleccionar ciudad"
+      options={ciudades || []} displayExpr={(c: Ciudad) => c.nombre} placeholder="Seleccionar ciudad"
     />
   </section>
 );

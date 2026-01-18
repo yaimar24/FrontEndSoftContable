@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, Folder, FileText, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { PucNodo } from '../../../../models/puc';
 
 interface Props {
-  nodo: any;
+  nodo: PucNodo;
   onAddChild: (padre: { codigo: string; nombre: string }) => void;
 }
 

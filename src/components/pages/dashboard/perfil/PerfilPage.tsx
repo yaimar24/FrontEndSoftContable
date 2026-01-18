@@ -8,7 +8,7 @@ import { SeccionDatosBasicos } from './section/SeccionDatosBasicos';
 import { SeccionFiscal } from './section/SeccionFiscal';
 import { SeccionRepresentante } from './section/SeccionRepresentante';
 import { usePerfilForm } from '../../../../hooks/usePerfilForm';
-import type { ParametrosSistema } from '../../register/RegisterForm';
+import type { ParametrosSistema } from '../../../../models/parametros';
 
 
 const PerfilPage: React.FC = () => {

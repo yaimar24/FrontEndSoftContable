@@ -2,8 +2,7 @@ import { UserCheck, Hash } from 'lucide-react';
 import InputField from '../../../../common/InputField';
 import SelectField from '../../../../common/SelectField';
 import React from 'react';
-import type { RepresentanteLegal } from '../../../../../models/Colegio';
-import type { TipoIdentificacion } from '../../../../../models/Tercero';
+import type { RepresentanteLegal, TipoIdentificacion } from '../../../../../models/Colegio';
 
 
 

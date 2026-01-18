@@ -8,10 +8,12 @@ import {
 } from "lucide-react";
 import InputField from "../../../../common/InputField";
 import SelectField from "../../../../common/SelectField";
+import type { ActividadEconomica, Colegio, RegimenIva, Tributo } from "../../../../../models/Colegio";
+import type { ParametrosSistema } from "../../../../../models/parametros";
 
 interface Props {
-  formData: any; // Idealmente usar la interfaz Colegio o Institucion
-  parametros: any;
+  formData: Partial<Colegio>; 
+  parametros: ParametrosSistema;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
@@ -43,7 +45,7 @@ export const SeccionFiscal: React.FC<Props> = ({
       {/* Grid de Cards Interactivas (Toggles) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {fiscalToggles.map((field) => {
-          const isChecked = !!formData[field.id];
+          const isChecked = !!formData[field.id as keyof Colegio];
           const Icon = field.icon;
 
           return (
@@ -112,7 +114,7 @@ export const SeccionFiscal: React.FC<Props> = ({
           value={formData.actividadEconomicaId ?? ""}
           onChange={onChange}
           options={parametros?.actividadesEconomicas || []}
-          displayExpr={(a: any) => `${a.codigo} - ${a.descripcion}`}
+          displayExpr={(a: ActividadEconomica) => `${a.codigo} - ${a.descripcion}`}
           placeholder="Seleccionar código CIIU"
         />
 
@@ -123,7 +125,7 @@ export const SeccionFiscal: React.FC<Props> = ({
             value={formData.regimenIvaId ?? ""}
             onChange={onChange}
             options={parametros?.regimenesIva || []}
-            displayExpr={(r: any) => r.nombre}
+            displayExpr={(r: RegimenIva) => r.nombre}
             placeholder="Seleccionar..."
           />
           <SelectField
@@ -132,7 +134,7 @@ export const SeccionFiscal: React.FC<Props> = ({
             value={formData.tributoId ?? ""}
             onChange={onChange}
             options={parametros?.tributos || []}
-            displayExpr={(t: any) => t.nombre}
+            displayExpr={(t: Tributo) => t.nombre}
             placeholder="Seleccionar..."
           />
         </div>

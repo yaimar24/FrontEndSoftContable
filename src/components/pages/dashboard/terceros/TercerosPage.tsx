@@ -4,10 +4,11 @@ import TercerosCreatePage from "./CreateTerceros/TercerosCreatePage";
 import { getTercerosByColegio } from "../../../../services/terceros/terceroService";
 import { ShieldCheck, UserPlus, Users } from "lucide-react";
 import LoadingOverlay from "../../../shared/LoadingOverlay";
+import type { TerceroCreateDTO, TerceroupdateDTO } from "../../../../models/Tercero";
 const TercerosPage = () => {
   const [view, setView] = useState<'lista' | 'formulario'>('lista');
-  const [terceros, setTerceros] = useState<any[]>([]);
-  const [selectedTercero, setSelectedTercero] = useState<any | null>(null);
+  const [terceros, setTerceros] = useState<TerceroupdateDTO[]>([]);
+  const [selectedTercero, setSelectedTercero] = useState<TerceroCreateDTO | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchTerceros = async () => {
@@ -20,7 +21,7 @@ const TercerosPage = () => {
 
   useEffect(() => { if (view === 'lista') fetchTerceros(); }, [view]);
 
-  const handleEdit = (tercero: any) => {
+  const handleEdit = (tercero: TerceroCreateDTO) => {
     setSelectedTercero(tercero);
     setView('formulario');
   };
