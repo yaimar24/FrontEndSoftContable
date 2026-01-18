@@ -104,7 +104,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
 
   const columns = [
     {
-      header: "Tercero / Razón Social",
+      header: "Terceros",
       className:
         "min-w-[300px] sticky left-0 bg-white group-hover:bg-slate-50 z-20",
       render: (t: TerceroupdateDTO) => {
@@ -226,7 +226,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="BUSCAR..."
+          placeholder="BUSCAR POR IDENTIFICACIÓN"
           className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[1.5rem] outline-none focus:ring-4 focus:ring-blue-500/5 transition-all text-[11px] font-bold uppercase"
         />
       </div>
