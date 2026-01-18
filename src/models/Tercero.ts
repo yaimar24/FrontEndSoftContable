@@ -27,7 +27,6 @@ export interface RegimenIva extends CatalogoBase {
   codigo?: string;
   descripcion?: string;
 }
-
 export interface TerceroCreateDTO {
   id?: number; 
   tipoPersonaId: number;
@@ -46,9 +45,8 @@ export interface TerceroCreateDTO {
   telefono?: string;
   indicativo?: string;
   codigoPostal?: string; 
-  contactoNombres?:string; 
-  contactoApellidos?:string; 
-  correoFacturacion?:string; 
-  responsabilidadesFiscalesIds?:[]
-
+  contactoNombres?: string; 
+  contactoApellidos?: string; 
+  correoFacturacion?: string; 
+  responsabilidadesFiscalesIds: number[];
 }

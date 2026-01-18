@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FolderPlus, RefreshCcw } from 'lucide-react';
-import { getPucTree, type PucNodo } from '../../../../services/puc/pucService';
+import { getPucTree } from '../../../../services/puc/pucService';
 import FormNuevaCuenta from './FormNuevaCuenta';
 import PucItem from './PucItem';
+import type { PucNodo } from '../../../../models/puc';
 
 
 const PucPage: React.FC = () => {
