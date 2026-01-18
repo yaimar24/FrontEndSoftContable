@@ -94,11 +94,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
           >
             <Edit3 size={16} />
           </button>
-          <button 
-            className="p-2 hover:bg-red-600 hover:text-white rounded-xl text-slate-400 transition-all shadow-sm border border-slate-100"
-          >
-            <Trash2 size={16} />
-          </button>
+    
         </div>
       )
     }
