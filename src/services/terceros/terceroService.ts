@@ -20,7 +20,7 @@ export const updateTercero = async (id: string | number, data: TerceroupdateDTO)
   });
 };
 export const desvincularTercero = async (terceroId: string): Promise<ApiResponse<string>> => {
-  return apiClient(`/api/Tercero/desvincular/${terceroId}`, {
-    method: 'PUT',
+  return apiClient(`/api/Tercero/status/${terceroId}`, {
+    method: 'PATCH',
   });
 };
