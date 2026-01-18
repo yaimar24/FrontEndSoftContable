@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getColegioIdFromToken } from "../utils/jwt";
-import type { TerceroCreateDTO, TerceroupdateDTO } from "../models/Tercero";
+import type { TerceroCreateDTO } from "../models/Tercero";
 import { getParametros } from "../services/colegio/parametrosService";
 import { calcularDV } from "../utils/calcularDV";
 import {
@@ -18,8 +18,9 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<TerceroCreateDTO>({
-    tipoPersonaId: 1,
-    tipoIdentificacionId: 1,
+    // Inicializamos en 0 para que sean numbers pero el validador los detecte como vacíos
+    tipoPersonaId: 0,
+    tipoIdentificacionId: 0,
     identificacion: "",
     dv: "",
     nombres: "",
@@ -32,9 +33,9 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     contactoApellidos: "",
     correoFacturacion: "",
     colegioId: "",
-    categoriaId: 1,
-    regimenIvaId: 1,
-    ciudadId: 1,
+    categoriaId: 0,
+    regimenIvaId: 0,
+    ciudadId: 0,
     direccion: "",
     telefono: "",
     responsabilidadesFiscalesIds: [],
@@ -47,7 +48,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     message: "",
   });
 
-  // Carga de parámetros
+  // Carga de parámetros iniciales
   useEffect(() => {
     if (colegioId) {
       getParametros().then((data) => {
@@ -57,7 +58,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     }
   }, [colegioId]);
 
-  // Sincronización de datos para EDICIÓN
+  // Sincronización para edición
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -73,19 +74,27 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     }
   }, [initialData]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Limpiar error del campo cuando el usuario empieza a escribir o seleccionar
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    
     setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
+      // Convertimos a número si el campo termina en 'Id'
+      const val = name.endsWith('Id') ? Number(value) : value;
+      const newData = { ...prev, [name]: val };
+      
       if (name === "identificacion") newData.dv = calcularDV(value).toString();
       return newData;
     });
   };
 
   const handleCheckboxChange = (id: number) => {
+    if (errors.responsabilidadesFiscalesIds) {
+      setErrors(prev => ({ ...prev, responsabilidadesFiscalesIds: "" }));
+    }
+
     setFormData((prev) => {
       const currentIds = prev.responsabilidadesFiscalesIds || [];
       const newIds = currentIds.includes(id)
@@ -96,70 +105,80 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   };
 
   const handleSaveClick = () => {
-    const schema = {
+    const schema: Record<string, any[]> = {
+      // Usamos requiredSelect para que el valor 0 dispare el error
+      tipoPersonaId: [validators.requiredSelect("Seleccione el tipo de persona")],
+      tipoIdentificacionId: [validators.requiredSelect("Seleccione el tipo de documento")],
       identificacion: [validators.required()],
-      email: [
-        validators.required(),
-        validators.email?.() || validators.required(),
-      ],
+
+      // Información Condicional
       ...(formData.tipoPersonaId === 1
-        ? { nombres: [validators.required()] }
-        : { nombreComercial: [validators.required()] }),
+        ? { 
+            nombres: [validators.required()], 
+            apellidos: [validators.required()] 
+          }
+        : { 
+            nombreComercial: [validators.required()] 
+          }),
+      
+      email: [validators.required(), validators.email?.()],
+      telefono: [validators.required()],
+
+      // Ubicación
+      ciudadId: [validators.requiredSelect("La ciudad es obligatoria")],
+      direccion: [validators.required()],
+
+      // Sección Fiscal
+      correoFacturacion: [validators.required(), validators.email?.()],
+      codigoPostal: [validators.required()],
+      categoriaId: [validators.requiredSelect("La categoría es obligatoria")],
+      regimenIvaId: [validators.requiredSelect("El régimen es obligatorio")],
     };
-    const validationErrors = validateForm(formData, schema) as Record<
-      string,
-      string
-    >;
-    if (Object.keys(validationErrors).length === 0) setShowConfirm(true);
-    else {
+
+    const validationErrors = validateForm(formData, schema) as Record<string, string>;
+
+  
+
+    if (Object.keys(validationErrors).length === 0) {
+      setShowConfirm(true);
+    } else {
       setErrors(validationErrors);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-const handleConfirmSave = async () => {
-  if (!colegioId) return;
-  setShowConfirm(false);
-  setIsSaving(true);
+  const handleConfirmSave = async () => {
+    if (!colegioId) return;
+    setShowConfirm(false);
+    setIsSaving(true);
 
-  try {
-    const payload = { ...formData, colegioId } as TerceroupdateDTO | TerceroCreateDTO;
+    try {
+      const payload = { ...formData, colegioId };
+      
+      const result = initialData?.id
+        ? await updateTercero(initialData.id, { ...payload, id: initialData.id } as any)
+        : await vincularTercero(payload);
 
-    // Llamada a API según si existe id
-    const result = initialData?.id
-      ? await updateTercero(initialData.id, { ...payload, id: initialData.id })
-      : await vincularTercero(payload);
+      setResultModal({
+        show: true,
+        success: result.success,
+        message: result.success ? "Tercero guardado con éxito." : result.message,
+      });
 
-    setResultModal({
-      show: true,
-      success: result.success,
-      message: result.success ? "Éxito en la operación." : result.message,
-    });
-
-  } catch (err: unknown) {
-    setResultModal({
-      show: true,
-      success: false,
-      message: err instanceof Error ? err.message : "Error de red.",
-    });
-  } finally {
-    setIsSaving(false);
-  }
-};
+    } catch (err: unknown) {
+      setResultModal({
+        show: true,
+        success: false,
+        message: err instanceof Error ? err.message : "Error inesperado al guardar.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return {
-    formData,
-    parametros,
-    loading,
-    isSaving,
-    errors,
-    showConfirm,
-    resultModal,
-    setShowConfirm,
-    setResultModal,
-    handleChange,
-    handleCheckboxChange,
-    handleSaveClick,
-    handleConfirmSave,
+    formData, parametros, loading, isSaving, errors,
+    showConfirm, resultModal, setShowConfirm, setResultModal,
+    handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave,
   };
 };

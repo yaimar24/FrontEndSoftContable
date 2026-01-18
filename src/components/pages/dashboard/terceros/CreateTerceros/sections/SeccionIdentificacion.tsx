@@ -14,7 +14,6 @@ interface Props {
 
 export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, errors, onChange }) => (
   <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-6 shadow-sm">
-    {/* Encabezado con el estilo unificado */}
     <div className="flex flex-col gap-1">
       <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
         <ShieldCheck size={14} className="text-blue-600"/> Identificación Legal
@@ -27,8 +26,10 @@ export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, e
         name="tipoPersonaId" 
         value={formData.tipoPersonaId ?? ""} 
         onChange={onChange} 
+        error={errors.tipoPersonaId}
         options={parametros?.tiposPersona || []} 
         displayExpr={t => t.nombre} 
+        placeholder="Seleccione Tipo Persona"
       />
 
       <SelectField 
@@ -36,12 +37,13 @@ export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, e
         name="tipoIdentificacionId" 
         value={formData.tipoIdentificacionId ?? ""} 
         onChange={onChange} 
+        error={errors.tipoIdentificacionId}
         options={parametros?.tiposIdentificacion || []} 
         displayExpr={t => t.nombre} 
+        placeholder="Seleccione Documento"
       />
 
       <div className="flex gap-3">
-        {/* Campo de Número de Identificación */}
         <div className="flex-1">
           <InputField 
             label="Número de Identificación" 
@@ -55,7 +57,6 @@ export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, e
           />
         </div>
 
-        {/* Campo DV - Ahora siempre visible para cualquier documento */}
         <div className="w-24">
           <InputField 
             label="DV" 
