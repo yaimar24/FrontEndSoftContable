@@ -1,132 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import Button from '../../../common/Button';
+import React, { useState } from 'react';
 import { Save, X } from 'lucide-react';
-import { buscarEnPucMaestro, createCuentaContable } from '../../../../services/puc/pucService';
-import StatusModal from '../../../common/StatusModal';
+import { createCuentaContable } from '../../../../services/puc/pucService';
 
 interface Props {
   padre?: { codigo: string; nombre: string };
+  hijosExistentes: string[];
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const FormNuevaCuenta: React.FC<Props> = ({ padre, onClose, onSuccess }) => {
-  const [codigo, setCodigo] = useState(padre ? padre.codigo : '');
-  const [nombre, setNombre] = useState('');
+const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [naturaleza, setNaturaleza] = useState('D');
+  const [esDetalle, setEsDetalle] = useState(false);
 
-  const [statusModal, setStatusModal] = useState({
-    show: false,
-    success: true,
-    message: ''
-  });
+  const sugerirCodigo = () => {
+    if (!padre) {
+      const raices = hijosExistentes.map(c => parseInt(c)).filter(n => !isNaN(n));
+      return (raices.length > 0 ? Math.max(...raices) + 1 : 1).toString();
+    }
+    const prefijo = padre.codigo;
+    const hijos = hijosExistentes
+      .filter(c => c.startsWith(prefijo) && c.length > prefijo.length)
+      .map(c => parseInt(c.substring(prefijo.length)))
+      .filter(n => !isNaN(n));
+    const max = hijos.length > 0 ? Math.max(...hijos) : 0;
+    return `${prefijo}${(max + 1).toString().padStart(2, '0')}`;
+  };
 
-  // Buscar nombre sugerido desde el PUC maestro
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-      if (codigo.length >= 4) {
-        try {
-          const sug = await buscarEnPucMaestro(codigo);
-          if (sug) setNombre(sug.nombre);
-        } catch {
-          // Puedes manejar error opcional si quieres
-        }
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [codigo]);
+  const [codigo, setCodigo] = useState(sugerirCodigo());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      await createCuentaContable({ 
-        codigo, 
-        nombre, 
-        codigoPadre: padre?.codigo 
-      });
-
-      setStatusModal({
-        show: true,
-        success: true,
-        message: 'Cuenta creada correctamente'
-      });
-
-      onSuccess();
-      onClose();
-
-    } catch (err: unknown) {
-      let message = 'Error al crear la cuenta. Verifique el código.';
-
-      if (err instanceof Error) {
-        message = err.message;
-      }
-
-      setStatusModal({
-        show: true,
-        success: false,
-        message
-      });
-    } finally {
-      setLoading(false);
-    }
+      const res = await createCuentaContable({ codigo, nombre: nombre.toUpperCase(), codigoPadre: padre?.codigo, naturaleza, esDetalle });
+      if (res.success) { onSuccess(); onClose(); }
+      else { alert(res.message); }
+    } catch (err) { alert("Error de conexión"); }
+    finally { setLoading(false); }
   };
 
   return (
-    <>
-      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-        <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden">
-          <div className="bg-[#1e3a8a] p-8 text-white">
-            <h2 className="text-2xl font-black uppercase tracking-tight">Nueva Cuenta</h2>
-            <p className="text-blue-200 text-xs font-bold uppercase mt-1">
-              {padre ? `Subcuenta de: ${padre.nombre} (${padre.codigo})` : 'Cuenta de Nivel Raíz'}
-            </p>
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden">
+        <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-black uppercase tracking-tighter">Nueva Cuenta</h2>
+            <p className="text-slate-400 text-[10px] font-bold uppercase">{padre ? `Padre: ${padre.codigo}` : 'Nivel Raíz'}</p>
           </div>
-          
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-2">Código de Cuenta</label>
-                <input 
-                  type="text"
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold focus:border-blue-500 focus:ring-0 transition-all"
-                  placeholder="Ej: 11050501"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-2">Nombre de la Cuenta</label>
-                <input 
-                  type="text"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold focus:border-blue-500 focus:ring-0 transition-all uppercase"
-                  placeholder="Ej: CAJA GENERAL AUXILIAR"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <Button variant="secondary" onClick={onClose} fullWidth icon={X}>Cancelar</Button>
-              <Button type="submit" disabled={loading} isLoading={loading} fullWidth icon={Save}>Guardar Cuenta</Button>
-            </div>
-          </form>
+          <button onClick={onClose} className="hover:rotate-90 transition-transform"><X size={24} /></button>
         </div>
-      </div>
+        
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <div className="space-y-4">
+            <input type="text" value={codigo} onChange={e => setCodigo(e.target.value)} placeholder="Código" className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold outline-none focus:border-blue-500" required />
+            <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre de cuenta" className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold outline-none focus:border-blue-500 uppercase" required />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <select value={naturaleza} onChange={e => setNaturaleza(e.target.value)} className="bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-bold outline-none">
+                <option value="D">DÉBITO</option>
+                <option value="C">CRÉDITO</option>
+              </select>
+              <button type="button" onClick={() => setEsDetalle(!esDetalle)} className={`rounded-2xl p-4 text-[10px] font-black uppercase transition-all ${esDetalle ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-400'}`}>
+                {esDetalle ? 'Es Movimiento' : 'Es Grupo'}
+              </button>
+            </div>
+          </div>
 
-      {/* Modal de estatus */}
-      <StatusModal
-        show={statusModal.show}
-        success={statusModal.success}
-        message={statusModal.message}
-        onClose={() => setStatusModal(prev => ({ ...prev, show: false }))}
-      />
-    </>
+          <div className="flex gap-4 pt-4">
+            <button type="button" onClick={onClose} className="flex-1 font-bold text-slate-400">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-2 hover:bg-blue-700 shadow-lg disabled:opacity-50">
+              <Save size={18} /> {loading ? 'Guardando...' : 'Registrar'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

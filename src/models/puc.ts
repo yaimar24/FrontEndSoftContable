@@ -5,4 +5,5 @@ export interface PucNodo {
   esDetalle: boolean;
   naturaleza: string;
   hijos: PucNodo[];
+  colegioId: string;
 }
