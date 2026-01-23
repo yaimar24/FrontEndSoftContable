@@ -9,6 +9,7 @@ import {
   GraduationCap,
   FolderTree,
   Users,
+  ShoppingBag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../common/Button";
@@ -83,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
     { path: "/dashboard/perfil", name: "Perfil", icon: User },
     { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
     { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
+    { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag },
   ];
 
   return (
