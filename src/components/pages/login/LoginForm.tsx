@@ -124,6 +124,7 @@ const LoginForm = () => {
             Entrar al Sistema
             <ArrowRight size={16} />
           </Button>
+
         </form>
 
         {/* Footer */}
