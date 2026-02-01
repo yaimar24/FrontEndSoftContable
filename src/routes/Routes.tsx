@@ -7,6 +7,7 @@ import PucPage from "../components/pages/dashboard/puc/PucPage";
 import { RegisterForm } from "../components/pages/register/RegisterForm";
 import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
 import VentasPage from "../components/pages/dashboard/ventas/Ventas";
+import ProductosPage from "../components/pages/dashboard/terceros/TercerosPage";
 
 const AppRoutes = () => (
   <Router>
@@ -29,6 +30,7 @@ const AppRoutes = () => (
           <Route path="perfil" element={<PerfilForm />} />
           <Route path="terceros" element={<TercerosPage />} />
           <Route path="ventas" element={<VentasPage />} />
+          <Route path="productos" element={<ProductosPage />} />
         </Route>
       </Route>
 

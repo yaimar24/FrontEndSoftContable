@@ -6,7 +6,7 @@ import { validators } from "../../../../utils/validators";
 import { validateForm } from "../../../../utils/validateForm";
 import type { RegistroFormData } from "../RegisterForm";
 import Button from "../../../common/Button";
-import type { ParametrosSistema } from "../../../../models/parametros";
+import type { ParametrosSistema } from "../../../../models/Parametros";
 
 interface Step2Props {
   formData: RegistroFormData;

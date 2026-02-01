@@ -3,7 +3,7 @@ import { ShieldCheck, Hash } from 'lucide-react';
 import type { TerceroCreateDTO } from '../../../../../../models/Tercero';
 import SelectField from '../../../../../common/SelectField';
 import InputField from '../../../../../common/InputField';
-import type { ParametrosSistema } from '../../../../../../models/parametros';
+import type { ParametrosSistema } from '../../../../../../models/Parametros';
 
 interface Props {
   formData: TerceroCreateDTO;

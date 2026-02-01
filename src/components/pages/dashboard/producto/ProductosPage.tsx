@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import { Package, Plus, Layers } from "lucide-react";
 
-import PageHeader from "../../../Layout/PageHeader";
 
+import PageHeader from "../../../Layout/PageHeader";
 import type { ProductoReadDTO } from "../../../../models/Producto";
 import { getProductosByColegio } from "../../../../services/producto/productoService";
-import ProductosList from "../producto/ProductosList";
-import ProductosCreatePage from "../producto/ProductosCreatePage";
+import ProductosList from "./ProductosList";
+import ProductosCreatePage from "./ProductosCreatePage";
 
 const ProductosPage = () => {
+  // Estado para alternar entre la tabla y el formulario
   const [view, setView] = useState<"lista" | "formulario">("lista");
+  
+  // Estado para los datos del catálogo
   const [productos, setProductos] = useState<ProductoReadDTO[]>([]);
+  
+  // Estado para el producto que se va a editar
   const [selectedProducto, setSelectedProducto] = useState<ProductoReadDTO | null>(null);
 
+  // Función de carga de datos
   const fetchProductos = async () => {
     const response = await getProductosByColegio();
     if (response.success && response.data) {
@@ -20,17 +26,22 @@ const ProductosPage = () => {
     }
   };
 
+  // Efecto para refrescar la lista al volver de crear/editar
   useEffect(() => {
     if (view === "lista") {
-      fetchProductos();
+      (async () => {
+        await fetchProductos();
+      })();
     }
   }, [view]);
 
+  // Manejador para abrir el formulario en modo edición
   const handleEdit = (producto: ProductoReadDTO) => {
     setSelectedProducto(producto);
     setView("formulario");
   };
 
+  // Manejador para cerrar el formulario y limpiar la selección
   const handleBackToList = () => {
     setSelectedProducto(null);
     setView("lista");
@@ -42,13 +53,16 @@ const ProductosPage = () => {
         title="Gestión de Productos"
         subtitle={`${productos.length} Ítems en el catálogo`}
         icon={Package}
-        // Este bloque es el que genera los botones de navegación arriba a la derecha
         switcher={
           <div className="flex bg-white p-1.5 rounded-[1.5rem] border border-slate-200 shadow-sm">
             <button
               onClick={() => setView("lista")}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition
-                ${view === "lista" ? "bg-blue-600 text-white" : "text-slate-500 hover:bg-slate-100"}`}
+                ${
+                  view === "lista"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100"
+                }`}
             >
               <Layers size={14} />
               Lista
@@ -56,11 +70,15 @@ const ProductosPage = () => {
 
             <button
               onClick={() => {
-                setSelectedProducto(null); // Reset para que el form sea de creación
+                setSelectedProducto(null); // Asegura que sea un registro nuevo
                 setView("formulario");
               }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition
-                ${view === "formulario" ? "bg-blue-600 text-white" : "text-slate-500 hover:bg-slate-100"}`}
+                ${
+                  view === "formulario"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100"
+                }`}
             >
               <Plus size={14} />
               Registrar
@@ -71,7 +89,10 @@ const ProductosPage = () => {
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700">
         {view === "lista" ? (
-          <ProductosList data={productos} onEdit={handleEdit} />
+          <ProductosList 
+            data={productos} 
+            onEdit={handleEdit} 
+          />
         ) : (
           <ProductosCreatePage
             initialData={selectedProducto}

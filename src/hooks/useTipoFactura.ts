@@ -4,13 +4,11 @@ import { getTipoFactura } from "../services/TipoFacturas/tipoFacturas";
 
 export const useTipoFactura = () => {
   const [tiposFactura, setTiposFactura] = useState<TipoFactura[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTiposFactura = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const response = await getTipoFactura();
@@ -23,9 +21,7 @@ export const useTipoFactura = () => {
       } catch (err) {
         setError("Error al conectar con el servidor");
         console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchTiposFactura();
@@ -33,7 +29,6 @@ export const useTipoFactura = () => {
 
   return {
     tiposFactura,
-    loading,
     error,
   };
 };

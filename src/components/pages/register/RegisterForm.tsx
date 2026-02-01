@@ -4,10 +4,9 @@ import Step1BasicInfo from "./Step/Step1BasicInfo";
 import Step2Legal from "./Step/Step2Legal";
 import Step3Account from "./Step/Step3Account";
 import StatusModal from "../../common/StatusModal";
-import LoadingOverlay from "../../shared/LoadingOverlay";
 import { registerColegio } from "../../../services/colegio/colegioService";
 import { getParametros } from "../../../services/colegio/parametrosService";
-import type { ParametrosSistema } from "../../../models/parametros";
+import type { ParametrosSistema } from "../../../models/Parametros";
 import type { Colegio } from "../../../models/Colegio";
 
 export interface RegistroFormData extends Partial<Colegio> {
@@ -50,8 +49,6 @@ export const RegisterForm: React.FC = () => {
     success: true,
     message: "",
   });
-  const [loading, setLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [parametros, setParametros] = useState<ParametrosSistema | null>(null);
 
   useEffect(() => {
@@ -60,11 +57,9 @@ export const RegisterForm: React.FC = () => {
         if (data) setParametros(data);
       })
       .catch(console.error)
-      .finally(() => setLoading(false));
   }, []);
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
 
     try {
       const {
@@ -109,8 +104,6 @@ export const RegisterForm: React.FC = () => {
         success: false,
         message: errorMessage,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -119,10 +112,7 @@ export const RegisterForm: React.FC = () => {
 
   return (
     <>
-      {(loading || isSubmitting) && (
-        <LoadingOverlay message={loading ? "Cargando..." : "Procesando..."} />
-      )}
-
+ 
       <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border-t-[8px] border-[#1e3a8a] max-w-4xl mx-auto">
         <div className="p-8 text-center border-b border-slate-100">
           <img src="sicpie.png" alt="SICPIE" className="h-16 mx-auto mb-2" />

@@ -12,7 +12,6 @@ import { validateForm } from "../utils/validateForm";
 
 export const useTercerosForm = (token: string | null, initialData?: any) => {
   const colegioId = getColegioIdFromToken(token);
-  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [parametros, setParametros] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -53,7 +52,6 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     if (colegioId) {
       getParametros().then((data) => {
         setParametros(data);
-        setLoading(false);
       });
     }
   }, [colegioId]);
@@ -177,7 +175,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   };
 
   return {
-    formData, parametros, loading, isSaving, errors,
+    formData, parametros, isSaving, errors,
     showConfirm, resultModal, setShowConfirm, setResultModal,
     handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave,
   };

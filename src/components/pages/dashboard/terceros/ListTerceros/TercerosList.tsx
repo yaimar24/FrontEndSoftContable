@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Search, Edit3, Building2, User, UserMinus, Link } from "lucide-react";
+import { Edit3, Building2, User, UserMinus, Link as LinkIcon } from "lucide-react";
 import { Table } from "../../../../common/Table";
 import { FilterGroup } from "../../../../common/FilterGroup";
 import { ExportButtons } from "../../../../common/ExportButtons";
 import StatusModal from "../../../../common/StatusModal";
+import SearchBar from "../../../../common/SearchBar"; 
 import { desvincularTercero } from "../../../../../services/terceros/terceroService";
 import type { TerceroupdateDTO } from "../../../../../models/Tercero";
 import { useFilter } from "../../../../../hooks/useGenericFilter";
@@ -40,13 +41,13 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
     terceroId?: string;
     isActivo?: boolean;
   }>({ show: false });
+  
   const [resultModal, setResultModal] = useState<{
     show: boolean;
     success?: boolean;
     message?: string;
   }>({ show: false });
 
-  // CONFIGURACIÓN DE EXPORTACIÓN CON TIPADO EXPLÍCITO
   const exportConfig: ExportConfig<TerceroupdateDTO> = {
     filename: `Reporte_Terceros`,
     data: filteredData,
@@ -55,21 +56,12 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
       { header: "DV", dataKey: "dv" },
       {
         header: "RAZÓN SOCIAL",
-        dataKey: (t) =>
-          (t.tipoPersonaId === 1
-            ? `${t.nombres} ${t.apellidos}`
-            : t.nombreComercial) || "SIN NOMBRE",
+        dataKey: (t) => (t.tipoPersonaId === 1 ? `${t.nombres} ${t.apellidos}` : t.nombreComercial) || "SIN NOMBRE",
       },
       { header: "EMAIL", dataKey: "email" },
       { header: "TELÉFONO", dataKey: "telefono" },
-      {
-        header: "CATEGORÍA",
-        dataKey: (t) => (t.categoriaId === 1 ? "CLIENTE" : "PROVEEDOR"),
-      },
-      {
-        header: "ESTADO",
-        dataKey: (t) => (t.activo ? "ACTIVO" : "DESVINCULADO"),
-      },
+      { header: "CATEGORÍA", dataKey: (t) => (t.categoriaId === 1 ? "CLIENTE" : "PROVEEDOR") },
+      { header: "ESTADO", dataKey: (t) => (t.activo ? "ACTIVO" : "DESVINCULADO") },
     ],
   };
 
@@ -77,26 +69,14 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
     if (!confirmModal.terceroId) return;
     try {
       const response = await desvincularTercero(confirmModal.terceroId);
-      setResultModal({
-        show: true,
-        success: response.success,
-        message: response.message,
-      });
+      setResultModal({ show: true, success: response.success, message: response.message });
       if (response.success) {
         setLocalData((prev) =>
-          prev.map((t) =>
-            t.id === confirmModal.terceroId
-              ? { ...t, activo: !confirmModal.isActivo }
-              : t
-          )
+          prev.map((t) => t.id === confirmModal.terceroId ? { ...t, activo: !confirmModal.isActivo } : t)
         );
       }
     } catch (err: any) {
-      setResultModal({
-        show: true,
-        success: false,
-        message: err.message || "Error",
-      });
+      setResultModal({ show: true, success: false, message: err.message || "Error" });
     } finally {
       setConfirmModal({ show: false });
     }
@@ -105,48 +85,23 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
   const columns = [
     {
       header: "Terceros",
-      className:
-        "min-w-[300px] sticky left-0 bg-white group-hover:bg-slate-50 z-20",
+      className: "min-w-[300px] sticky left-0 bg-white group-hover:bg-slate-50 z-20 transition-colors",
       render: (t: TerceroupdateDTO) => {
         const esNatural = t.tipoPersonaId === 1;
         return (
           <div className="flex items-center gap-3">
-            <div
-              className={`p-2 rounded-lg ${
-                esNatural
-                  ? "bg-blue-50 text-blue-600"
-                  : "bg-purple-50 text-purple-600"
-              }`}
-            >
-              {esNatural ? <User size={16} /> : <Building2 size={16} />}
+            <div className={`p-2.5 rounded-xl ${esNatural ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"}`}>
+              {esNatural ? <User size={18} /> : <Building2 size={18} />}
             </div>
             <div className="flex flex-col">
-              <span
-                className={`font-black uppercase text-[11px] ${
-                  t.activo ? "text-slate-800" : "text-slate-400 italic"
-                }`}
-              >
-                {(esNatural
-                  ? `${t.nombres} ${t.apellidos}`
-                  : t.nombreComercial) || "SIN NOMBRE"}
+              <span className={`font-black uppercase text-[11px] tracking-tight ${t.activo ? "text-slate-800" : "text-slate-400 italic"}`}>
+                {(esNatural ? `${t.nombres} ${t.apellidos}` : t.nombreComercial) || "SIN NOMBRE"}
               </span>
               <div className="flex gap-1.5 mt-1">
-                <span
-                  className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${
-                    t.categoriaId === 1
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-amber-100 text-amber-700"
-                  }`}
-                >
+                <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${t.categoriaId === 1 ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
                   {t.categoriaId === 1 ? "Cliente" : "Proveedor"}
                 </span>
-                <span
-                  className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${
-                    t.activo
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-rose-100 text-rose-700"
-                  }`}
-                >
+                <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${t.activo ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700"}`}>
                   {t.activo ? "Activo" : "Desvinculado"}
                 </span>
               </div>
@@ -160,40 +115,34 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
       className: "min-w-[140px]",
       render: (t: TerceroupdateDTO) => (
         <div className="flex flex-col">
-          <span className="font-bold text-slate-700">{t.identificacion}</span>
-          <span className="text-[10px] text-slate-400 font-black">
-            DV: {t.dv}
-          </span>
+          <span className="font-bold text-slate-700 text-xs">{t.identificacion}</span>
+          <span className="text-[10px] text-slate-400 font-black uppercase">DV: {t.dv}</span>
         </div>
       ),
     },
     {
       header: "Acciones",
-      className:
-        "text-right sticky right-0 bg-white group-hover:bg-slate-50 z-20",
+      className: "text-right sticky right-0 bg-white group-hover:bg-slate-50 z-20 transition-colors",
       render: (t: TerceroupdateDTO) => (
         <div className="flex justify-end gap-2">
+          {/* Botón Editar Reutilizable */}
           <button
             onClick={() => onEdit(t)}
-            className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all"
+            className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95"
           >
-            <Edit3 size={16} />
+            <Edit3 size={15} strokeWidth={2.5} />
           </button>
+          
+          {/* Botón Vincular/Desvincular */}
           <button
-            onClick={() =>
-              setConfirmModal({
-                show: true,
-                terceroId: t.id,
-                isActivo: t.activo,
-              })
-            }
-            className={`p-2 rounded-xl transition-all ${
+            onClick={() => setConfirmModal({ show: true, terceroId: t.id, isActivo: t.activo })}
+            className={`p-2.5 rounded-xl transition-all shadow-sm active:scale-95 ${
               t.activo
-                ? "bg-rose-50 text-rose-600 hover:bg-rose-600"
-                : "bg-emerald-50 text-emerald-600 hover:bg-emerald-600"
-            } hover:text-white`}
+                ? "bg-slate-50 text-slate-400 hover:bg-rose-600 hover:text-white"
+                : "bg-slate-50 text-slate-400 hover:bg-emerald-600 hover:text-white"
+            }`}
           >
-            {t.activo ? <UserMinus size={16} /> : <Link size={16} />}
+            {t.activo ? <UserMinus size={15} strokeWidth={2.5} /> : <LinkIcon size={15} strokeWidth={2.5} />}
           </button>
         </div>
       ),
@@ -202,7 +151,8 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row justify-between gap-4">
+      {/* Filtros y Exportación */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <FilterGroup
           activeId={activeFilters.categoria || "all"}
           onChange={(id) => updateFilter("categoria", id)}
@@ -217,34 +167,34 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
           onExportPDF={() => exportToPDF(exportConfig)}
         />
       </div>
-      <div className="relative group w-full">
-        <Search
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
-          size={20}
-        />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="BUSCAR POR IDENTIFICACIÓN"
-          className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[1.5rem] outline-none focus:ring-4 focus:ring-blue-500/5 transition-all text-[11px] font-bold uppercase"
-        />
+
+      {/* Buscador Reutilizable */}
+      <SearchBar 
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Buscar por identificación, nombre o razón social..."
+      />
+
+      {/* Tabla con Estilo Blanco y Sombra */}
+      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+        <Table columns={columns} data={filteredData} />
       </div>
-      <Table columns={columns} data={filteredData} />
+
+      {/* Modales de Estado */}
       <StatusModal
         show={confirmModal.show}
         type="confirm"
-        message={confirmModal.isActivo ? "¿Desvincular?" : "¿Vincular?"}
+        message={confirmModal.isActivo ? "¿Seguro que desea desvincular este tercero?" : "¿Desea vincular este tercero?"}
         onClose={() => setConfirmModal({ show: false })}
         onConfirm={confirmAction}
       />
+      
       <StatusModal
         show={resultModal.show}
         success={resultModal.success}
-        // Solución al error: Garantizamos que siempre sea string
         message={resultModal.message || ""}
         onClose={() => setResultModal((prev) => ({ ...prev, show: false }))}
-      />{" "}
+      />
     </div>
   );
 };

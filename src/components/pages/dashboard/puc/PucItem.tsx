@@ -10,10 +10,12 @@ interface Props {
 }
 
 const PucItem: React.FC<Props> = ({ nodo, onAddChild, forceOpen }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!!forceOpen);
   const tieneHijos = nodo.hijos && nodo.hijos.length > 0;
 
-  useEffect(() => { if (forceOpen) setIsOpen(true); }, [forceOpen]);
+  useEffect(() => {
+    if (forceOpen) setIsOpen(true);
+  }, [forceOpen]);
 
   return (
     <div className="ml-4">

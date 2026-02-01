@@ -1,4 +1,4 @@
-import type { categorias } from "./categoria";
+import type { categorias } from "./Categoria";
 import type { ActividadEconomica, Ciudad, RegimenIva, ResponsabilidadFiscal, TipoIdentificacion, Tributo } from "./Colegio";
 import type { TiposPersona } from "./tipoPersona";
 

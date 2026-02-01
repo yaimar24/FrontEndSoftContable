@@ -8,7 +8,6 @@ import SelectField from '../../../../common/SelectField';
 import { useTercerosForm } from '../../../../../hooks/useTercerosForm';
 import { SeccionIdentificacion } from './sections/SeccionIdentificacion';
 import { SeccionFiscal } from './sections/SeccionFiscal';
-import LoadingOverlay from '../../../../shared/LoadingOverlay';
 
 interface Props {
   initialData?: any;
@@ -19,16 +18,14 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const { token } = useAuth();
   const isEditing = !!initialData;
   const {
-    formData, parametros, loading, isSaving, errors,
+    formData, parametros, errors,
     showConfirm, resultModal, setShowConfirm, setResultModal,
     handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave
   } = useTercerosForm(token, initialData);
 
-  if (loading) return <LoadingOverlay message="Cargando configuración..." />;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
-      {isSaving && <LoadingOverlay message="Sincronizando..." />}
 
       <StatusModal 
         show={showConfirm} type="confirm" onConfirm={handleConfirmSave} 
@@ -51,7 +48,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             {isEditing ? 'Editar Tercero' : 'Nuevo Tercero'}
           </h1>
         </div>
-        <Button onClick={handleSaveClick} icon={Save} isLoading={isSaving}>
+        <Button onClick={handleSaveClick} icon={Save}>
           {isEditing ? 'Actualizar' : 'Guardar'}
         </Button>
       </div>

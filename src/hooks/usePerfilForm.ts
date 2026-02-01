@@ -7,7 +7,6 @@ import type { Colegio } from '../models/Colegio';
 
 export const usePerfilForm = (token: string | null) => {
   const colegioId = getColegioIdFromToken(token);
-  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<Colegio>>({});
   const [parametros, setParametros] = useState<any>(null);
@@ -23,7 +22,6 @@ export const usePerfilForm = (token: string | null) => {
           setParametros(parametrosData);
         })
         .catch(err => console.error("Error:", err))
-        .finally(() => setLoading(false));
     }
   }, [colegioId]);
 
@@ -60,7 +58,7 @@ export const usePerfilForm = (token: string | null) => {
   };
 
   return {
-    colegioId, loading, isSaving, formData, parametros,
+    colegioId, isSaving, formData, parametros,
     showConfirm, setShowConfirm, resultModal, setResultModal,
     handleChange, handleRepChange, handleSave
   };
