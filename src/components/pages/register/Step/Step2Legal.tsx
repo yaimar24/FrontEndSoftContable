@@ -6,14 +6,14 @@ import { validators } from "../../../../utils/validators";
 import { validateForm } from "../../../../utils/validateForm";
 import type { RegistroFormData } from "../RegisterForm";
 import Button from "../../../common/Button";
-import type { ParametrosSistema } from "../../../../models/Parametros";
+import type { Parametros } from "../../../../models/Parametros";
 
 interface Step2Props {
   formData: RegistroFormData;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   nextStep: () => void;
   prevStep: () => void;
-  params: ParametrosSistema;
+  params: Parametros;
 }
 
 const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, prevStep, params }) => {

@@ -3,7 +3,7 @@ import type { ActividadEconomica, Ciudad, RegimenIva, ResponsabilidadFiscal, Tip
 import type { TiposPersona } from "./tipoPersona";
 
 
-export interface ParametrosSistema {
+export interface Parametros {
   ciudades: Ciudad[];
   actividadesEconomicas: ActividadEconomica[];
   tiposIdentificacion: TipoIdentificacion[];

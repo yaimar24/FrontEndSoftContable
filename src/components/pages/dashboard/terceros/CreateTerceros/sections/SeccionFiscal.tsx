@@ -3,12 +3,12 @@ import { Globe, Mail, ShieldCheck, MapPin } from "lucide-react";
 import type { TerceroCreateDTO } from "../../../../../../models/Tercero";
 import InputField from "../../../../../common/InputField";
 import SelectField from "../../../../../common/SelectField";
-import type { ParametrosSistema } from "../../../../../../models/Parametros";
+import type { Parametros } from "../../../../../../models/Parametros";
 import type { ResponsabilidadFiscal } from "../../../../../../models/Colegio";
 
 interface Props {
   formData: TerceroCreateDTO;
-  parametros: ParametrosSistema;
+  parametros: Parametros;
   errors: Record<string, string>;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

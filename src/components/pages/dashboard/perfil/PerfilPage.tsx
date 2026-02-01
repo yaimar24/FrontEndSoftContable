@@ -10,7 +10,7 @@ import { SeccionFiscal } from "./section/SeccionFiscal";
 import { SeccionRepresentante } from "./section/SeccionRepresentante";
 
 import { usePerfilForm } from "../../../../hooks/usePerfilForm";
-import type { ParametrosSistema } from "../../../../models/Parametros";
+import type { Parametros } from "../../../../models/Parametros";
 import PageHeader from "../../../Layout/PageHeader";
 
 const PerfilPage: React.FC = () => {
@@ -81,7 +81,7 @@ const PerfilPage: React.FC = () => {
 
         <SeccionFiscal
           formData={formData}
-          parametros={parametros ?? ({} as ParametrosSistema)}
+          parametros={parametros ?? ({} as Parametros)}
           onChange={handleChange}
         />
       </div>

@@ -6,7 +6,7 @@ import Step3Account from "./Step/Step3Account";
 import StatusModal from "../../common/StatusModal";
 import { registerColegio } from "../../../services/colegio/colegioService";
 import { getParametros } from "../../../services/colegio/parametrosService";
-import type { ParametrosSistema } from "../../../models/Parametros";
+import type { Parametros } from "../../../models/Parametros";
 import type { Colegio } from "../../../models/Colegio";
 
 export interface RegistroFormData extends Partial<Colegio> {
@@ -49,7 +49,7 @@ export const RegisterForm: React.FC = () => {
     success: true,
     message: "",
   });
-  const [parametros, setParametros] = useState<ParametrosSistema | null>(null);
+  const [parametros, setParametros] = useState<Parametros | null>(null);
 
   useEffect(() => {
     getParametros()

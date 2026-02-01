@@ -9,11 +9,11 @@ import {
 import InputField from "../../../../common/InputField";
 import SelectField from "../../../../common/SelectField";
 import type { ActividadEconomica, Colegio, RegimenIva, Tributo } from "../../../../../models/Colegio";
-import type { ParametrosSistema } from "../../../../../models/Parametros";
+import type { Parametros } from "../../../../../models/Parametros";
 
 interface Props {
   formData: Partial<Colegio>; 
-  parametros: ParametrosSistema;
+  parametros: Parametros;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
