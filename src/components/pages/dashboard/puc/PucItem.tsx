@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown, Folder, FileText, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { PucNodo } from '../../../../models/puc';
+import type { PucNodo } from '../../../../models/Puc';
 
 interface Props {
   nodo: PucNodo;

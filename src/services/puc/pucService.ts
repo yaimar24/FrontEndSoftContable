@@ -1,5 +1,5 @@
 import { apiClient } from '../../api/apiClient';
-import type { PucNodo } from '../../models/puc';
+import type { PucNodo } from '../../models/Puc';
 import type { ApiResponse } from '../../models/types/ApiResponse';
 
 

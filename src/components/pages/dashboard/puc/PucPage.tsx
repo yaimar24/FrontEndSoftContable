@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { getPucTree } from "../../../../services/puc/pucService";
 import FormNuevaCuenta from "./FormNuevaCuenta";
 import PucItem from "./PucItem";
-import type { PucNodo } from "../../../../models/puc";
+import type { PucNodo } from "../../../../models/Puc";
 import PageHeader from "../../../Layout/PageHeader";
 import SearchBar from "../../../common/SearchBar";
 import { FolderPlus, RefreshCcw } from "lucide-react";
