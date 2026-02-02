@@ -7,7 +7,7 @@ import PucPage from "../components/pages/dashboard/puc/PucPage";
 import { RegisterForm } from "../components/pages/register/RegisterForm";
 import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
 import VentasPage from "../components/pages/dashboard/ventas/Ventas";
-import ProductosPage from "../components/pages/dashboard/terceros/TercerosPage";
+import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
 
 const AppRoutes = () => (
   <Router>
