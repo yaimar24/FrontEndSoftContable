@@ -1,6 +1,5 @@
 import { Edit3, Tag, Box } from "lucide-react";
 import { ExportButtons } from "../../../common/ExportButtons";
-import { FilterGroup } from "../../../common/FilterGroup";
 import SearchBar from "../../../common/SearchBar";
 import { Table } from "../../../common/Table";
 import type { ProductoReadDTO } from "../../../../models/Producto";
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Default value []
-  const { searchTerm, setSearchTerm, activeFilters, updateFilter, filteredData } = useFilter(data || [], {
+  const { searchTerm, setSearchTerm, filteredData } = useFilter(data || [], {
     searchFields: ["nombre", "sku"],
     customFilters: {
       // 2. Agregamos validación para evitar comparar contra undefined
@@ -71,15 +70,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Defaul
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-        <FilterGroup
-          activeId={activeFilters.categoria || "all"}
-          onChange={(id) => updateFilter("categoria", id)}
-          options={[
-            { id: "all", label: "Todos" },
-            { id: 1, label: "Servicios" },
-            { id: 2, label: "Productos" },
-          ]}
-        />
+
         <ExportButtons onExportExcel={() => {}} onExportPDF={() => {}} />
       </div>
 

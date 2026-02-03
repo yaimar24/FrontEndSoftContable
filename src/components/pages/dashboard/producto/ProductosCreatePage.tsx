@@ -102,12 +102,14 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
               <SelectField
                 label="Categoría"
-                name="CategoriaId"
-                value={formData.CategoriaId}
+                name="categoriaId"
+                value={formData.categoriaId}
                 onChange={handleChange}
                 options={parametros?.categorias || []}
                 displayExpr={(c) => c.nombre}
               />
+
+              
             </div>
           </section>
 
