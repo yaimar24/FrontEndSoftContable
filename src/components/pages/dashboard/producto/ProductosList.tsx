@@ -26,7 +26,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Defaul
   // ... resto del código
   const columns = [
     {
-      header: "Producto / SKU",
+      header: "Producto / Código de referencia",
       className: "min-w-[280px]",
       render: (p: ProductoReadDTO) => (
         <div className="flex items-center gap-3">

@@ -94,7 +94,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 />
               </div>
               <InputField
-                label="SKU"
+                label="Código de referencia"
                 name="sku"
                 value={formData.sku}
                 onChange={handleChange}
