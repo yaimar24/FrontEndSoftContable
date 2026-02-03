@@ -4,18 +4,21 @@ import SearchBar from "../../../common/SearchBar";
 import { Table } from "../../../common/Table";
 import type { ProductoReadDTO } from "../../../../models/Producto";
 import { useFilter } from "../../../../hooks/useGenericFilter";
-
+import { 
+  exportToExcel, 
+  exportToPDF, 
+  type ExportConfig 
+} from "../../../../utils/exportUtils";
 
 interface Props {
   data: ProductoReadDTO[];
   onEdit: (p: ProductoReadDTO) => void;
 }
 
-const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Default value []
+const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
   const { searchTerm, setSearchTerm, filteredData } = useFilter(data || [], {
     searchFields: ["nombre", "sku"],
     customFilters: {
-      // 2. Agregamos validación para evitar comparar contra undefined
       categoria: (item, value) => {
         if (value === "all") return true;
         return item.categoriaProductoId === Number(value);
@@ -23,7 +26,23 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Defaul
     },
   });
 
-  // ... resto del código
+  // --- CONFIGURACIÓN DE EXPORTACIÓN (Igual que en Terceros) ---
+  const exportConfig: ExportConfig<ProductoReadDTO> = {
+    filename: `Reporte_Productos`,
+    data: filteredData,
+    columns: [
+      { header: "NOMBRE PRODUCTO", dataKey: "nombre" },
+      { header: "SKU / REFERENCIA", dataKey: (p) => p.sku || "N/A" },
+      { header: "CATEGORÍA", dataKey: "categoriaNombre" },
+      { 
+        header: "PRECIO BASE", 
+        dataKey: (p) => p.precios[0]?.valor ? `$${p.precios[0].valor.toLocaleString()}` : "$0" 
+      },
+      { header: "TIPO", dataKey: (p) => (p.esServicio ? "SERVICIO" : "PRODUCTO") },
+      { header: "IVA", dataKey: (p) => p.impuestoCargoNombre || "EXENTO" },
+    ],
+  };
+
   const columns = [
     {
       header: "Producto / Código de referencia",
@@ -70,8 +89,13 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => { // 1. Defaul
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-
-        <ExportButtons onExportExcel={() => {}} onExportPDF={() => {}} />
+        {/* Espacio para FilterGroup si lo necesitas, igual que en Terceros */}
+        <div className="flex-1" /> 
+        
+        <ExportButtons
+          onExportExcel={() => exportToExcel(exportConfig)}
+          onExportPDF={() => exportToPDF(exportConfig)}
+        />
       </div>
 
       <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o SKU..." />
