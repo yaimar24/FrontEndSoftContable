@@ -16,7 +16,7 @@ export const usePerfilForm = (token: string | null) => {
 
   useEffect(() => {
     if (colegioId) {
-      Promise.all([getColegioById(colegioId), getParametros()])
+      Promise.all([getColegioById(), getParametros()])
         .then(([colegioData, parametrosData]) => {
           setFormData(colegioData);
           setParametros(parametrosData);
