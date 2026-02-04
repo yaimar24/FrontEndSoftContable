@@ -32,7 +32,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
     data: filteredData,
     columns: [
       { header: "NOMBRE PRODUCTO", dataKey: "nombre" },
-      { header: "SKU / REFERENCIA", dataKey: (p) => p.sku || "N/A" },
+      { header: "Código  De referencia", dataKey: (p) => p.sku || "N/A" },
       { header: "CATEGORÍA", dataKey: "categoriaNombre" },
       { 
         header: "PRECIO BASE", 
@@ -54,7 +54,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
           </div>
           <div className="flex flex-col">
             <span className="font-black uppercase text-[11px] text-slate-800">{p.nombre}</span>
-            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">SKU: {p.sku || '---'}</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Código  De referencia: {p.sku || '---'}</span>
           </div>
         </div>
       )
@@ -98,7 +98,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
         />
       </div>
 
-      <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o SKU..." />
+      <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o código  De referencia" />
 
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
