@@ -17,7 +17,6 @@ const PerfilPage: React.FC = () => {
   const { token } = useAuth();
 
   const {
-    colegioId,
     formData,
     parametros,
     showConfirm,
@@ -52,7 +51,6 @@ const PerfilPage: React.FC = () => {
       <PageHeader
         title="Perfil Institucional"
         subtitle="Configuración de la entidad"
-        idTag={colegioId}
         actions={
           <Button
             onClick={() => setShowConfirm(true)}
