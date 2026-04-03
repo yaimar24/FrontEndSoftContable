@@ -194,7 +194,7 @@ const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, pr
         <Button variant="secondary" onClick={prevStep} className="flex-1">
           Anterior
         </Button>
-        <Button variant="primary" onClick={handleNext} className="flex-[2]">
+        <Button variant="primary" onClick={handleNext} className="flex-1">
           Siguiente
         </Button>
       </div>

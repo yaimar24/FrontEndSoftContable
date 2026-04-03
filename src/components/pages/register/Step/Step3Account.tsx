@@ -195,20 +195,20 @@ const Step3Account: React.FC<Step3Props> = ({
       </div>
 
       {/* Botones */}
-      <div className="flex flex-col md:flex-row gap-4 pt-6">
+      <div className="flex gap-4 pt-6 border-t border-slate-100">
      <Button
           type="button"
           variant="secondary"
           onClick={prevStep}
-          className="order-2 md:order-1 py-5"
+          className="flex-1"
         >
-          Atrás
+          Anterior
         </Button>
 
         <Button
           type="submit"
           variant="primary"
-          className="flex-[2] order-1 md:order-2 py-5 text-sm tracking-[0.2em]"
+          className="flex-1"
         >
           Finalizar Registro
         </Button>

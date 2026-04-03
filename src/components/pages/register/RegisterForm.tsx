@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRegisterForm } from "../../../hooks/useRegisterForm";
 import Step1BasicInfo from "./Step/Step1BasicInfo";
 import Step2Legal from "./Step/Step2Legal";
@@ -42,6 +43,7 @@ const initialData: RegistroFormData = {
 };
 
 export const RegisterForm: React.FC = () => {
+  const navigate = useNavigate();
   const { formData, handleChange, nextStep, prevStep, step, resetForm } =
     useRegisterForm<RegistroFormData>(initialData);
   const [modal, setModal] = useState({
@@ -151,7 +153,10 @@ export const RegisterForm: React.FC = () => {
           {...modal}
           onClose={() => {
             setModal((m) => ({ ...m, show: false }));
-            if (modal.success) resetForm();
+            if (modal.success) {
+              resetForm();
+              navigate("/login");
+            }
           }}
         />
       </div>

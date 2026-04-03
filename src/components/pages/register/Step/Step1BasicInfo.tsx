@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { School, MapPin, Phone } from "lucide-react";
 import InputField from "../../../common/InputField";
 import SelectField from "../../../common/SelectField";
@@ -145,13 +146,29 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
         />
       </div>
 
-   <Button 
-        onClick={handleNext} 
-        fullWidth 
-        className="py-5 shadow-xl"
-      >
-        Siguiente: Datos Legales
-      </Button>
+      {/* Botones */}
+      <div className="flex gap-4 pt-6 border-t border-slate-100">
+        <Button 
+          variant="primary" 
+          onClick={handleNext} 
+          className="flex-1"
+        >
+          Siguiente
+        </Button>
+      </div>
+
+      {/* Enlace a Login */}
+      <div className="text-center pt-4">
+        <p className="text-sm text-slate-600 font-medium">
+          ¿Ya tienes cuenta?{" "}
+          <Link
+            to="/login"
+            className="text-[#1e3a8a] hover:text-[#1e3a8a]/80 font-bold underline transition-colors"
+          >
+            Ir al Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
