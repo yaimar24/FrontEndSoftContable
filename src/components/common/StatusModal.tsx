@@ -32,9 +32,8 @@ const StatusModal: React.FC<StatusModalProps> = ({
       return () => {
         clearTimeout(timer);
         document.body.style.overflow = 'unset';
+        setIsAnimate(false);
       };
-    } else {
-      setIsAnimate(false);
     }
   }, [show]);
 
@@ -64,7 +63,16 @@ const StatusModal: React.FC<StatusModalProps> = ({
     }
   };
 
-  const currentType = onConfirm ? 'confirm' : (type as 'success' | 'error' | 'confirm');
+  // Determinar el tipo correcto
+  let currentType: 'success' | 'error' | 'confirm' = 'error';
+  if (onConfirm) {
+    currentType = 'confirm';
+  } else if (typeof success === 'boolean') {
+    currentType = success ? 'success' : 'error';
+  } else if (type) {
+    currentType = type as 'success' | 'error' | 'confirm';
+  }
+
   const theme = config[currentType];
 
   return (
@@ -90,7 +98,11 @@ const StatusModal: React.FC<StatusModalProps> = ({
           <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">
             {theme.title}
           </h3>
-          <p className="text-slate-500 text-sm font-medium leading-relaxed px-4">{message}</p>
+          {message && message.trim() && (
+            <p className="text-slate-700 text-base font-semibold leading-relaxed px-4 break-words">
+              {message}
+            </p>
+          )}
         </div>
 
         {/* --- BOTONES USANDO SOLO COMPONENTES COMMON --- */}

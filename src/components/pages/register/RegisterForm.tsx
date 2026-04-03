@@ -55,10 +55,16 @@ export const RegisterForm: React.FC = () => {
 
   useEffect(() => {
     getParametros()
-      .then((data) => {
-        if (data) setParametros(data);
+      .then((response) => {
+        if (response?.success && response.data) {
+          setParametros(response.data);
+        } else {
+          console.error('Error al cargar parámetros:', response?.message);
+        }
       })
-      .catch(console.error)
+      .catch((error) => {
+        console.error('Error al cargar parámetros:', error);
+      });
   }, []);
 
   const handleSubmit = async () => {
@@ -83,24 +89,35 @@ export const RegisterForm: React.FC = () => {
         ],
       } as Colegio;
 
-      const res = await registerColegio(finalData);
+      const response = await registerColegio(finalData);
 
-      if (!res.success) {
-        throw new Error(res.message || "Error al registrar el colegio");
+      if (!response.success) {
+        // Si hay error en la respuesta, mostrar directamente el mensaje del backend
+        setModal({
+          show: true,
+          success: false,
+          message: response.message || "Error al registrar el colegio",
+        });
+        return;
       }
 
+      // Si es exitoso, mostrar el mensaje de éxito
       setModal({
         show: true,
         success: true,
-        message: res.message || "Registro exitoso",
+        message: response.message || "Registro exitoso",
       });
     } catch (error: unknown) {
       let errorMessage = "Error inesperado en el servidor";
 
       if (error instanceof Error) {
         errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
       }
 
+      console.error('Error en registro:', error);
+      
       setModal({
         show: true,
         success: false,
@@ -150,7 +167,9 @@ export const RegisterForm: React.FC = () => {
         </div>
 
         <StatusModal
-          {...modal}
+          show={modal.show}
+          success={modal.success}
+          message={modal.message}
           onClose={() => {
             setModal((m) => ({ ...m, show: false }));
             if (modal.success) {

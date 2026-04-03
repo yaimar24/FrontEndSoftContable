@@ -1,4 +1,5 @@
 import { loadingController } from "../services/loading/loadingController";
+import type { ApiResponse } from "../models/types/ApiResponse";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -7,10 +8,14 @@ interface FetchOptions extends RequestInit {
   skipGlobalLoader?: boolean;
 }
 
+/**
+ * Cliente API que devuelve siempre la estructura ApiResponse del backend
+ * @returns ApiResponse<T> Estructura con success, message y data
+ */
 export const apiClient = async (
   endpoint: string,
   options: FetchOptions = {}
-) => {
+): Promise<ApiResponse<any>> => {
   const {
     useAuth = true,
     skipGlobalLoader = false,
@@ -43,19 +48,49 @@ export const apiClient = async (
       headers,
     });
 
-    // 🚫 401 global
+    // 🚫 401 global - redirigir al login
     if (response.status === 401) {
       localStorage.removeItem("token");
       window.location.href = "/login";
-      throw new Error("Sesión expirada");
+      return {
+        success: false,
+        message: "Sesión expirada. Redirigiendo al login...",
+      };
     }
 
+    // Parsear respuesta
+    const data: ApiResponse<any> = await response.json().catch(() => ({
+      success: false,
+      message: `Error HTTP ${response.status}: ${response.statusText}`,
+    }));
+
+    // Si la respuesta ya tiene estructura ApiResponse, devolverla
+    if (data?.success !== undefined) {
+      return data;
+    }
+
+    // Si no es exitosa pero hay estructura, devolver como está
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Error en la petición");
+      return {
+        success: false,
+        message: data?.message || `Error ${response.status}: ${response.statusText}`,
+        data: data,
+      };
     }
 
-    return await response.json();
+    // Si es exitosa y no tiene estructura, asumir que es data
+    return {
+      success: true,
+      message: "",
+      data,
+    };
+  } catch (error) {
+    const message = (error as Error)?.message || "Error desconocido";
+    console.error("API Error:", error);
+    return {
+      success: false,
+      message,
+    };
   } finally {
     if (!skipGlobalLoader) {
       loadingController.hide();
