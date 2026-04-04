@@ -19,9 +19,14 @@ import StatusModal from "../common/StatusModal";
 
 interface SidebarProps {
   nombreColegio: string | null;
+  logoUrl?: string | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
+const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const getFullUrl = (path: string | null | undefined) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
+  };
+  const displayLogoUrl = getFullUrl(logoUrl);
   // isCollapsed controla el estado visual (ancho)
   const [isCollapsed, setIsCollapsed] = useState(false);
   // isManuallyClosed rastrea si el usuario usó el botón para cerrarlo
@@ -113,18 +118,25 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio }) => {
         <div className="p-6 flex flex-col items-center">
           <motion.div
             layout
-            className="bg-gradient-to-br from-[#1e3a8a] to-blue-600 text-white rounded-[1.5rem] flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-100"
-            style={{
-              width: isCollapsed ? 45 : 64,
-              height: isCollapsed ? 45 : 64,
-            }}
-          >
-            {nombreColegio?.charAt(0).toUpperCase() || (
-              <GraduationCap size={isCollapsed ? 20 : 32} />
-            )}
-          </motion.div>
-
-          <AnimatePresence>
+              className="bg-gradient-to-br from-[#1e3a8a] to-blue-600 text-white rounded-[1.5rem] flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-100 overflow-hidden relative"
+              style={{
+                width: isCollapsed ? 45 : 64,
+                height: isCollapsed ? 45 : 64,
+              }}
+            >
+              {displayLogoUrl ? (
+                <img
+                  src={displayLogoUrl}
+                  alt="Logo del Colegio"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                nombreColegio?.charAt(0).toUpperCase() || (
+                  <GraduationCap size={isCollapsed ? 20 : 32} />
+                )
+              )}
+            </motion.div>
+            <AnimatePresence>
             {!isCollapsed && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}

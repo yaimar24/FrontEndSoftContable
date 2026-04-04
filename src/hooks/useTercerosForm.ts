@@ -50,8 +50,10 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   // Carga de parámetros iniciales
   useEffect(() => {
     if (colegioId) {
-      getParametros().then((data) => {
-        setParametros(data);
+      getParametros().then((res) => {
+        if (res.success && res.data) {
+          setParametros(res.data);
+        }
       });
     }
   }, [colegioId]);

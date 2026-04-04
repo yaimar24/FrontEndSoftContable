@@ -6,7 +6,7 @@ import PerfilForm from "../components/pages/dashboard/perfil/PerfilPage";
 import PucPage from "../components/pages/dashboard/puc/PucPage";
 import { RegisterForm } from "../components/pages/register/RegisterForm";
 import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
-import VentasPage from "../components/pages/dashboard/ventas/Ventas";
+import VentasPage from "../components/pages/dashboard/ventas/VentasPage";
 import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
 
 const AppRoutes = () => (

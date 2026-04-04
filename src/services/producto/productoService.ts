@@ -1,91 +1,35 @@
-import { apiClient } from '../../api/apiClient';
-import type { ProductoReadDTO, ProductoCreateDTO } from '../../models/Producto';
-import type { ApiResponse } from '../../models/types/ApiResponse';
+import { apiClient } from "../../api/apiClient";
+import type { ProductoReadDTO, ProductoCreateDTO } from "../../models/Producto";
+import type { ApiResponse } from "../../models/types/ApiResponse";
 
-/**
- * Obtiene la lista de productos del colegio actual
- * @returns ApiResponse<ProductoReadDTO[]> Lista de productos
- */
 export const getProductosByColegio = async (): Promise<ApiResponse<ProductoReadDTO[]>> => {
-  try {
-    const response = await apiClient('/api/Producto');
-    return response as ApiResponse<ProductoReadDTO[]>;
-  } catch (error) {
-    return {
-      success: false,
-      message: (error as Error).message || 'Error al obtener productos',
-    };
-  }
+  return await apiClient("/api/Producto");
 };
 
-/**
- * Crea un nuevo producto
- * @returns ApiResponse<string> Mensaje de éxito
- */
 export const crearProducto = async (data: ProductoCreateDTO): Promise<ApiResponse<string>> => {
-  try {
-    const response = await apiClient('/api/Producto', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    return response as ApiResponse<string>;
-  } catch (error) {
-    return {
-      success: false,
-      message: (error as Error).message || 'Error al crear producto',
-    };
-  }
+  return await apiClient("/api/Producto", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };
 
-/**
- * Actualiza un producto existente
- * @returns ApiResponse<string> Mensaje de éxito
- */
 export const updateProducto = async (id: string, data: Partial<ProductoCreateDTO>): Promise<ApiResponse<string>> => {
-  try {
-    const response = await apiClient(`/api/Producto/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-    return response as ApiResponse<string>;
-  } catch (error) {
-    return {
-      success: false,
-      message: (error as Error).message || 'Error al actualizar producto',
-    };
-  }
+  return await apiClient(`/api/Producto/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 };
 
-/**
- * Obtiene los parámetros maestros para el formulario de productos
- * @returns ApiResponse<any> Parámetros (categorías, impuestos, unidades)
- */
 export const getProductoParametros = async (): Promise<ApiResponse<any>> => {
-  try {
-    const response = await apiClient('/api/Parametros/productos');
-    return response as ApiResponse<any>;
-  } catch (error) {
-    return {
-      success: false,
-      message: (error as Error).message || 'Error al obtener parámetros de productos',
-    };
-  }
+  return await apiClient("/api/Parametros/productos");
 };
 
-/**
- * Cambia el estado del producto
- * @returns ApiResponse<string> Mensaje de éxito
- */
 export const toggleProductoStatus = async (id: string): Promise<ApiResponse<string>> => {
-  try {
-    const response = await apiClient(`/api/Producto/status/${id}`, {
-      method: 'PATCH',
-    });
-    return response as ApiResponse<string>;
-  } catch (error) {
-    return {
-      success: false,
-      message: (error as Error).message || 'Error al cambiar estado del producto',
-    };
-  }
+  return await apiClient(`/api/Producto/status/${id}`, {
+    method: "PATCH",
+  });
+};
+
+export const searchProductos = async (termino: string): Promise<ApiResponse<ProductoReadDTO[]>> => {
+  return await apiClient(`/api/Producto/search?termino=${encodeURIComponent(termino)}`);
 };
