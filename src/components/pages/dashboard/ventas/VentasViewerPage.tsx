@@ -6,8 +6,7 @@ import { InvoiceTemplate } from "./ListVentas/InvoiceTemplate";
 import type { FacturaVentaReadDTO } from "../../../../models/Venta";
 import LoadingOverlay from "../../../shared/LoadingOverlay";
 import Button from "../../../common/Button";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { exportInvoiceToPDF } from "../../../../utils/exportInvoicePDF";
 
 const VentasViewerPage: React.FC = () => {
   const { id } = useParams();
@@ -38,26 +37,10 @@ const VentasViewerPage: React.FC = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (!printRef.current) return;
+    if (!factura) return;
     try {
-      const element = printRef.current;
-      const canvas = await html2canvas(element, { 
-        scale: 2,
-        useCORS: true,
-        allowTaint: true
-      });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4"
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Factura_${factura?.numero || 'Documento'}.pdf`);
+      const token = localStorage.getItem('token');
+      await exportInvoiceToPDF(factura, token);
     } catch (error) {
       console.error("Error generando PDF", error);
     }

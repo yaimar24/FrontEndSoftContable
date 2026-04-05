@@ -53,4 +53,6 @@ export interface FacturaVentaReadDTO {
   totalImpuestos: number;
   totalNeto: number;
   detalles: FacturaDetalleReadDTO[];
+  clienteTelefono?: string;
+  clienteDireccion?: string;
 }

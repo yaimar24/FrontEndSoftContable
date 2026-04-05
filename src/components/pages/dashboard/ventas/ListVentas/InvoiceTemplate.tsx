@@ -12,9 +12,22 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
 
   if (!factura) return null;
 
-  const nombreColegio = getNombreColegioFromToken(token) || "Mi Institución";
+  let perfil: any = null;
+  try {
+    const rawPerfil = localStorage.getItem('perfilInstitucional');
+    if (rawPerfil) perfil = JSON.parse(rawPerfil);
+  } catch (e) {
+    console.error("Error parsing perfil", e);
+  }
+
+  const nombreColegio = perfil?.nombreColegio || getNombreColegioFromToken(token) || "Mi Institución";   
+  const nitColegio = perfil?.nit || perfil?.identificacion || 'N/A';
+  const telefonoColegio = perfil?.telefono || 'N/A';
+  const direccionColegio = perfil?.direccion || 'N/A';
+  const regimenIvaColegio = perfil?.regimenIva?.nombre || 'N/A';
+
   const rawLogoUrl = localStorage.getItem('logoUrl') || getLogoUrlFromToken(token);
-  const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? rawLogoUrl : `${import.meta.env.VITE_API_URL}${rawLogoUrl}`) : null;
+  const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? new URL(new URL(rawLogoUrl).pathname, window.location.origin).toString() : rawLogoUrl) : null;
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -55,8 +68,8 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
             </div>
           )}
           <h1 className="text-xl font-black text-blue-900 uppercase tracking-wider">{nombreColegio}</h1>
-          <p className="text-xs text-slate-500 font-medium">NIT: N/A - Responsable de IVA: N/A</p>
-          <p className="text-xs text-slate-500 font-medium">Teléfono: N/A | Dir: N/A</p>
+          <p className="text-xs text-slate-500 font-medium">NIT: {nitColegio} - Responsable de IVA: {regimenIvaColegio}</p>
+          <p className="text-xs text-slate-500 font-medium">Teléfono: {telefonoColegio} | Dir: {direccionColegio}</p>
         </div>
 
         <div className="text-right">
@@ -74,13 +87,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
           <h3 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4 border-b border-slate-200 pb-2">Facturar A</h3>
           <p className="font-black text-base text-slate-800 mb-1">{factura.clienteNombre}</p>
           <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">ID / NIT:</span> {factura.clienteId}</p>
-          <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">Teléfono:</span> N/A</p>
-          <p className="text-xs text-slate-600 font-medium"><span className="text-slate-400">Dirección:</span> N/A</p>
-        </div>
+          <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">Teléfono:</span> {factura.clienteTelefono || 'N/A'}</p>
+          <p className="text-xs text-slate-600 font-medium"><span className="text-slate-400">Dirección:</span> {factura.clienteDireccion || 'N/A'}</p>        </div>
 
         <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col justify-center">
-          <div className="grid grid-cols-2 gap-y-4">
-            <div>
+          <div className="grid grid-cols-2 gap-y-4">            <div>
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Fecha Expedición</p>
               <p className="text-xs font-bold text-slate-800">{formatDate(factura.fechaElaboracion)}</p>
             </div>
