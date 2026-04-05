@@ -1,9 +1,14 @@
-export interface FacturaDetalleCreateDTO {
+﻿export interface FacturaDetalleCreateDTO {
   productoId: string;
   descripcion?: string;
   cantidad: number;
   valorUnitario: number;
   porcentajeDescuento: number;
+  // Campos extra para la UI
+  impuestoCargoNombre?: string;
+  tarifaCargo?: number;
+  retencionNombre?: string;
+  tarifaRetencion?: number;
 }
 
 export interface FacturaVentaCreateDTO {
@@ -25,7 +30,11 @@ export interface FacturaDetalleReadDTO {
   valorUnitario: number;
   porcentajeDescuento: number;
   impuestoCargo: number;
+  impuestoCargoNombre?: string;
+  tarifaCargo?: number;
   impuestoRetencion: number;
+  retencionNombre?: string;
+  tarifaRetencion?: number;
   valorTotal: number;
 }
 

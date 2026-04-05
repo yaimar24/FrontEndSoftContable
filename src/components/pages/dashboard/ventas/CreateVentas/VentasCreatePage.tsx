@@ -1,14 +1,12 @@
-import React from "react";
+﻿import React from "react";
 import { Receipt, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash } from "lucide-react";
 import Button from "../../../../common/Button";
 import StatusModal from "../../../../common/StatusModal";
 import InputField from "../../../../common/InputField";
-import SelectField from "../../../../common/SelectField";
 import { AsyncSearchField } from "../../../../common/AsyncSearchField";
 import { useVentasForm } from "../../../../../hooks/useVentasForm";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
-import { useTipoFactura } from "../../../../../hooks/useTipoFactura";
 import { searchClientes } from "../../../../../services/terceros/terceroService";
 import { searchProductos } from "../../../../../services/producto/productoService";
 import type { FacturaDetalleCreateDTO } from "../../../../../models/Venta";
@@ -29,8 +27,6 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handleConfirmSave,
     handleDetallesChange
   } = useVentasForm(token, initialData);
-
-  const { tiposFactura } = useTipoFactura();
 
   const addDetalle = () => {
     handleDetallesChange([
@@ -112,17 +108,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <FileText size={18} className="text-blue-500" /> Datos de Encabezado
             </h3>
             <div className="space-y-4">
-              <SelectField
-                label="Tipo de Factura"
-                name="tipoFacturaId"
-                value={formData.tipoFacturaId}
-                onChange={handleChange}
-                options={tiposFactura}
-                displayExpr={(item: any) => item.nombre}
-              />
-              
               <InputField
-                label="Número de Factura"
+                label="Número de Venta"
                 name="numero"
                 value={numeroDisplay || "Pendiente"}
                 onChange={() => {}}
@@ -157,7 +144,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
 
               <InputField
-                label="Fecha de la Factura"
+                label="Fecha de la Venta"
                 name="fechaElaboracion"
                 type="date"
                 value={formData.fechaElaboracion}
@@ -210,20 +197,38 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             const res = await searchProductos(q);
                             return res.success && res.data ? res.data : [];
                           }}
-                          getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0})`}
+                          getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}
                           getKey={(p: any) => p.id}
                           onSelect={(p: any) => {
                             const newDetalles = [...formData.detalles];
                             newDetalles[index].productoId = p.id;
                             newDetalles[index].descripcion = p.nombre;
                             newDetalles[index].valorUnitario = p.precios?.[0]?.valor || 0;
-                            // Optionally override amount to 1 on re-select
+                            // Optionally override amount to 1 on re-select     
                             newDetalles[index].cantidad = 1;
+                            newDetalles[index].impuestoCargoNombre = p.impuestoCargoNombre;
+                            newDetalles[index].tarifaCargo = p.tarifaCargo;
+                            newDetalles[index].retencionNombre = p.retencionNombre;
+                            newDetalles[index].tarifaRetencion = p.tarifaRetencion;
                             handleDetallesChange(newDetalles);
                           }}
                         />
+                        {(detalle.impuestoCargoNombre || detalle.retencionNombre) && (
+                          <div className="flex flex-wrap justify-start gap-2 mt-2 mb-3 px-1">
+                            {detalle.impuestoCargoNombre && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 shadow-sm border border-blue-200">
+                                Cargo: {detalle.impuestoCargoNombre} {detalle.tarifaCargo ? `(${detalle.tarifaCargo}%)` : ""}
+                              </span>
+                            )}
+                            {detalle.retencionNombre && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200">
+                                Retención: {detalle.retencionNombre} {detalle.tarifaRetencion ? `(${detalle.tarifaRetencion}%)` : ""}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      
+
                       <div className="lg:col-span-3">
                          <InputField
                           label="Descripción (Opcional)"
@@ -288,3 +293,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 };
 
 export default VentasCreatePage;
+
+
+
+
+

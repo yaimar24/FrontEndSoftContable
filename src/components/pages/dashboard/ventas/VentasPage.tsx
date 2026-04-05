@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import VentasList from "./ListVentas/VentasList";
 import VentasCreatePage from "./CreateVentas/VentasCreatePage";
 import { getVentasByColegio } from "../../../../services/venta/ventaService";
 import { FileText, FilePlus, Receipt } from "lucide-react";
 import LoadingOverlay from "../../../shared/LoadingOverlay";
 import type { FacturaVentaReadDTO } from "../../../../models/Venta";
+import { DocumentViewerModal } from "../../../common/DocumentViewerModal";
+import { InvoiceTemplate } from "./ListVentas/InvoiceTemplate";
 
 const VentasPage = () => {
   const [view, setView] = useState<'lista' | 'formulario'>('lista');
   const [ventas, setVentas] = useState<FacturaVentaReadDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedInvoice, setSelectedInvoice] = useState<FacturaVentaReadDTO | null>(null);
 
   const fetchVentas = async () => {
     try {
@@ -61,11 +64,24 @@ const VentasPage = () => {
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700"> 
         {view === 'lista' ? (
-          <VentasList data={ventas} onEdit={() => {}} />
+          <VentasList data={ventas} onEdit={(p) => setSelectedInvoice(p)} />
         ) : (
           <VentasCreatePage onBack={handleBackToList} />
         )}
       </main>
+
+      <DocumentViewerModal
+        isOpen={!!selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        title={`Venta N° ${selectedInvoice?.numero || ''}`}
+        onOpenNewTab={() => {
+          if (selectedInvoice) {
+            window.open(`/invoice/${selectedInvoice.id}`, '_blank');
+          }
+        }}
+      >
+        <InvoiceTemplate factura={selectedInvoice} />
+      </DocumentViewerModal>
     </div>
   );
 };

@@ -7,7 +7,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   const colegioId = getColegioIdFromToken(token) || "";
 
   const [formData, setFormData] = useState<FacturaVentaCreateDTO>({
-    tipoFacturaId: initialData?.tipoFacturaId || 0,
+    tipoFacturaId: initialData?.tipoFacturaId || 1,
     clienteId: initialData?.clienteId || "",
     vendedorId: colegioId, // Usamos el ID del colegio emisor
     colegioId: colegioId,
