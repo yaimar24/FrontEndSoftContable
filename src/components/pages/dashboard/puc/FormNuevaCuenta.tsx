@@ -4,6 +4,7 @@ import { createCuentaContable } from '../../../../services/puc/pucService';
 import InputField from '../../../common/InputField';
 import Button from '../../../common/Button';
 import Modal from '../../../common/Modal'; // Importamos el nuevo Modal
+import StatusModal from '../../../common/StatusModal';
 
 interface Props {
   padre?: { codigo: string; nombre: string };
@@ -35,19 +36,21 @@ const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onCl
 
   const [codigo, setCodigo] = useState(sugerirCodigo());
 
+  const [statusError, setStatusError] = useState<{ show: boolean, message: string }>({ show: false, message: '' });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await createCuentaContable({ 
-        codigo, 
-        nombre: nombre.toUpperCase(), 
-        codigoPadre: padre?.codigo, 
-        naturaleza, 
-        esDetalle 
+      const res = await createCuentaContable({
+        codigo,
+        nombre: nombre.toUpperCase(),
+        codigoPadre: padre?.codigo,
+        naturaleza,
+        esDetalle
       });
-      if (res.success) { onSuccess(); onClose(); } 
-      else { alert(res.message); }
-    } catch (err) { alert("Error de conexión"); } 
+      if (res.success) { onSuccess(); onClose(); }
+      else { setStatusError({ show: true, message: res.message }); }
+    } catch (err) { setStatusError({ show: true, message: "Error de conexión" }); }
   };
 
   return (
@@ -124,8 +127,12 @@ const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onCl
             Registrar
           </Button>
         </div>
-      </form>
-    </Modal>
+      </form>      <StatusModal
+        show={statusError.show}
+        type="error"
+        message={statusError.message}
+        onClose={() => setStatusError({ show: false, message: '' })}
+      />    </Modal>
   );
 };
 
