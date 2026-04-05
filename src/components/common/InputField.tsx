@@ -17,6 +17,7 @@ interface InputFieldProps {
   showToggle?: boolean; 
   showPassword?: boolean; 
   setShowPassword?: (val: boolean) => void;
+  disabled?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -35,6 +36,7 @@ const InputField: React.FC<InputFieldProps> = ({
   showToggle = false,
   showPassword,
   setShowPassword,
+  disabled = false,
 }) => {
 
   // Filtro de teclado para proteger el campo
@@ -85,8 +87,10 @@ const InputField: React.FC<InputFieldProps> = ({
             ${showToggle ? 'pr-12' : ''}
             ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-100 focus:ring-blue-500'}
             ${type === 'checkbox' ? 'w-5 h-5 cursor-pointer accent-blue-600' : ''}
+            ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
           `}
           required={required}
+          disabled={disabled}
         />
 
         {/* Toggle password */}

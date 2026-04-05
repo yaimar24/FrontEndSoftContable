@@ -23,14 +23,8 @@ export const registerColegio = async (data: Colegio): Promise<ApiResponse<Colegi
   }
 };
 
-export const getColegioById = async (): Promise<Colegio> => {
-  try {
-    const response = await apiClient(`/api/Colegio/detalle`);
-    return (response as ApiResponse<Colegio>).data || {} as Colegio;
-  } catch (error) {
-    console.error('Error al obtener colegio:', error);
-    return {} as Colegio;
-  }
+export const getColegioById = async (): Promise<ApiResponse<Colegio>> => {
+  return await apiClient(`/api/Colegio/detalle`);
 };
 
 /**

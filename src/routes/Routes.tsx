@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "../components/pages/dashboard/Dashboard";
 import LoginForm from "../components/pages/login/LoginForm";
 import ProtectedRoute from "./ProtectedRoute"; // Importa el protector
@@ -6,11 +6,10 @@ import PerfilForm from "../components/pages/dashboard/perfil/PerfilPage";
 import PucPage from "../components/pages/dashboard/puc/PucPage";
 import { RegisterForm } from "../components/pages/register/RegisterForm";
 import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
-import VentasPage from "../components/pages/dashboard/ventas/Ventas";
-import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
+import VentasPage from "../components/pages/dashboard/ventas/VentasPage";
+import VentasViewerPage from "../components/pages/dashboard/ventas/VentasViewerPage";import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
 
-const AppRoutes = () => (
-  <Router>
+const AppRoutes = () => (  <Router>
     <Routes>
       {/* RUTAS PÚBLICAS */}
       <Route path="/login" element={<LoginForm />} />
@@ -32,6 +31,8 @@ const AppRoutes = () => (
           <Route path="ventas" element={<VentasPage />} />
           <Route path="productos" element={<ProductosPage />} />
         </Route>
+        {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
+        <Route path="/invoice/:id" element={<VentasViewerPage />} />
       </Route>
 
       {/* REDIRECCIÓN GLOBAL */}

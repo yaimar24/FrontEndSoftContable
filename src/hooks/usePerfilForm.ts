@@ -17,9 +17,19 @@ export const usePerfilForm = (token: string | null) => {
   useEffect(() => {
     if (colegioId) {
       Promise.all([getColegioById(), getParametros()])
-        .then(([colegioData, parametrosData]) => {
-          setFormData(colegioData);
-          setParametros(parametrosData);
+        .then(([colegioResponse, parametrosResponse]) => {
+          if (colegioResponse.success && colegioResponse.data) {
+            setFormData(colegioResponse.data);
+            localStorage.setItem('perfilInstitucional', JSON.stringify(colegioResponse.data));
+            if (colegioResponse.data.logoPath) {
+              const logo = colegioResponse.data.logoPath;
+              localStorage.setItem('logoUrl', logo);
+              window.dispatchEvent(new CustomEvent('logoUpdate', { detail: logo }));
+            }
+          }
+          if (parametrosResponse.success && parametrosResponse.data) {
+            setParametros(parametrosResponse.data);
+          }
         })
         .catch(err => console.error("Error:", err))
     }
@@ -27,8 +37,15 @@ export const usePerfilForm = (token: string | null) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-    setFormData(prev => ({ ...prev, [name]: val }));
+    if (type === 'file') {
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        setFormData(prev => ({ ...prev, [name]: target.files![0] }));
+      }
+    } else {
+      const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+      setFormData(prev => ({ ...prev, [name]: val }));
+    }
   };
 
   const handleRepChange = (index: number, field: string, value: any) => {
@@ -45,6 +62,17 @@ export const usePerfilForm = (token: string | null) => {
     setIsSaving(true);
     try {
       const result = await updateColegio(colegioId, formData);
+      if (result.success && result.data) {
+        setFormData(result.data); // Update local form with correct path
+        localStorage.setItem('perfilInstitucional', JSON.stringify(result.data));
+
+        if (result.data.logoPath) {
+          const logo = result.data.logoPath;
+          localStorage.setItem('logoUrl', logo);
+          window.dispatchEvent(new CustomEvent('logoUpdate', { detail: logo }));
+        }
+      }
+
       setResultModal({
         show: true,
         success: result.success,
