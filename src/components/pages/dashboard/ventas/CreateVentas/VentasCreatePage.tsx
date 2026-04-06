@@ -1,15 +1,17 @@
-﻿import React from "react";
-import { Receipt, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash } from "lucide-react";
+﻿import React, { useEffect, useState } from "react";
+import { Receipt, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash, Wallet, DollarSign } from "lucide-react";
 import Button from "../../../../common/Button";
 import StatusModal from "../../../../common/StatusModal";
 import InputField from "../../../../common/InputField";
 import { AsyncSearchField } from "../../../../common/AsyncSearchField";
+import SelectField from "../../../../common/SelectField";
 import { useVentasForm } from "../../../../../hooks/useVentasForm";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
 import { searchClientes } from "../../../../../services/terceros/terceroService";
 import { searchProductos } from "../../../../../services/producto/productoService";
-import type { FacturaDetalleCreateDTO } from "../../../../../models/Venta";
+import { getMediosPago } from "../../../../../services/venta/ventaService";
+import type { FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../../../../models/Venta";
 
 interface Props {
   initialData?: any;
@@ -25,8 +27,19 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     setResultModal,
     handleChange,
     handleConfirmSave,
-    handleDetallesChange
+    handleDetallesChange,
+    handlePagosChange
   } = useVentasForm(token, initialData);
+
+  const [mediosPago, setMediosPago] = useState<any[]>([]);
+
+  useEffect(() => {
+    getMediosPago().then(res => {
+      if (res.success && res.data) {
+        setMediosPago(res.data);
+      }
+    });
+  }, []);
 
   const addDetalle = () => {
     handleDetallesChange([
@@ -45,11 +58,53 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handleDetallesChange(formData.detalles.filter((_: any, i: number) => i !== index));
   };
 
-  const currentTotal = formData.detalles.reduce((acc: number, curr: FacturaDetalleCreateDTO) => {
+  const currentTotal = Number(formData.detalles.reduce((acc: number, curr: FacturaDetalleCreateDTO) => {
     const subtotal = curr.cantidad * curr.valorUnitario;
     const discount = subtotal * ((curr.porcentajeDescuento || 0) / 100);
-    return acc + (subtotal - discount);
-  }, 0);
+    const base = subtotal - discount;
+    const cargo = base * ((curr.tarifaCargo || 0) / 100);
+    const retencion = base * ((curr.tarifaRetencion || 0) / 100);
+    return acc + (base + cargo - retencion);
+  }, 0).toFixed(2));
+
+  const currentTotalPagos = Number((formData.pagos || []).reduce((acc: number, curr: ReciboCajaCreate) => acc + (curr.monto || 0), 0).toFixed(2));
+  const saldoPendiente = Number(Math.max(0, currentTotal - currentTotalPagos).toFixed(2));
+
+  const [condicionPago, setCondicionPago] = useState<'CREDITO' | 'CONTADO' | 'PARCIAL'>(
+    (formData.pagos && formData.pagos.length > 0) 
+      ? (currentTotalPagos >= currentTotal ? 'CONTADO' : 'PARCIAL') 
+      : 'CREDITO'
+  );
+
+  useEffect(() => {
+    if (condicionPago === 'CONTADO') {
+      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoCodigo: "", monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" };
+      handlePagosChange([{ ...p, monto: currentTotal }]);
+    } else if (condicionPago === 'CREDITO') {
+      handlePagosChange([]);
+    } else if (condicionPago === 'PARCIAL' && (!formData.pagos || formData.pagos.length === 0)) {
+      handlePagosChange([{ medioPagoCodigo: "", monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" }]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [condicionPago, currentTotal]);
+
+  const addPago = () => {
+    const newPagos = formData.pagos || [];
+    handlePagosChange([
+      ...newPagos,
+      {
+        medioPagoCodigo: "",
+        monto: saldoPendiente > 0 ? saldoPendiente : 0,
+        fechaRecibo: formData.fechaElaboracion,
+        referencia: "",
+        observacion: ""
+      } as ReciboCajaCreate
+    ]);
+  };
+
+  const removePago = (index: number) => {
+    handlePagosChange((formData.pagos || []).filter((_: any, i: number) => i !== index));
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
@@ -84,8 +139,20 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         <div className="flex items-center gap-4">
           <div className="text-right mr-4">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Estimado</p>
-            <p className="text-xl font-black text-emerald-600">${currentTotal.toLocaleString()}</p>
+            <p className="text-xl font-black text-emerald-600">${Math.round(currentTotal).toLocaleString()}</p>
           </div>
+          {(formData.pagos || []).length > 0 && (
+            <div className="text-right mr-4 border-l pl-4 border-slate-200">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Abonado</p>
+              <p className="text-xl font-black text-blue-600">${Math.round(currentTotalPagos).toLocaleString()}</p>
+            </div>
+          )}
+          {(formData.pagos || []).length > 0 && saldoPendiente > 0 && (
+             <div className="text-right mr-4 border-l pl-4 border-slate-200">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Saldo</p>
+              <p className="text-xl font-black text-amber-600">${Math.round(saldoPendiente).toLocaleString()}</p>
+            </div>
+          )}
             <Button 
               onClick={() => {
                 if (formData.detalles.length === 0) {
@@ -283,6 +350,118 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </section>
+
+          {/* Sección de Medios de Pago */}
+          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
+                <Wallet size={18} className="text-blue-500" /> Condición y Medio de Pago
+              </h3>
+            </div>
+
+            <div className="mb-6 border-b border-slate-100 pb-6">
+              <SelectField
+                label="Condición de Pago"
+                name="condicionPago"
+                value={condicionPago}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCondicionPago(e.target.value as any)}
+                options={[
+                  { id: 'CREDITO', nombre: 'A Crédito (Borrador / Sin Abono Inicial)' },
+                  { id: 'CONTADO', nombre: 'De Contado (Pago Total)' },
+                  { id: 'PARCIAL', nombre: 'Pago Parcial (Abono Inicial)' }
+                ]}
+                displayExpr={(item) => item.nombre}
+              />
+            </div>
+
+            {condicionPago === 'CREDITO' ? (
+              <div className="text-center py-8 px-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50">
+                <DollarSign size={32} className="mx-auto text-slate-300 mb-2" />
+                <p className="text-sm font-bold text-slate-500 mb-1">Factura a Crédito</p>
+                <p className="text-xs text-slate-400">Esta factura quedará marcada como "Borrador". Los abonos se registrarán después de haberla aprobado.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {formData.pagos?.map((pago: ReciboCajaCreate, index: number) => (
+                  <div key={index} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                    {index > 0 && (
+                        <button
+                        onClick={() => removePago(index)}
+                        className="absolute -top-3 -right-3 p-2 bg-red-100 text-red-600 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all hidden group-hover:block"
+                        title="Eliminar fila"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <SelectField
+                        label="Medio de Pago"
+                        name="medioPagoCodigo"
+                        value={pago.medioPagoCodigo}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                          const newPagos = [...formData.pagos!];
+                          newPagos[index].medioPagoCodigo = e.target.value;
+                          handlePagosChange(newPagos);
+                        }}
+                        options={mediosPago.map(m => ({ id: m.codigo, nombre: `${m.codigo} - ${m.nombre}` }))}
+                        displayExpr={item => item.nombre}
+                      />
+
+                      <InputField
+                        label="Monto Recibido"
+                        name="monto"
+                        type="number"
+                        value={pago.monto || ""}
+                        onChange={(e) => {
+                          const newPagos = [...formData.pagos!];
+                          newPagos[index].monto = Number(e.target.value);
+                          handlePagosChange(newPagos);
+                        }}
+disabled={condicionPago === 'CONTADO' && index === 0}
+                        required
+                        icon={DollarSign}
+                      />
+
+                      <InputField
+                        label="Referencia (Opcional)"
+                        name="referencia"
+                        value={pago.referencia || ""}
+                        onChange={(e) => {
+                          const newPagos = [...formData.pagos!];
+                          newPagos[index].referencia = e.target.value;
+                          handlePagosChange(newPagos);
+                        }}
+                        placeholder="Nro. cheque, trans., etc."
+                      />
+
+                      <InputField
+                        label="Fecha de Pago"
+                        name="fechaRecibo"
+                        type="date"
+                        value={pago.fechaRecibo || formData.fechaElaboracion}
+                        onChange={(e) => {
+                          const newPagos = [...formData.pagos!];
+                          newPagos[index].fechaRecibo = e.target.value;
+                          handlePagosChange(newPagos);
+                        }}
+                        disabled={condicionPago === 'CONTADO' && index === 0}
+                        required
+                      />
+                    </div>
+                  </div>
+                ))}
+                
+                {condicionPago === 'PARCIAL' && (
+                  <div className="flex justify-end mt-4">
+                    <Button onClick={addPago} icon={Plus} variant="outline" className="text-xs py-2 px-4 rounded-xl">
+                      Agregar otro medio de pago
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </section>

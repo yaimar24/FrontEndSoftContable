@@ -1,6 +1,22 @@
 import { apiClient } from "../../api/apiClient";
 import type { ApiResponse } from "../../models/types/ApiResponse";
-import type { FacturaVentaCreateDTO, FacturaVentaReadDTO } from "../../models/Venta";
+import type { FacturaVentaCreateDTO, FacturaVentaReadDTO, ReciboCajaCreate, ReciboCajaRead } from "../../models/Venta";
+import type { PucNodo } from "../../models/Puc";
+
+export const getMediosPago = async (): Promise<ApiResponse<PucNodo[]>> => {
+  return await apiClient("/api/puc/medios-pago?codigoRaiz=11");
+};
+
+export const registrarPago = async (id: number, pago: ReciboCajaCreate): Promise<ApiResponse<ReciboCajaRead>> => {
+  return await apiClient(`/api/FacturaVenta/${id}/recibos`, {
+    method: "POST",
+    body: JSON.stringify(pago),
+  });
+};
+
+export const getVentaById = async (id: number): Promise<ApiResponse<FacturaVentaReadDTO>> => {
+  return await apiClient(`/api/FacturaVenta/${id}`);
+};
 
 export const getVentasByColegio = async (): Promise<ApiResponse<FacturaVentaReadDTO[]>> => {
   return await apiClient("/api/FacturaVenta");

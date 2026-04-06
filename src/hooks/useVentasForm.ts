@@ -9,10 +9,11 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   const [formData, setFormData] = useState<FacturaVentaCreateDTO>({
     tipoFacturaId: initialData?.tipoFacturaId || 1,
     clienteId: initialData?.clienteId || "",
-    vendedorId: colegioId, // Usamos el ID del colegio emisor
+    vendedorId: colegioId,
     colegioId: colegioId,
     fechaElaboracion: initialData?.fechaElaboracion ? new Date(initialData.fechaElaboracion).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     detalles: initialData?.detalles || [],
+    pagos: initialData?.pagos || [],
   });
 
   const [numeroDisplay, setNumeroDisplay] = useState<string>(initialData?.numero || "");
@@ -39,7 +40,13 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   };
 
   const handleDetallesChange = (detalles: FacturaDetalleCreateDTO[]) => {       
-    setFormData((prev: FacturaVentaCreateDTO) => ({ ...prev, detalles }));  };
+    setFormData((prev: FacturaVentaCreateDTO) => ({ ...prev, detalles }));
+  };
+
+  const handlePagosChange = (pagos: any[]) => {
+    setFormData((prev: FacturaVentaCreateDTO) => ({ ...prev, pagos }));
+  };
+
   const handleConfirmSave = async () => {
     setShowConfirm(false);
     setLoading(true);
@@ -76,6 +83,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     setResultModal,
     handleChange,
     handleDetallesChange,
+    handlePagosChange,
     handleConfirmSave,
   };
 };

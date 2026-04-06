@@ -1,35 +1,37 @@
 ﻿import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Printer, Download } from "lucide-react";
-import { getVentasByColegio } from "../../../../services/venta/ventaService";
+import { ArrowLeft, Printer, Download, Banknote } from "lucide-react";
+import { getVentaById } from "../../../../services/venta/ventaService";
 import { InvoiceTemplate } from "./ListVentas/InvoiceTemplate";
 import type { FacturaVentaReadDTO } from "../../../../models/Venta";
 import LoadingOverlay from "../../../shared/LoadingOverlay";
 import Button from "../../../common/Button";
 import { exportInvoiceToPDF } from "../../../../utils/exportInvoicePDF";
+import { PaymentModal } from "./ListVentas/PaymentModal";
 
 const VentasViewerPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [factura, setFactura] = useState<FacturaVentaReadDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchFactura = async () => {
-      try {
-        setLoading(true);
-        // Note: For now we fetch all and find the one. Ideally in the future you'd have a getVentaById endpoint.
-        const res = await getVentasByColegio();
-        if (res.success && res.data) {
-          const found = res.data.find(f => f.id === Number(id));
-          if (found) setFactura(found);
-        }
-      } finally {
-        setLoading(false);
+  const fetchFactura = async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const res = await getVentaById(Number(id));
+      if (res.success && res.data) {
+        setFactura(res.data);
       }
-    };
-    if (id) fetchFactura();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFactura();
   }, [id]);
 
   const handlePrint = () => {
@@ -68,18 +70,37 @@ const VentasViewerPage: React.FC = () => {
           Factura #{factura.numero}
         </h1>
         <div className="flex items-center gap-3">
+          {(factura.estadoId === 2 || factura.estadoId === 3 || factura.estadoId === 6) && factura.saldo > 0 && (
+            <Button
+              variant="secondary"
+              icon={Banknote}
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 border-emerald-100 shadow-none hidden sm:flex"
+            >
+              Registrar Pago
+            </Button>
+          )}
           <Button variant="outline" onClick={handleDownloadPDF} icon={Download}>
             PDF
           </Button>
-          <Button variant="primary" onClick={handlePrint} icon={Printer}>
+          <Button variant="primary" onClick={handlePrint} icon={Printer}>       
             Imprimir
           </Button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-4 sm:p-8 custom-scrollbar print:p-0 bg-slate-100 print:bg-white flex justify-center">
-        <div 
+      {isPaymentModalOpen && (
+          <PaymentModal
+             isOpen={isPaymentModalOpen}
+             onClose={() => setIsPaymentModalOpen(false)}
+             factura={factura}
+             onSuccess={fetchFactura}
+          />
+      )}
+
+      {/* Main Print Area */}
+      <div className="flex-1 overflow-auto p-8 print:p-0 flex justify-center custom-scrollbar">
+        <div
           ref={printRef}
           className="bg-white shadow-xl print:shadow-none min-h-[1056px] w-[816px] origin-top"
         >
