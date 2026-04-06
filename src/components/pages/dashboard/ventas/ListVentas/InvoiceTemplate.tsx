@@ -24,7 +24,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
   const nitColegio = perfil?.nit || perfil?.identificacion || 'N/A';
   const telefonoColegio = perfil?.telefono || 'N/A';
   const direccionColegio = perfil?.direccion || 'N/A';
-  const regimenIvaColegio = perfil?.regimenIva?.nombre || 'N/A';
+  const regimenIvaColegio = perfil?.regimenIva || 'N/A' || 'N/A';
 
   const rawLogoUrl = localStorage.getItem('logoUrl') || getLogoUrlFromToken(token);
   const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? new URL(new URL(rawLogoUrl).pathname, window.location.origin).toString() : rawLogoUrl) : null;
@@ -101,7 +101,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
             </div>
             <div>
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Medio de Pago</p>
-              <p className="text-xs font-bold text-slate-800">N/A</p>
+                <p className="text-xs font-bold text-slate-800">
+                  {factura.recibos && factura.recibos.length > 0
+                    ? (factura.recibos.length > 1 ? "Múltiples (Dividido)" : factura.recibos[0].medioPagoNombre || factura.recibos[0].medioPagoCodigo)
+                    : "A Crédito / Pendiente"}
+                </p>
             </div>
           </div>
         </div>
@@ -147,12 +151,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
             <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2 border-b border-slate-200 pb-1">Observaciones / Notas</h4>
             <p className="text-xs text-slate-600 italic">N/A</p>
           </div>
-          <div>
-            <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2 border-b border-slate-200 pb-1">Resolución DIAN</h4>
-            <p className="text-[10px] text-slate-500 text-justify">
-              Autorización de numeración de Facturación N/A de fecha N/A. Rango autorizado N/A.
-            </p>
-          </div>
+          
         </div>
 
         <div className="w-[40%] bg-slate-50 rounded-2xl border border-slate-200 p-6">

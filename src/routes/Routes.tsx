@@ -8,6 +8,7 @@ import { RegisterForm } from "../components/pages/register/RegisterForm";
 import TercerosPage from "../components/pages/dashboard/terceros/TercerosPage";
 import VentasPage from "../components/pages/dashboard/ventas/VentasPage";
 import VentasViewerPage from "../components/pages/dashboard/ventas/VentasViewerPage";
+import InvoicePrintPage from "../components/pages/dashboard/ventas/InvoicePrintPage";
 import RecibosList from "../components/pages/dashboard/ventas/recibos/RecibosList";
 import ReciboCajaViewer from "../components/pages/dashboard/ventas/recibos/ReciboCajaViewer";
 import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
@@ -32,10 +33,10 @@ const AppRoutes = () => (
           <Route path="ventas/recibos" element={<RecibosList />} />
           <Route path="ventas/recibos/:id" element={<ReciboCajaViewer />} />
           <Route path="ventas/:id" element={<VentasViewerPage />} />
-          <Route path="ventas/:id" element={<VentasViewerPage />} />
           <Route path="productos" element={<ProductosPage />} />
         </Route>
         {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
+        <Route path="/invoice/:id" element={<InvoicePrintPage />} />
         
       </Route>
 

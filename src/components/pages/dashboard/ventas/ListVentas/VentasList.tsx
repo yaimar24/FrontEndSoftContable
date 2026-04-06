@@ -1,4 +1,4 @@
-import { Eye, FileText } from "lucide-react";
+import { Eye, FileText, ArrowRight } from "lucide-react";
 import { ExportButtons } from "../../../../common/ExportButtons";
 import SearchBar from "../../../../common/SearchBar";
 import { Table } from "../../../../common/Table";
@@ -8,7 +8,8 @@ import { exportToExcel, exportToPDF, type ExportConfig } from "../../../../../ut
 
 interface Props {
   data: FacturaVentaReadDTO[];
-  onEdit?: (id: number) => void;
+  onPreview?: (v: FacturaVentaReadDTO) => void;
+  onDetails?: (id: number) => void;
 }
 
 const getEstadoInfo = (estado: string | number) => {
@@ -30,7 +31,7 @@ const getEstadoInfo = (estado: string | number) => {
   return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
 };
 
-const VentasList: React.FC<Props> = ({ data = [], onEdit }) => {
+const VentasList: React.FC<Props> = ({ data = [], onPreview, onDetails }) => {
   const { searchTerm, setSearchTerm, filteredData } = useFilter(data || [], {   
     searchFields: ["numero", "clienteNombre", "tipoFacturaNombre"],
   });
@@ -98,8 +99,11 @@ const VentasList: React.FC<Props> = ({ data = [], onEdit }) => {
       className: "text-right",
       render: (v: FacturaVentaReadDTO) => (
         <div className="flex justify-end gap-2">
-          <button onClick={() => onEdit?.(v.id)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ver Detalles">
+          <button onClick={() => onPreview?.(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Vista Previa PDF">
             <Eye size={15} strokeWidth={2.5} />
+          </button>
+          <button onClick={() => onDetails?.(v.id)} className="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-700 hover:text-white transition-all shadow-sm" title="Ver Detalles de Factura">
+            <ArrowRight size={15} strokeWidth={2.5} />
           </button>
         </div>
       )
