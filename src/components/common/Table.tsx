@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
-interface Column<T> {
+export interface Column<T> {
   header: string;
   render: (item: T) => React.ReactNode;
   className?: string;

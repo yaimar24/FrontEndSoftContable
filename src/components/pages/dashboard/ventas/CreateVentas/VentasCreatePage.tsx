@@ -8,7 +8,7 @@ import SelectField from "../../../../common/SelectField";
 import { useVentasForm } from "../../../../../hooks/useVentasForm";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
-import { searchClientes } from "../../../../../services/terceros/terceroService";
+import { buscarTerceros } from "../../../../../services/terceros/terceroService";
 import { searchProductos } from "../../../../../services/producto/productoService";
 import { getMediosPago } from "../../../../../services/venta/ventaService";
 import type { FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../../../../models/Venta";
@@ -192,10 +192,10 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 placeholder="Nombre o ID del Cliente..."
                 icon={User}
                 fetcher={async (q) => {
-                  const res = await searchClientes(q);
+                  const res = await buscarTerceros("CLIENTE", q);
                   return res.success && res.data ? res.data : [];
                 }}
-                getDisplayValue={(c: any) => c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.nombreCompleto} - ${c.identificacion}`}
+                getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
                 getKey={(c: any) => c.id}
                 onSelect={(c: any) => handleChange({ target: { name: "clienteId", value: c.id } } as any)}
                 required

@@ -1,0 +1,157 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Table } from '../../../common/Table';
+import type { Column } from '../../../common/Table';
+import LoadingOverlay from '../../../shared/LoadingOverlay';
+import { getComprasByColegio } from '../../../../services/compra/compraService';
+import type { FacturaCompraReadDTO } from '../../../../models/FacturaCompra';
+import { ShoppingCart, FilePlus, FileText, ArrowRight } from 'lucide-react';
+import SearchBar from '../../../common/SearchBar';
+import { useFilter } from '../../../../hooks/useGenericFilter';
+import CreateCompras from './CreateCompras/CreateCompras';
+
+const getEstadoInfo = (estado: string | number) => {
+  const map: Record<string, { label: string, color: string }> = {
+    '1': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    '2': { label: 'Anulada', color: 'bg-red-50 text-red-600 border-red-100' },
+  };
+  return map[estado.toString()] || { label: 'Desconocido', color: 'bg-slate-100 text-slate-500' };
+};
+
+const ComprasPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [view, setView] = useState<'lista' | 'formulario'>('lista');
+  const [compras, setCompras] = useState<FacturaCompraReadDTO[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { searchTerm, setSearchTerm, filteredData } = useFilter(compras, {
+    searchFields: ["numero", "proveedorNombre"],
+  });
+
+  useEffect(() => {
+    if (view === 'lista') {
+      fetchCompras();
+    }
+  }, [view]);
+
+  const fetchCompras = async () => {
+    try {
+      setLoading(true);
+      const res = await getComprasByColegio();
+      if (res.success && res.data) {
+        setCompras(res.data);
+      } else {
+        setError(res.message || 'Error al obtener compras');
+      }
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Error inesperado');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns: Column<FacturaCompraReadDTO>[] = [
+    {
+      header: "Factura",
+      className: "min-w-[280px]",
+      render: (v: FacturaCompraReadDTO) => (
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600">
+            <FileText size={18} />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-black uppercase text-[11px] text-slate-800">{v.numero || 'S/N'}</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Fecha: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: "Proveedor",
+      render: (v: FacturaCompraReadDTO) => (
+        <span className="font-bold text-[10px] text-slate-700 uppercase">{v.proveedorNombre}</span>
+      )
+    },
+    {
+      header: "Total Neto",
+      render: (v: FacturaCompraReadDTO) => (
+        <span className="font-bold text-slate-700">${v.totalNeto?.toLocaleString()}</span>
+      )
+    },
+    {
+      header: "Estado",
+      render: (v: FacturaCompraReadDTO) => {
+        const info = getEstadoInfo(v.estadoId);
+        return (
+          <span className={`px-3 py-1 text-[9px] font-black uppercase border rounded-lg ${info.color}`}>
+            {info.label}
+          </span>
+        )
+      }
+    },
+    {
+      header: "Acciones",
+      className: "text-right",
+      render: (v: FacturaCompraReadDTO) => (
+        <div className="flex justify-end gap-2">
+          <button onClick={() => navigate(`/dashboard/factura-compra/${v.id}`)} className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-700 hover:text-white transition-all shadow-sm" title="Ver Detalles de Compra">
+            <ArrowRight size={15} strokeWidth={2.5} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8">
+      {loading && <LoadingOverlay message="Sincronizando Compras..." />}
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-black text-slate-800 tracking-tighter uppercase flex items-center gap-3">
+            <ShoppingCart className="text-indigo-600" size={28}/> Gestión de Compras
+          </h1>
+          {view === 'lista' && !loading && (
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
+              {compras.length} Facturas registradas
+            </p>
+          )}
+        </div>
+
+        <div className="flex bg-white p-1.5 rounded-3xl border border-slate-200 shadow-sm self-start">
+          <button
+            onClick={() => setView('lista')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            <FileText size={14} /> Historial de Compras
+          </button>
+          <button
+            onClick={() => setView('formulario')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
+          >
+            <FilePlus size={14} /> Nueva Compra
+          </button>
+        </div>
+      </div>
+
+      <main className="animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6"> 
+        {view === 'lista' ? (
+          <>
+            {error && <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold">{error}</div>}
+
+            <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+
+            <div className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+              <Table columns={columns} data={filteredData} />
+            </div>
+          </>
+        ) : (
+          <CreateCompras onBack={() => setView('lista')} />
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default ComprasPage;

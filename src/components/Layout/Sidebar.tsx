@@ -11,6 +11,8 @@ import {
   Users,
   ShoppingBag,
   ShoppingCart,
+  Receipt,
+  Package,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../common/Button";
@@ -91,7 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
     { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
     { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag },
-    { path: "/dashboard/productos", name: "Productos", icon:  ShoppingCart },
+    { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt  },
+    { path: "/dashboard/productos", name: "Productos", icon:  Package  },   
   ];
 
   return (

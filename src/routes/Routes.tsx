@@ -12,8 +12,9 @@ import InvoicePrintPage from "../components/pages/dashboard/ventas/InvoicePrintP
 import RecibosList from "../components/pages/dashboard/ventas/recibos/RecibosList";
 import ReciboCajaViewer from "../components/pages/dashboard/ventas/recibos/ReciboCajaViewer";
 import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
-import DashboardHome from "../components/pages/dashboard/DashboardHome";
-
+import DashboardHome from "../components/pages/dashboard/DashboardHome";import ComprasPage from "../components/pages/dashboard/compras/ComprasPage";
+import CreateCompras from "../components/pages/dashboard/compras/CreateCompras/CreateCompras";
+import ComprasViewerPage from "../components/pages/dashboard/compras/ComprasViewerPage";
 const AppRoutes = () => (
   <Router>
     <Routes>
@@ -32,8 +33,8 @@ const AppRoutes = () => (
           <Route path="ventas" element={<VentasPage />} />
           <Route path="ventas/recibos" element={<RecibosList />} />
           <Route path="ventas/recibos/:id" element={<ReciboCajaViewer />} />
-          <Route path="ventas/:id" element={<VentasViewerPage />} />
-          <Route path="productos" element={<ProductosPage />} />
+          <Route path="ventas/:id" element={<VentasViewerPage />} />          <Route path="factura-compra" element={<ComprasPage />} />
+          <Route path="factura-compra/:id" element={<ComprasViewerPage />} />          <Route path="productos" element={<ProductosPage />} />
         </Route>
         {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />

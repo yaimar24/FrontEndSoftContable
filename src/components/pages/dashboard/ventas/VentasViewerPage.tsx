@@ -73,7 +73,7 @@ const VentasViewerPage: React.FC = () => {
   const canPay = factura.saldo > 0 && factura.estadoNombre !== "Anulada";
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20 print:bg-white print:p-0 print:min-h-0 print:m-0">
       {/* Header bar (no printable) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-40 print:hidden">
         <div className="flex items-center gap-4">

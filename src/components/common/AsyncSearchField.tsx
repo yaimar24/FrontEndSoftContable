@@ -33,8 +33,13 @@ export function AsyncSearchField<T>({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Store the current fetch abort controller to prevent race conditions
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
-    setQuery(displayValue);
+    if (displayValue) {
+      setQuery(displayValue);
+    }
   }, [displayValue]);
 
   useEffect(() => {
@@ -50,33 +55,56 @@ export function AsyncSearchField<T>({
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
+    setIsOpen(true); // Open the dropdown when the user types
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (!newQuery.trim()) {
       setResults([]);
       setIsOpen(false);
+      // Let the parent component know that the value has been cleared
+      // if they provide a handler for clearing
       return;
     }
 
+    setLoading(true);
     timeoutRef.current = setTimeout(async () => {
-      setLoading(true);
+      // Abort any old pending requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       try {
         const data = await fetcher(newQuery);
-        setResults(data);
-        setIsOpen(true);
+        // Only set results if this is still the active request
+        if (!controller.signal.aborted) {
+          setResults(data);
+          setIsOpen(true);
+        }
       } catch (error) {
-        console.error("AsyncSearchField:", error);
+        if (!controller.signal.aborted) {
+          console.error("AsyncSearchField:", error);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
-    }, 500); // 500ms debounce
+    }, 400); // 400ms debounce
   };
 
   const handleSelect = (item: T) => {
-    setQuery(getDisplayValue(item));
+    const selectedDisplay = getDisplayValue(item);
+    setQuery(selectedDisplay);
     setIsOpen(false);
     onSelect(item);
+  };
+
+  const handleInputClick = () => {
+    // If the user clears the text while it's selected, open it directly so they can see all default search options if needed.
+    if (query.trim() || results.length > 0) setIsOpen(true);
   };
 
   return (
@@ -101,9 +129,8 @@ export function AsyncSearchField<T>({
           value={query}
           onChange={handleQueryChange}
           placeholder={placeholder}
-          onClick={() => {
-            if (query.trim() && results.length > 0) setIsOpen(true);
-          }}
+          onClick={handleInputClick}
+          onFocus={handleInputClick}
           className={`w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all py-3.5 pr-4 pl-12 placeholder:font-medium placeholder:text-slate-400`}
         />
         {/* Hidden input to store proper value for form submission, etc if needed */}

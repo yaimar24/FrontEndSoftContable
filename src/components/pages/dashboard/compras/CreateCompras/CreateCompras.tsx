@@ -1,0 +1,334 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash } from 'lucide-react';
+import Button from '../../../../common/Button';
+import InputField from '../../../../common/InputField';
+import { AsyncSearchField } from '../../../../common/AsyncSearchField';
+import { buscarTerceros } from '../../../../../services/terceros/terceroService';
+import SelectField from '../../../../common/SelectField';
+import StatusModal from '../../../../common/StatusModal';
+import { useComprasForm } from '../../../../../hooks/useComprasForm';
+import { searchProductos } from '../../../../../services/producto/productoService';
+import type { FacturaCompraDetalleCreateDTO, TipoItemCompraEnum } from '../../../../../models/FacturaCompra';
+
+interface Props {
+  onBack: () => void;
+}
+
+const CreateCompras: React.FC<Props> = ({ onBack }) => {
+  const navigate = useNavigate();
+  const {
+    formData,
+    numeroDisplay,
+    showConfirm,
+    resultModal,
+    setShowConfirm,
+    setResultModal,
+    handleChange,
+    setProveedorId,
+    handleDetallesChange,
+    handleConfirmSave,
+  } = useComprasForm();
+
+  const addDetalle = () => {
+    handleDetallesChange([
+      ...formData.detalles,
+      {
+        tipoItem: 1,
+        productoId: 0,
+        pucId: undefined,
+        activoFijoId: undefined,
+        descripcion: '',
+        cantidad: 1,
+        valorUnitario: 0,
+        porcentajeDescuento: 0,
+        impuestoCargoNombre: '',
+        tarifaCargo: 0,
+        retencionNombre: '',
+        tarifaRetencion: 0,
+      } as unknown as FacturaCompraDetalleCreateDTO
+    ]);
+  };
+
+  const removeDetalle = (index: number) => {
+    handleDetallesChange(formData.detalles.filter((_: any, i: number) => i !== index));
+  };
+
+  const itemTypeOptions = [
+    { id: 1, label: 'Producto' },
+    { id: 2, label: 'Activo Fijo' },
+    { id: 3, label: 'Gasto' }
+  ];
+
+  const currentTotal = Number(formData.detalles.reduce((acc: number, curr: FacturaCompraDetalleCreateDTO) => {
+    const subtotal = curr.cantidad * (curr.valorUnitario || 0);
+    const discount = subtotal * ((curr.porcentajeDescuento || 0) / 100);
+    const base = subtotal - discount;
+    const cargo = base * ((curr.tarifaCargo || 0) / 100);
+    const retencion = base * ((curr.tarifaRetencion || 0) / 100);
+    return acc + (base + cargo - retencion);
+  }, 0).toFixed(2));
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+      <StatusModal
+        show={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        type="confirm"
+        message="¿Estás seguro de registrar esta factura de compra?"
+        confirmText="Confirmar"
+        onConfirm={handleConfirmSave}
+        cancelText="Cancelar"
+      />
+
+      <StatusModal
+        show={resultModal.show}
+        onClose={() => {
+          setResultModal({ ...resultModal, show: false });
+          if(resultModal.success) onBack();
+        }}
+        type={resultModal.success ? 'success' : 'error'}
+        message={resultModal.message}
+        confirmText="Aceptar"
+        onConfirm={() => {
+          setResultModal({ ...resultModal, show: false });
+          if(resultModal.success) onBack();
+        }}
+      />
+
+      <div className="flex justify-between items-center bg-white p-6 rounded-4xl shadow-sm sticky top-4 z-20 border border-slate-100">
+        <div className="flex items-center gap-4">
+          <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors" title="Volver">
+            <ArrowLeft size={24} className="text-slate-400" />
+          </button>
+          <h1 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2">
+            <ShoppingCart size={28} className="text-indigo-600" />
+            Nueva Factura de Compra
+          </h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-right mr-4">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Estimado</p>
+            <p className="text-xl font-black text-indigo-600">${Math.round(currentTotal).toLocaleString()}</p>
+          </div>
+          <Button
+            onClick={() => {
+              if (formData.detalles.length === 0) {
+                setResultModal({ show: true, success: false, message: 'La factura debe tener al menos un detalle agregado.' });
+                return;
+              }
+              setShowConfirm(true);
+            }}
+            icon={Save}
+          >
+            Guardar Compra
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 space-y-6">
+          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
+              <FileText size={18} className="text-indigo-500" /> Datos de Encabezado
+            </h3>
+            <div className="space-y-4">
+              <InputField
+                label="Número de Compra"
+                name="numero"
+                value={numeroDisplay || 'Pendiente'}
+                onChange={() => {}}
+                icon={Hash}
+                placeholder="-- Generado Automáticamente --"
+                disabled
+              />
+
+              <AsyncSearchField
+                label="Buscar Proveedor"
+                value={formData.proveedorId}
+                displayValue={formData.proveedorId ? "Proveedor Seleccionado" : ""}
+                placeholder="Nombre o ID del Proveedor..."
+                icon={User}
+                fetcher={async (q) => {
+                  const res = await buscarTerceros("PROVEEDOR", q);
+                  return res.success && res.data ? res.data : [];
+                }}
+                getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
+                getKey={(c: any) => c.id}
+                onSelect={(c: any) => setProveedorId(c.id)}
+                required
+              />
+
+              <InputField
+                label="Fecha de Elaboración"
+                name="fechaElaboracion"
+                type="date"
+                value={formData.fechaElaboracion}
+                onChange={handleChange}
+                icon={Calendar}
+                required
+              />
+            </div>
+          </section>
+        </div>
+
+        <div className="lg:col-span-2 space-y-6">
+          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
+                <Tags size={18} className="text-emerald-500" /> Líneas de Detalle
+              </h3>
+              <Button onClick={addDetalle} icon={Plus} variant="outline" className="text-xs py-2 px-4 rounded-xl">
+                Añadir Ítem
+              </Button>
+            </div>
+
+            {formData.detalles.length === 0 ? (
+              <div className="text-center py-12 px-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50">
+                <FileText size={32} className="mx-auto text-slate-300 mb-2" />
+                <p className="text-sm font-bold text-slate-500 mb-1">Sin detalles agregados</p>
+                <p className="text-xs text-slate-400">Añada ítems para continuar con la factura de compra</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {formData.detalles.map((detalle: FacturaCompraDetalleCreateDTO, index: number) => (
+                  <div key={index} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                    <button
+                      onClick={() => removeDetalle(index)}
+                      className="absolute -top-3 -right-3 p-2 bg-red-100 text-red-600 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all hidden group-hover:block"
+                      title="Eliminar fila"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="lg:col-span-1">
+                        <SelectField
+                          label="Tipo de Ítem"
+                          name="tipoItem"
+                          value={detalle.tipoItem}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                            const newDetalles = [...formData.detalles];
+                            newDetalles[index].tipoItem = Number(e.target.value) as TipoItemCompraEnum;
+                            newDetalles[index].productoId = undefined; // Resetear id
+                            handleDetallesChange(newDetalles);
+                          }}
+                          options={itemTypeOptions}
+                          displayExpr={(opt: { id: number; label: string }) => opt.label}
+                        />
+                      </div>
+                      
+                      <div className="lg:col-span-3">
+                        {detalle.tipoItem === 1 && (
+                          <AsyncSearchField
+                            label="Producto"
+                            value={detalle.productoId || ''}
+                            displayValue={detalle.descripcion || 'Buscar producto'}
+                            placeholder="Buscar nombre o referencia"
+                            fetcher={async (q) => {
+                              const res = await searchProductos(q);
+                              return res.success && res.data ? res.data : [];
+                            }}
+                            getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0})`}
+                            getKey={(p: any) => p.id}
+                            onSelect={(p: any) => {
+                              const newDetalles = [...formData.detalles];
+                              newDetalles[index].productoId = p.id;
+                              newDetalles[index].descripcion = p.nombre;
+                              newDetalles[index].valorUnitario = p.precios?.[0]?.valor || 0;
+                              newDetalles[index].cantidad = 1;
+                              newDetalles[index].impuestoCargoNombre = p.impuestoCargoNombre;
+                              newDetalles[index].tarifaCargo = p.tarifaCargo;
+                              newDetalles[index].retencionNombre = p.retencionNombre;
+                              newDetalles[index].tarifaRetencion = p.tarifaRetencion;
+                              handleDetallesChange(newDetalles);
+                            }}
+                          />
+                        )}
+                        {detalle.tipoItem !== 1 && (
+                          <InputField
+                            label="Descripción"
+                            name="descripcion"
+                            value={detalle.descripcion || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              const newDetalles = [...formData.detalles];
+                              newDetalles[index].descripcion = e.target.value;
+                              handleDetallesChange(newDetalles);
+                            }}
+                            placeholder="Ej. Servicio de consultoría"
+                          />
+                        )}
+                        
+                        {(detalle.impuestoCargoNombre || detalle.retencionNombre) && detalle.tipoItem === 1 && (
+                          <div className="flex flex-wrap justify-start gap-2 mt-2 mb-1 px-1">
+                            {detalle.impuestoCargoNombre && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 shadow-sm border border-blue-200">
+                                Cargo: {detalle.impuestoCargoNombre} {detalle.tarifaCargo ? `(${detalle.tarifaCargo}%)` : ''}
+                              </span>
+                            )}
+                            {detalle.retencionNombre && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200">
+                                Retención: {detalle.retencionNombre} {detalle.tarifaRetencion ? `(${detalle.tarifaRetencion}%)` : ''}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-4 gap-3 mt-2">
+                        <InputField
+                          label="Cantidad"
+                          name="cantidad"
+                          type="number"
+                          value={detalle.cantidad}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            const newDetalles = [...formData.detalles];
+                            newDetalles[index].cantidad = Number(e.target.value);
+                            handleDetallesChange(newDetalles);
+                          }}
+                          placeholder="0"
+                        />
+                        <InputField
+                          label="Val. Unitario"
+                          name="valorUnitario"
+                          type="number"
+                          value={detalle.valorUnitario || 0}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            const newDetalles = [...formData.detalles];
+                            newDetalles[index].valorUnitario = Number(e.target.value);
+                            handleDetallesChange(newDetalles);
+                          }}
+                          placeholder="$ 0"
+                        />
+                        <InputField
+                          label="% Desc."
+                          name="porcentajeDescuento"
+                          type="number"
+                          value={detalle.porcentajeDescuento || 0}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            const newDetalles = [...formData.detalles];
+                            newDetalles[index].porcentajeDescuento = Number(e.target.value);
+                            handleDetallesChange(newDetalles);
+                          }}
+                          placeholder="%"
+                        />
+                        <div className="flex flex-col justify-end">
+                          <label className="text-[10px] uppercase font-bold text-slate-500 mb-1">Subtotal</label>
+                          <div className="bg-emerald-50 text-emerald-700 font-bold p-3 rounded-xl border border-emerald-100 text-center">
+                            ${Math.round((detalle.cantidad * (detalle.valorUnitario || 0)) - ((detalle.cantidad * (detalle.valorUnitario || 0)) * ((detalle.porcentajeDescuento || 0) / 100))).toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CreateCompras;
