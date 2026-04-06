@@ -8,7 +8,7 @@ import { exportToExcel, exportToPDF, type ExportConfig } from "../../../../../ut
 
 interface Props {
   data: FacturaVentaReadDTO[];
-  onEdit?: (p: FacturaVentaReadDTO) => void;
+  onEdit?: (id: number) => void;
 }
 
 const getEstadoInfo = (estado: string | number) => {
@@ -98,7 +98,7 @@ const VentasList: React.FC<Props> = ({ data = [], onEdit }) => {
       className: "text-right",
       render: (v: FacturaVentaReadDTO) => (
         <div className="flex justify-end gap-2">
-          <button onClick={() => onEdit?.(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ver Detalles">
+          <button onClick={() => onEdit?.(v.id)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ver Detalles">
             <Eye size={15} strokeWidth={2.5} />
           </button>
         </div>

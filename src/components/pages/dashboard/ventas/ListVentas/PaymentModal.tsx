@@ -58,7 +58,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
       setLoading(true);
       const res = await registrarPago(factura.id, {
         medioPagoCodigo: selectedMedio,
-        monto: numMonto,
+        monto: Number(monto),
         fechaRecibo,
         referencia,
         observacion

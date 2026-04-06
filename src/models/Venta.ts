@@ -16,6 +16,7 @@ export interface ReciboCajaCreate {
 
 export interface ReciboCajaRead {
   id: number;
+  numero: string;
   facturaVentaId: number;
   facturaVentaNumero: string;
   terceroNombre: string;
@@ -75,6 +76,11 @@ export interface FacturaVentaReadDTO {
   numero: string;
   clienteId: string;
   clienteNombre: string;
+  clienteTelefono?: string;
+  clienteDireccion?: string;
+  colegioId: string;
+  colegioNombre: string;
+  colegioNit: string;
   vendedorId?: string;
   fechaElaboracion: string;
   estadoId: number;
@@ -82,12 +88,12 @@ export interface FacturaVentaReadDTO {
   totalBruto: number;
   descuentoTotal: number;
   subtotal: number;
+  totalImpuestoCargo: number;
+  totalRetencion: number;
   totalImpuestos: number;
   totalNeto: number;
   totalPagado: number;
   saldo: number;
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
-  clienteTelefono?: string;
-  clienteDireccion?: string;
 }

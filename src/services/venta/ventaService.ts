@@ -8,7 +8,7 @@ export const getMediosPago = async (): Promise<ApiResponse<PucNodo[]>> => {
 };
 
 export const registrarPago = async (id: number, pago: ReciboCajaCreate): Promise<ApiResponse<ReciboCajaRead>> => {
-  return await apiClient(`/api/FacturaVenta/${id}/recibos`, {
+  return await apiClient(`/api/recibocaja/${id}`, {
     method: "POST",
     body: JSON.stringify(pago),
   });
@@ -38,4 +38,12 @@ export const updateVenta = async (id: number, venta: FacturaVentaCreateDTO): Pro
 
 export const getProximoNumeroFactura = async (tipoFacturaId: number): Promise<ApiResponse<string>> => {
   return await apiClient(`/api/FacturaVenta/proximo-numero?tipoFacturaId=${tipoFacturaId}`);
+};
+
+export const getRecibosCaja = async (): Promise<ApiResponse<ReciboCajaRead[]>> => {
+  return await apiClient("/api/recibocaja");
+};
+
+export const getReciboCajaById = async (id: number): Promise<ApiResponse<ReciboCajaRead>> => {
+  return await apiClient(`/api/recibocaja/${id}`);
 };
