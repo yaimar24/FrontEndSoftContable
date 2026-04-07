@@ -67,6 +67,9 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
     formData.detalles.forEach((doc: any, index: number) => {
       // Si tipoItem === 1 (Producto)
       if (doc.tipoItem === 1 && !doc.productoId) newErrors[`detalle_${index}_producto`] = "Debe elegir un producto";
+      // Si no es producto, la descripción es obligatoria
+      if (doc.tipoItem !== 1 && (!doc.descripcion || doc.descripcion.trim() === '')) newErrors[`detalle_${index}_descripcion`] = "Desc. requerida";
+
       if (!doc.cantidad || doc.cantidad <= 0) newErrors[`detalle_${index}_cantidad`] = "Cantidad requ.";
       if (doc.valorUnitario === undefined || doc.valorUnitario < 0) newErrors[`detalle_${index}_valor`] = "Valor req.";
     });
@@ -96,8 +99,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
         show={showConfirm}
         onClose={() => setShowConfirm(false)}
         type="confirm"
-        message="¿Estás seguro de registrar esta factura de compra?"
-        confirmText="Confirmar"
+        message={initialCompraId ? "¿Estás seguro de actualizar esta factura de compra?" : "¿Estás seguro de registrar esta factura de compra?"}
+        confirmText={initialCompraId ? "Actualizar" : "Confirmar"}
         onConfirm={handleConfirmSave}
         cancelText="Cancelar"
       />
@@ -119,7 +122,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
           </button>
           <h1 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2">
             <ShoppingCart size={28} className="text-indigo-600" />
-            Nueva Factura de Compra
+            {initialCompraId ? 'Actualizar Factura de Compra' : 'Nueva Factura de Compra'}
           </h1>
         </div>
         <div className="flex items-center gap-4">
@@ -141,7 +144,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
             }}
             icon={Save}
           >
-            Guardar Compra
+            {initialCompraId ? 'Actualizar Compra' : 'Guardar Compra'}
           </Button>
         </div>
       </div>
@@ -281,7 +284,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                         )}
                         {detalle.tipoItem !== 1 && (
                           <InputField
-                            label="Descripción"
+                            label="Descripción *"
                             name="descripcion"
                             value={detalle.descripcion || ''}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -290,6 +293,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                               handleDetallesChange(newDetalles);
                             }}
                             placeholder="Ej. Servicio de consultoría"
+                            required
+                            error={errors[`detalle_${index}_descripcion`]}
                           />
                         )}
                         
@@ -350,10 +355,13 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           label="Cantidad"
                           name="cantidad"
                           type="number"
-                          value={detalle.cantidad}
+                          min={0}
+                          step="0.01"
+                          value={detalle.cantidad === 0 ? '' : detalle.cantidad}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
-                            newDetalles[index].cantidad = Number(e.target.value);
+                            const val = e.target.value;
+                            newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Number(val));
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="0"
@@ -364,10 +372,13 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           label="Val. Unitario"
                           name="valorUnitario"
                           type="number"
-                          value={detalle.valorUnitario || 0}
+                          min={0}
+                          step="0.01"
+                          value={detalle.valorUnitario === 0 ? '' : (detalle.valorUnitario || '')}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
-                            newDetalles[index].valorUnitario = Number(e.target.value);
+                            const val = e.target.value;
+                            newDetalles[index].valorUnitario = val === '' ? 0 : Math.max(0, Number(val));
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="$ 0"
@@ -378,10 +389,14 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           label="% Desc."
                           name="porcentajeDescuento"
                           type="number"
-                          value={detalle.porcentajeDescuento || 0}
+                          min={0}
+                          max={100}
+                          step="0.01"
+                          value={detalle.porcentajeDescuento === 0 ? '' : detalle.porcentajeDescuento}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
-                            newDetalles[index].porcentajeDescuento = Number(e.target.value);
+                            const val = e.target.value;
+                            newDetalles[index].porcentajeDescuento = val === '' ? 0 : Math.min(100, Math.max(0, Number(val)));
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="%"

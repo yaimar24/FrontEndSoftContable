@@ -181,7 +181,7 @@ const DashboardHome = () => {
                     <BarChart data={d.resumenMensual.map(r => ({ ...r, mesNombre: r.mesNombre.substring(0,3).toUpperCase() }))} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                        <Tooltip
                           cursor={{ fill: 'transparent' }}
-                          formatter={(value: number) => formatCurrency(value)}
+                          formatter={(value: any) => formatCurrency(Number(value) || 0)}
                           contentStyle={{ borderRadius: '16px', border: '1px solid #e2e8f0', fontWeight: 'bold' }}
                        />
                        <XAxis dataKey="mesNombre" tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 'bold' }} axisLine={false} tickLine={false} />

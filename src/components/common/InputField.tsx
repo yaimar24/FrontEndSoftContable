@@ -15,9 +15,12 @@ interface InputFieldProps {
   onlyNumbers?: boolean; 
   allowDecimals?: boolean; 
   showToggle?: boolean; 
-  showPassword?: boolean; 
+  showPassword?: boolean;
   setShowPassword?: (val: boolean) => void;
   disabled?: boolean;
+  min?: number | string;
+  max?: number | string;
+  step?: number | string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -37,6 +40,9 @@ const InputField: React.FC<InputFieldProps> = ({
   showPassword,
   setShowPassword,
   disabled = false,
+  min,
+  max,
+  step,
 }) => {
 
   // Filtro de teclado para proteger el campo
@@ -81,6 +87,9 @@ const InputField: React.FC<InputFieldProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           maxLength={maxLength}
+          min={min}
+          max={max}
+          step={step}
           inputMode={onlyNumbers ? (allowDecimals ? "decimal" : "numeric") : undefined}
           className={`w-full bg-slate-50 border-2 rounded-2xl p-4 focus:ring-2 outline-none transition-all
             ${Icon ? 'pl-12' : ''}

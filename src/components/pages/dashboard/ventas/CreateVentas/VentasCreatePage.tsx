@@ -335,10 +335,13 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         label="Cant."
                         name="cantidad"
                         type="number"
-                        value={detalle.cantidad}
-                        onChange={(e) => {
+                        min={0}
+                        step="0.01"
+                        value={detalle.cantidad === 0 ? '' : detalle.cantidad}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].cantidad = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Number(val));
                           handleDetallesChange(newDetalles);
                         }}
                         required
@@ -349,10 +352,13 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         label="V. Unitario"
                         name="valorUnitario"
                         type="number"
-                        value={detalle.valorUnitario}
-                        onChange={(e) => {
+                        min={0}
+                        step="0.01"
+                        value={detalle.valorUnitario === 0 ? '' : detalle.valorUnitario}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].valorUnitario = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].valorUnitario = val === '' ? 0 : Math.max(0, Number(val));
                           handleDetallesChange(newDetalles);
                         }}
                         required
@@ -363,10 +369,14 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         label="% Dcto"
                         name="porcentajeDescuento"
                         type="number"
-                        value={detalle.porcentajeDescuento || ""}
-                        onChange={(e) => {
+                        min={0}
+                        max={100}
+                        step="0.01"
+                        value={detalle.porcentajeDescuento === 0 ? '' : detalle.porcentajeDescuento}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].porcentajeDescuento = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].porcentajeDescuento = val === '' ? 0 : Math.min(100, Math.max(0, Number(val)));
                           handleDetallesChange(newDetalles);
                         }}
                       />
