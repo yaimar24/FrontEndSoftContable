@@ -26,9 +26,9 @@ export const desvincularTercero = async (terceroId: string): Promise<ApiResponse
   });
 };
 
-export const buscarTerceros = async (tipo: string, nombre?: string): Promise<ApiResponse<TerceroupdateDTO[]>> => {
+export const buscarTerceros = async (tipo: string, nombre?: string, skipGlobalLoader: boolean = false): Promise<ApiResponse<TerceroupdateDTO[]>> => {
   const url = nombre 
     ? `/api/Tercero/buscar?tipo=${encodeURIComponent(tipo)}&nombre=${encodeURIComponent(nombre)}`
     : `/api/Tercero/buscar?tipo=${encodeURIComponent(tipo)}`;
-  return await apiClient(url);
+  return await apiClient(url, { skipGlobalLoader });
 };

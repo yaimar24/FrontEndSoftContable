@@ -167,9 +167,8 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                 value={formData.proveedorId}
                 displayValue={formData.proveedorId ? "Proveedor Seleccionado" : ""}
                 placeholder="Nombre o ID del Proveedor..."
-                icon={User}
                 fetcher={async (q) => {
-                  const res = await buscarTerceros("PROVEEDOR", q);
+                  const res = await buscarTerceros("PROVEEDOR", q, true);
                   return res.success && res.data ? res.data : [];
                 }}
                 getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
@@ -253,10 +252,10 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                           <AsyncSearchField
                             label="Producto"
                             value={detalle.productoId || ''}
-                            displayValue={detalle.descripcion || 'Buscar producto'}
+                            displayValue={detalle.descripcion || ''}
                             placeholder="Buscar nombre o referencia"
                             fetcher={async (q) => {
-                              const res = await searchProductos(q);
+                              const res = await searchProductos(q, true);
                               return res.success && res.data ? res.data : [];
                             }}
                             getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0})`}

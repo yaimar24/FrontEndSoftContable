@@ -68,7 +68,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
             </div>
           )}
           <h1 className="text-xl font-black text-blue-900 uppercase tracking-wider">{nombreColegio}</h1>
-          <p className="text-xs text-slate-500 font-medium">NIT: {nitColegio} - Responsable de IVA: {regimenIvaColegio}</p>
+          <p className="text-xs text-slate-500 font-medium">NIT: {nitColegio}</p>
           <p className="text-xs text-slate-500 font-medium">Teléfono: {telefonoColegio} | Dir: {direccionColegio}</p>
         </div>
 

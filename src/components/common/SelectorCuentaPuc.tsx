@@ -32,11 +32,10 @@ export const SelectorCuentaPuc: React.FC<SelectorCuentaPucProps> = ({
         value={value || ''}
         displayValue={displayValue || value || ''}
         placeholder="Seleccionar cuenta..."
-        icon={BookMarked}
         required={required}
         error={error}
         fetcher={async (query) => {
-          const res = await getCuentasPuc(codigoRaiz, true, query);
+          const res = await getCuentasPuc(codigoRaiz, true, query, true);
           return res.success && res.data ? res.data : [];
         }}
         getDisplayValue={(c: CuentaPuc) => `${c.codigo} - ${c.nombre}`}

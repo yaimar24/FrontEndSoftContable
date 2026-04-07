@@ -209,9 +209,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.clienteId}
                 displayValue={formData.clienteId ? "Cliente Seleccionado" : ""}
                 placeholder="Nombre o ID del Cliente..."
-                icon={User}
                 fetcher={async (q) => {
-                  const res = await buscarTerceros("CLIENTE", q);
+                  const res = await buscarTerceros("CLIENTE", q, true);
                   return res.success && res.data ? res.data : [];
                 }}
                 getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
@@ -279,10 +278,10 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         <AsyncSearchField
                           label="Producto"
                           value={detalle.productoId}
-                          displayValue={detalle.productoId ? "Producto agregado" : ""}
+                          displayValue={detalle.descripcion || ""}
                           placeholder="Buscar nombre o referencia"
                           fetcher={async (q) => {
-                            const res = await searchProductos(q);
+                            const res = await searchProductos(q, true);
                             return res.success && res.data ? res.data : [];
                           }}
                           getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}
