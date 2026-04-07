@@ -12,9 +12,11 @@ import InvoicePrintPage from "../components/pages/dashboard/ventas/InvoicePrintP
 import RecibosList from "../components/pages/dashboard/ventas/recibos/RecibosList";
 import ReciboCajaViewer from "../components/pages/dashboard/ventas/recibos/ReciboCajaViewer";
 import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
-import DashboardHome from "../components/pages/dashboard/DashboardHome";import ComprasPage from "../components/pages/dashboard/compras/ComprasPage";
+import DashboardHome from "../components/pages/dashboard/DashboardHome";
+import ComprasPage from "../components/pages/dashboard/compras/ComprasPage";
 import CreateCompras from "../components/pages/dashboard/compras/CreateCompras/CreateCompras";
 import ComprasViewerPage from "../components/pages/dashboard/compras/ComprasViewerPage";
+import CompraPrintPage from "../components/pages/dashboard/compras/CompraPrintPage";
 const AppRoutes = () => (
   <Router>
     <Routes>
@@ -38,9 +40,7 @@ const AppRoutes = () => (
         </Route>
         {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />
-        
-      </Route>
-
+        <Route path="/purchase-invoice/:id" element={<CompraPrintPage />} />      </Route>
       {/* REDIRECCIÓN GLOBAL */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>

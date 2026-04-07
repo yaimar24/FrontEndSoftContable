@@ -1,7 +1,10 @@
-export enum EstadoFacturaCompra {
-  Registrada = 1,
-  Anulada = 2,
-}
+export const EstadoFacturaCompra = {
+  Borrador: 0,
+  Registrada: 1,
+  Anulada: 2,
+} as const;
+
+export type EstadoFacturaCompra = typeof EstadoFacturaCompra[keyof typeof EstadoFacturaCompra];
 
 export type TipoItemCompraEnum = 1 | 2 | 3; // 1 = Producto, 2 = ActivoFijo, 3 = Gasto
 
@@ -24,6 +27,14 @@ export interface FacturaCompraDetalleCreateDTO {
 }
 
 export interface FacturaCompraCreateDTO {
+  tipoFacturaId: number;
+  proveedorId: string;
+  fechaElaboracion: string;
+  medioPagoCodigo: string;
+  detalles: FacturaCompraDetalleCreateDTO[];
+}
+
+export interface FacturaCompraUpdateDTO {
   tipoFacturaId: number;
   proveedorId: string;
   fechaElaboracion: string;

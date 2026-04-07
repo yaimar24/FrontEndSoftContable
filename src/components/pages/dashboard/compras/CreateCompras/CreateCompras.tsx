@@ -14,9 +14,10 @@ import type { FacturaCompraDetalleCreateDTO, TipoItemCompraEnum } from '../../..
 
 interface Props {
   onBack: () => void;
+  initialCompraId?: number;
 }
 
-const CreateCompras: React.FC<Props> = ({ onBack }) => {
+const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
   const navigate = useNavigate();
   const {
     formData,
@@ -29,7 +30,7 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
     setProveedorId,
     handleDetallesChange,
     handleConfirmSave,
-  } = useComprasForm();
+  } = useComprasForm(initialCompraId);
 
   const addDetalle = () => {
     handleDetallesChange([

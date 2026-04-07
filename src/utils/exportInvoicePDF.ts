@@ -1,9 +1,10 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { FacturaVentaReadDTO } from "../models/Venta";
+import type { FacturaCompraReadDTO } from "../models/FacturaCompra";
 import { getNombreColegioFromToken, getLogoUrlFromToken } from "./jwt";
 
-export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO, token: string | null) => {
+export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaCompraReadDTO, token: string | null) => {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   
   let perfilInstitucional: any = {};
@@ -88,6 +89,17 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO, token: st
     doc.text("LOGO", 26.5, 28, { align: 'center' });
   }
 
+  // Type Checks
+  const isCompra = 'proveedorNombre' in factura;
+  const docTitle = isCompra ? "COMPRA" : "VENTA";
+  const entityTitle = isCompra ? "PROVEEDOR" : "FACTURAR A";
+  const entityNombreBase = isCompra ? (factura as FacturaCompraReadDTO).proveedorNombre || "Proveedor General" : (factura as FacturaVentaReadDTO).clienteNombre || "Cliente General";
+  const entityId = isCompra ? (factura as FacturaCompraReadDTO).proveedorId : (factura as FacturaVentaReadDTO).clienteId;
+  const entityTelefono = isCompra ? (factura as FacturaCompraReadDTO).proveedorTelefono : (factura as FacturaVentaReadDTO).clienteTelefono;
+  const entityDireccion = isCompra ? (factura as FacturaCompraReadDTO).proveedorDireccion : (factura as FacturaVentaReadDTO).clienteDireccion;
+  const numColor = isCompra ? [79, 70, 229] : [37, 99, 235]; // indigo for COMPRA, blue for VENTA
+  const medioPagoStr = isCompra ? ((factura as FacturaCompraReadDTO).medioPagoNombre || (factura as FacturaCompraReadDTO).medioPagoCodigo || "N/A") : "N/A";
+
   // Header Title
   doc.setTextColor(30, 58, 138); // blue-900
   doc.setFontSize(16);
@@ -104,15 +116,15 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO, token: st
   doc.setTextColor(30, 41, 59); // slate-800
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
-  doc.text("VENTA", 195, 25, { align: 'right' });
+  doc.text(docTitle, 195, 25, { align: 'right' });
   
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(226, 232, 240);
   doc.roundedRect(155, 28, 40, 15, 2, 2, 'FD');
   doc.setTextColor(148, 163, 184);
   doc.setFontSize(7);
-  doc.text("VENTA N°", 158, 33);
-  doc.setTextColor(37, 99, 235);
+  doc.text(`${docTitle} N°`, 158, 33);
+  doc.setTextColor(numColor[0], numColor[1], numColor[2]);
   doc.setFontSize(14);
   doc.text(factura.numero || "000", 158, 40);
   
@@ -120,30 +132,30 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO, token: st
   doc.setDrawColor(226, 232, 240);
   doc.line(14, 48, 196, 48);
   
-  // Client Info block
+  // Client/Provider Info block
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(241, 245, 249);
   doc.roundedRect(14, 55, 80, 28, 3, 3, 'FD');
   doc.setTextColor(148, 163, 184);
   doc.setFontSize(7);
-  doc.text("FACTURAR A", 18, 61);
+  doc.text(entityTitle, 18, 61);
   doc.line(18, 63, 90, 63);
 
   doc.setTextColor(30, 41, 59);
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  let clienteNombre = factura.clienteNombre || "Cliente General";
-  if (clienteNombre.length > 25) clienteNombre = clienteNombre.substring(0, 25) + "...";
-  doc.text(clienteNombre, 18, 68);
+  let entityNombre = entityNombreBase;
+  if (entityNombre.length > 25) entityNombre = entityNombre.substring(0, 25) + "...";
+  doc.text(entityNombre, 18, 68);
 
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(71, 85, 105);
-  doc.text(`ID / NIT: ${factura.clienteId || 'N/A'}`, 18, 72);
-  doc.text(`Teléfono: ${factura.clienteTelefono || 'N/A'}`, 18, 76);
-  let clienteDir = factura.clienteDireccion || 'N/A';
-  if (clienteDir.length > 35) clienteDir = clienteDir.substring(0, 35) + "...";
-  doc.text(`Dirección: ${clienteDir}`, 18, 80);
+  doc.text(`ID / NIT: ${entityId || 'N/A'}`, 18, 72);
+  doc.text(`Teléfono: ${entityTelefono || 'N/A'}`, 18, 76);
+  let entityDir = entityDireccion || 'N/A';
+  if (entityDir.length > 35) entityDir = entityDir.substring(0, 35) + "...";
+  doc.text(`Dirección: ${entityDir}`, 18, 80);
 
   // Dates Info Block
   doc.setFillColor(248, 250, 252);
@@ -159,7 +171,7 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO, token: st
   doc.setFontSize(9);
   doc.text(formatDate(factura.fechaElaboracion), 105, 65);
   doc.text(formatDate(expirationDate.toISOString()), 105, 75);
-  doc.text("N/A", 155, 65);
+  doc.text(medioPagoStr, 155, 65);
 
   // Table Items
   const tableBody = (factura.detalles || []).map((det, idx) => [

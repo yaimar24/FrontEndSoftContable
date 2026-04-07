@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Table } from '../../../common/Table';
 import type { Column } from '../../../common/Table';
 import LoadingOverlay from '../../../shared/LoadingOverlay';
-import { getComprasByColegio } from '../../../../services/compra/compraService';
+import { getComprasByColegio, registrarFacturaCompra, anularFacturaCompra } from '../../../../services/compra/compraService';
 import type { FacturaCompraReadDTO } from '../../../../models/FacturaCompra';
-import { ShoppingCart, FilePlus, FileText, ArrowRight } from 'lucide-react';
+import { ShoppingCart, FilePlus, FileText, ArrowRight, Edit2, CheckCircle, XCircle, Eye } from 'lucide-react';
 import SearchBar from '../../../common/SearchBar';
+import StatusModal from '../../../common/StatusModal';
 import { useFilter } from '../../../../hooks/useGenericFilter';
 import CreateCompras from './CreateCompras/CreateCompras';
+import { DocumentViewerModal } from '../../../common/DocumentViewerModal';
+import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 
 const getEstadoInfo = (estado: string | number) => {
   const map: Record<string, { label: string, color: string }> = {
+    '0': { label: 'Borrador', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     '1': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
     '2': { label: 'Anulada', color: 'bg-red-50 text-red-600 border-red-100' },
   };
@@ -20,10 +24,27 @@ const getEstadoInfo = (estado: string | number) => {
 
 const ComprasPage: React.FC = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'lista' | 'formulario'>('lista');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialView = (searchParams.get('view') as 'lista' | 'formulario') || 'lista';
+  const initialId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
+
+  const [view, setView] = useState<'lista' | 'formulario'>(initialView);
   const [compras, setCompras] = useState<FacturaCompraReadDTO[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(initialView === 'lista');
   const [error, setError] = useState<string | null>(null);
+  const [compraEditId, setCompraEditId] = useState<number | null>(initialId);
+  const [selectedInvoice, setSelectedInvoice] = useState<FacturaCompraReadDTO | null>(null);
+
+  // Sync state if URL changes to reset to lista or load form
+  useEffect(() => {
+    const currentView = (searchParams.get('view') as 'lista' | 'formulario') || 'lista';
+    const currentId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
+    setView(currentView);
+    setCompraEditId(currentId);
+  }, [location.search]);
+  const [confirmModal, setConfirmModal] = useState<{show: boolean, action: 'registrar' | 'anular' | null, id: number | null}>({show: false, action: null, id: null});
+  const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
   const { searchTerm, setSearchTerm, filteredData } = useFilter(compras, {
     searchFields: ["numero", "proveedorNombre"],
@@ -32,6 +53,8 @@ const ComprasPage: React.FC = () => {
   useEffect(() => {
     if (view === 'lista') {
       fetchCompras();
+    } else {
+      setLoading(false);
     }
   }, [view]);
 
@@ -49,6 +72,33 @@ const ComprasPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmModal.id || !confirmModal.action) return;
+    setLoading(true);
+    setConfirmModal({ ...confirmModal, show: false });
+    
+    try {
+      const res = confirmModal.action === 'registrar' 
+        ? await registrarFacturaCompra(confirmModal.id)
+        : await anularFacturaCompra(confirmModal.id);
+        
+      if (res.success) {
+        setResultModal({ show: true, success: true, message: `Factura ${confirmModal.action === 'registrar' ? 'registrada' : 'anulada'} exitosamente.` });
+        fetchCompras();
+      } else {
+        setResultModal({ show: true, success: false, message: res.message || `Error al ${confirmModal.action} la factura.` });
+      }
+    } catch (error: any) {
+      setResultModal({ show: true, success: false, message: error.message || 'Error inesperado' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (id: number) => {
+    navigate(`/dashboard/factura-compra?view=formulario&id=${id}`);
   };
 
   const columns: Column<FacturaCompraReadDTO>[] = [
@@ -95,6 +145,41 @@ const ComprasPage: React.FC = () => {
       className: "text-right",
       render: (v: FacturaCompraReadDTO) => (
         <div className="flex justify-end gap-2">
+          {v.estadoId === 0 && (
+            <>
+              <button onClick={() => handleEdit(v.id)} className="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Editar">
+                <Edit2 size={15} strokeWidth={2.5} />
+              </button>
+              <button 
+                onClick={() => setConfirmModal({ show: true, action: 'registrar', id: v.id })} 
+                className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm" 
+                title="Registrar"
+              >
+                <CheckCircle size={15} strokeWidth={2.5} />
+              </button>
+              <button 
+                onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })} 
+                className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" 
+                title="Anular"
+              >
+                <XCircle size={15} strokeWidth={2.5} />
+              </button>
+            </>
+          )}
+          {v.estadoId === 1 && (
+            <>
+              <button onClick={() => setSelectedInvoice(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Vista Previa PDF">
+                <Eye size={15} strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })}
+                className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                title="Anular"
+              >
+                <XCircle size={15} strokeWidth={2.5} />
+              </button>
+            </>
+          )}
           <button onClick={() => navigate(`/dashboard/factura-compra/${v.id}`)} className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-700 hover:text-white transition-all shadow-sm" title="Ver Detalles de Compra">
             <ArrowRight size={15} strokeWidth={2.5} />
           </button>
@@ -105,7 +190,24 @@ const ComprasPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8">
-      {loading && <LoadingOverlay message="Sincronizando Compras..." />}
+      {loading && <LoadingOverlay message="Procesando..." />}
+
+      <StatusModal
+        show={confirmModal.show}
+        onClose={() => setConfirmModal({ show: false, action: null, id: null })}
+        type="confirm"
+        message={`¿Estás seguro de ${confirmModal.action} esta factura de compra?`}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmAction}
+      />
+
+      <StatusModal
+        show={resultModal.show}
+        success={resultModal.success}
+        message={resultModal.message}
+        onClose={() => setResultModal({ ...resultModal, show: false })}
+      />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
@@ -121,13 +223,13 @@ const ComprasPage: React.FC = () => {
 
         <div className="flex bg-white p-1.5 rounded-3xl border border-slate-200 shadow-sm self-start">
           <button
-            onClick={() => setView('lista')}
+            onClick={() => navigate('/dashboard/factura-compra')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <FileText size={14} /> Historial de Compras
           </button>
           <button
-            onClick={() => setView('formulario')}
+            onClick={() => navigate('/dashboard/factura-compra?view=formulario')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
           >
             <FilePlus size={14} /> Nueva Compra
@@ -147,9 +249,22 @@ const ComprasPage: React.FC = () => {
             </div>
           </>
         ) : (
-          <CreateCompras onBack={() => setView('lista')} />
+          <CreateCompras onBack={() => { setView('lista'); setCompraEditId(null); fetchCompras(); navigate('/dashboard/factura-compra', { replace: true }); }} initialCompraId={compraEditId ?? undefined} />
         )}
       </main>
+
+      <DocumentViewerModal
+        isOpen={!!selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        title={`Vista Previa Factura Compra N° ${selectedInvoice?.numero || ''}`}
+        onOpenNewTab={() => {
+          if (selectedInvoice) {
+            window.open(`/purchase-invoice/${selectedInvoice.id}`, '_blank');
+          }
+        }}
+      >
+        <CompraInvoiceTemplate factura={selectedInvoice} />
+      </DocumentViewerModal>
     </div>
   );
 };

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from '../../../common/Button';
 import LoadingOverlay from '../../../shared/LoadingOverlay';
-import { getCompraById } from '../../../../services/compra/compraService';
+import { getCompraById, registrarFacturaCompra, anularFacturaCompra } from '../../../../services/compra/compraService';
 import type { FacturaCompraReadDTO } from '../../../../models/FacturaCompra';
-import { ArrowLeft, Printer, ShoppingCart, FileText } from 'lucide-react';
+import { ArrowLeft, Printer, ShoppingCart, FileText, CheckCircle, XCircle, Edit2, Download } from 'lucide-react';
+import StatusModal from '../../../common/StatusModal';
+import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
+import { exportInvoiceToPDF } from '../../../../utils/exportInvoicePDF';
 
 const ComprasViewerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +15,8 @@ const ComprasViewerPage: React.FC = () => {
   const [compra, setCompra] = useState<FacturaCompraReadDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{show: boolean, action: 'registrar' | 'anular' | null}>({show: false, action: null});
+  const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
   useEffect(() => {
     if (id) {
@@ -35,8 +40,41 @@ const ComprasViewerPage: React.FC = () => {
     }
   };
 
+  const handleConfirmAction = async () => {
+    if (!id || !confirmModal.action) return;
+    setLoading(true);
+    setConfirmModal({ show: false, action: null });
+    
+    try {
+      const res = confirmModal.action === 'registrar' 
+        ? await registrarFacturaCompra(Number(id))
+        : await anularFacturaCompra(Number(id));
+        
+      if (res.success) {
+        setResultModal({ show: true, success: true, message: `Factura ${confirmModal.action === 'registrar' ? 'registrada' : 'anulada'} exitosamente.` });
+        fetchCompra(Number(id));
+      } else {
+        setResultModal({ show: true, success: false, message: res.message || `Error al ${confirmModal.action} la factura.` });
+      }
+    } catch (err: any) {
+      setResultModal({ show: true, success: false, message: err.message || 'Error inesperado' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!compra) return;
+    try {
+      const token = localStorage.getItem('token');
+      await exportInvoiceToPDF(compra, token);
+    } catch (error) {
+      console.error("Error generando PDF", error);
+    }
   };
 
   if (loading) return <LoadingOverlay message="Cargando compra..." />;
@@ -52,13 +90,31 @@ const ComprasViewerPage: React.FC = () => {
 
   // Determine Badge Colors
   let badgeColor = "bg-slate-100 text-slate-600";
-  if (compra.estadoNombre === "Registrada") badgeColor = "bg-emerald-100 text-emerald-600"; // verde
-  if (compra.estadoNombre === "Anulada") badgeColor = "bg-red-100 text-red-600"; // rojo
+  if (compra.estadoId === 0) badgeColor = "bg-blue-100 text-blue-600"; // Borrador
+  if (compra.estadoId === 1) badgeColor = "bg-emerald-100 text-emerald-600"; // Registrada
+  if (compra.estadoId === 2) badgeColor = "bg-red-100 text-red-600"; // Anulada
 
   const formatCurrency = (val: number) => val.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20 print:bg-white print:p-0 print:m-0">
+      <StatusModal
+        show={confirmModal.show}
+        onClose={() => setConfirmModal({ show: false, action: null })}
+        type="confirm"
+        message={`¿Estás seguro de ${confirmModal.action} esta factura de compra?`}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmAction}
+      />
+
+      <StatusModal
+        show={resultModal.show}
+        success={resultModal.success}
+        message={resultModal.message}
+        onClose={() => setResultModal({ ...resultModal, show: false })}
+      />
+
       {/* Header bar (no printable) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-40 print:hidden">
         <div className="flex items-center gap-4">
@@ -73,6 +129,27 @@ const ComprasViewerPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {compra.estadoId === 0 && (
+            <>
+              <Button variant="outline" onClick={() => navigate(`/dashboard/factura-compra?view=formulario&id=${compra.id}`)} icon={Edit2}>
+                Editar
+              </Button>
+              <Button variant="success" onClick={() => setConfirmModal({ show: true, action: 'registrar' })} icon={CheckCircle}>
+                Registrar
+              </Button>
+              <Button variant="danger" onClick={() => setConfirmModal({ show: true, action: 'anular' })} icon={XCircle}>
+                Anular
+              </Button>
+            </>
+          )}
+          {compra.estadoId === 1 && (
+            <Button variant="danger" onClick={() => setConfirmModal({ show: true, action: 'anular' })} icon={XCircle}>
+              Anular
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleDownloadPDF} icon={Download}>
+            PDF
+          </Button>
           <Button variant="primary" onClick={handlePrint} icon={Printer}>       
             Imprimir
           </Button>
@@ -186,6 +263,11 @@ const ComprasViewerPage: React.FC = () => {
             </div>
 
          </div>
+      </div>
+
+      {/* Hidden Printable Template */}
+      <div className="hidden print:block">
+         <CompraInvoiceTemplate factura={compra} />
       </div>
     </div>
   );
