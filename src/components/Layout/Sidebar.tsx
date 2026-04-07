@@ -29,10 +29,13 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     return path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
   };
   const displayLogoUrl = getFullUrl(logoUrl);
-  // isCollapsed controla el estado visual (ancho)
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  // isManuallyClosed rastrea si el usuario usó el botón para cerrarlo
-  const [isManuallyClosed, setIsManuallyClosed] = useState(false);
+  // isPinned determina si la barra de navegación se mantiene desplegada y fija.
+  // isHovered detecta si el ratón está encima para expandir temporalmente.
+  const [isPinned, setIsPinned] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isCollapsed = !isPinned && !isHovered;
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -42,23 +45,15 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
   // --- LÓGICA DE EXPANSIÓN POR HOVER ---
 
   const handleMouseEnter = () => {
-    // Si estaba colapsado (ya sea manual o por defecto), lo abrimos al entrar
-    if (isCollapsed) {
-      setIsCollapsed(false);
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    // Si el usuario lo había cerrado manualmente, lo volvemos a colapsar al salir
-    if (isManuallyClosed) {
-      setIsCollapsed(true);
-    }
+    setIsHovered(false);
   };
 
   const toggleCollapse = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    setIsManuallyClosed(newState); // Registramos que el usuario tomó acción manual
+    setIsPinned(!isPinned);
   };
 
   // --- LÓGICA DE CIERRE DE SESIÓN ---
@@ -114,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
           onClick={toggleCollapse}
           className="absolute -right-3 top-12 bg-white border border-slate-100 rounded-full p-1.5 shadow-md hover:scale-110 transition-transform text-slate-400 hover:text-blue-600 z-50"
         >
-          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          {!isPinned ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
 
         {/* HEADER: LOGO */}
@@ -201,18 +196,30 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
         </nav>
 
         {/* FOOTER: BOTÓN DE LOGOUT */}
-        <div className="p-4 border-t border-slate-50">
-          <Button
-            variant="danger"
-            fullWidth
-            isLoading={isLoggingOut}
-            loadingText={isCollapsed ? "" : "Saliendo..."}
-            icon={LogOut}
+        <div className="p-4 border-t border-slate-100 mt-auto">
+          <button
             onClick={handleLogoutIntent}
-            className={isCollapsed ? "px-0 justify-center h-12" : "h-12"}
+            disabled={isLoggingOut}
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all font-bold group relative`}
           >
-            {!isCollapsed && "Finalizar sesión"}
-          </Button>
+            <LogOut size={22} strokeWidth={2.5} className="group-hover:-translate-x-1 transition-transform" />
+            {!isCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-[13px] uppercase tracking-widest whitespace-nowrap"
+              >
+                {isLoggingOut ? "Saliendo..." : "Cerrar sesión"}
+              </motion.span>
+            )}
+            
+            {/* Tooltip para estado colapsado */}
+            {isCollapsed && (
+              <div className="absolute left-16 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 font-medium tracking-normal">
+                {isLoggingOut ? "Saliendo..." : "Cerrar sesión"}
+              </div>
+            )}
+          </button>
         </div>
       </motion.aside>
 

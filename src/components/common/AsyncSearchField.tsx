@@ -12,6 +12,7 @@ interface AsyncSearchFieldProps<T> {
   getKey: (item: T) => string | number;
   onSelect: (item: T) => void;
   icon?: React.ElementType;
+  error?: string;
 }
 
 export function AsyncSearchField<T>({
@@ -24,7 +25,8 @@ export function AsyncSearchField<T>({
   getDisplayValue,
   getKey,
   onSelect,
-  icon: Icon
+  icon: Icon,
+  error
 }: AsyncSearchFieldProps<T>) {
   const [query, setQuery] = useState(displayValue);
   const [results, setResults] = useState<T[]>([]);
@@ -131,7 +133,9 @@ export function AsyncSearchField<T>({
           placeholder={placeholder}
           onClick={handleInputClick}
           onFocus={handleInputClick}
-          className={`w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all py-3.5 pr-4 pl-12 placeholder:font-medium placeholder:text-slate-400`}
+          className={`w-full bg-slate-50 border text-slate-700 text-sm font-bold rounded-2xl focus:ring-4 outline-none transition-all py-3.5 pr-4 pl-12 placeholder:font-medium placeholder:text-slate-400 ${
+            error ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-200 focus:ring-blue-500/20 focus:border-blue-500'
+          }`}
         />
         {/* Hidden input to store proper value for form submission, etc if needed */}
         <input type="hidden" value={value} required={required} />

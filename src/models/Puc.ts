@@ -10,6 +10,18 @@ export interface PucNodo {
   activo: boolean;
 }
 
+export interface CuentaPuc {
+  codigo: string;
+  nombre: string;
+  nivel: number;
+  esDetalle: boolean;
+  naturaleza: string;    // "D" o "C"
+  colegioId: string;
+  esGlobal: boolean;
+  activo: boolean;
+  hijos: CuentaPuc[];
+}
+
 export interface PucCreateDTO {
   codigo: string;
   nombre: string;

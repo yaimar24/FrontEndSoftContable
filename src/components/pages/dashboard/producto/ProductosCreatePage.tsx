@@ -7,11 +7,13 @@ import {
   ShieldCheck,
   DollarSign,
   Box,
+  BookMarked,
 } from "lucide-react";
 import Button from "../../../common/Button";
 import StatusModal from "../../../common/StatusModal";
 import InputField from "../../../common/InputField";
 import SelectField from "../../../common/SelectField";
+import { SelectorCuentaPuc } from "../../../common/SelectorCuentaPuc";
 import { useProductosForm } from "../../../../hooks/useProductosForm";
 
 interface Props {
@@ -123,10 +125,13 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 label="Valor"
                 name="valor"
                 type="number"
-                value={formData.precios[0]?.valor}
+                value={formData.precios?.[0]?.valor || 0}
                 onChange={(e) => {
-                  const newPrecios = [...formData.precios];
-                  newPrecios[0].valor = e.target.value;
+                  const newPrecios = [...(formData.precios || [])];
+                  if (newPrecios.length === 0) {
+                    newPrecios.push({ nombreLista: "General", valor: 0, incluyeIva: false });
+                  }
+                  newPrecios[0].valor = Number(e.target.value);
                   handleChange({
                     target: { name: "precios", value: newPrecios },
                   });
@@ -136,6 +141,36 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
             </div>
           </section>
+
+          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+            <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
+              <BookMarked size={18} className="text-amber-500" /> Cuentas Contables (PUC)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <SelectorCuentaPuc
+                label="Cuenta de Ingreso"
+                codigoRaiz="41"
+                value={formData.cuentaIngresoCodigo || null}
+                displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
+              />
+              <SelectorCuentaPuc
+                label="Cuenta de Costo"
+                codigoRaiz="6"
+                value={formData.cuentaCostoCodigo || null}
+                displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
+              />
+              <SelectorCuentaPuc
+                label="Cuenta de Inventario"
+                codigoRaiz="14"
+                value={formData.cuentaInventarioCodigo || null}
+                displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
+              />
+            </div>
+          </section>
+
         </div>
 
         <div className="space-y-6">

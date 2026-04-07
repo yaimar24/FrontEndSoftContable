@@ -7,6 +7,7 @@ export const useComprasForm = (initialData?: Partial<FacturaCompraCreateDTO> & {
     tipoFacturaId: initialData?.tipoFacturaId || 1, // o el id que corresponda a "FACTURA DE COMPRA"
     proveedorId: initialData?.proveedorId || "",
     fechaElaboracion: initialData?.fechaElaboracion ? new Date(initialData.fechaElaboracion).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    medioPagoCodigo: initialData?.medioPagoCodigo || "",
     detalles: initialData?.detalles || [],
   });
 

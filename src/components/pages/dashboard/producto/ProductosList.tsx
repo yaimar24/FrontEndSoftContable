@@ -40,6 +40,9 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
       },
       { header: "TIPO", dataKey: (p) => (p.esServicio ? "SERVICIO" : "PRODUCTO") },
       { header: "IVA", dataKey: (p) => p.impuestoCargoNombre || "EXENTO" },
+      { header: "CTA INGRESO", dataKey: (p) => p.cuentaIngresoCodigo ? `${p.cuentaIngresoCodigo} - ${p.cuentaIngresoNombre || ''}` : "N/A" },
+      { header: "CTA COSTO", dataKey: (p) => p.cuentaCostoCodigo ? `${p.cuentaCostoCodigo} - ${p.cuentaCostoNombre || ''}` : "N/A" },
+      { header: "CTA INVENTARIO", dataKey: (p) => p.cuentaInventarioCodigo ? `${p.cuentaInventarioCodigo} - ${p.cuentaInventarioNombre || ''}` : "N/A" },
     ],
   };
 

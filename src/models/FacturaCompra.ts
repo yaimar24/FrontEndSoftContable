@@ -15,6 +15,7 @@ export interface FacturaCompraDetalleCreateDTO {
   porcentajeDescuento: number; // 0-100, default 0
   impuestoCargoId?: number | null; 
   retencionId?: number | null;
+  cuentaContableCodigo?: string | null;
   // Campos extra para la UI
   impuestoCargoNombre?: string;
   tarifaCargo?: number;
@@ -26,6 +27,7 @@ export interface FacturaCompraCreateDTO {
   tipoFacturaId: number;
   proveedorId: string;
   fechaElaboracion: string;
+  medioPagoCodigo: string;
   detalles: FacturaCompraDetalleCreateDTO[];
 }
 
@@ -49,6 +51,8 @@ export interface FacturaCompraDetalleReadDTO {
   tarifaRetencion: number;
   impuestoRetencion: number;
   valorTotal: number;
+  cuentaContableCodigo?: string | null;
+  cuentaContableNombre?: string | null;
 }
 
 export interface FacturaCompraReadDTO {
@@ -65,6 +69,8 @@ export interface FacturaCompraReadDTO {
   fechaElaboracion: string;
   estadoId: number;
   estadoNombre: string;
+  medioPagoCodigo: string;
+  medioPagoNombre: string;
   totalBruto: number;
   descuentoTotal: number;
   subtotal: number;

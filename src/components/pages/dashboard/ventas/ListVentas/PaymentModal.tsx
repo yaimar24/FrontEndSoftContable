@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { CreditCard, DollarSign, Calendar, Target, AlignLeft } from 'lucide-react';
 import Modal from '../../../../common/Modal';
 import InputField from '../../../../common/InputField';
+import { SelectorCuentaPuc } from '../../../../common/SelectorCuentaPuc';
 import Button from '../../../../common/Button';
-import { getMediosPago, registrarPago } from '../../../../../services/venta/ventaService';
+import { registrarPago } from '../../../../../services/venta/ventaService';
 import type { FacturaVentaReadDTO } from '../../../../../models/Venta';
 import type { PucNodo } from '../../../../../models/Puc';
 import StatusModal from '../../../../common/StatusModal';
@@ -16,7 +17,6 @@ interface PaymentModalProps {
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, factura, onSuccess }) => {
-  const [mediosPago, setMediosPago] = useState<PucNodo[]>([]);
   const [selectedMedio, setSelectedMedio] = useState('');
   const [monto, setMonto] = useState('');
   const [fechaRecibo, setFechaPago] = useState(() => new Date().toISOString().split('T')[0]);
@@ -28,23 +28,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
 
   useEffect(() => {
     if (isOpen) {
-      loadMedios();
       setMonto(factura.saldo.toString());
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
       setObservacion('');
+      setSelectedMedio('');
     }
   }, [isOpen, factura]);
-
-  const loadMedios = async () => {
-    try {
-      const res = await getMediosPago();
-      if (res.success && res.data) {
-        setMediosPago(res.data);
-        if (res.data.length > 0) setSelectedMedio(res.data[0].codigo);
-      }
-    } catch (e) {}
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,23 +88,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                <p className="text-3xl font-black text-blue-600">${factura.saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 })}</p>
             </div>
 
-            <div className="space-y-2">
-               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">
-                  Medio de Pago (PUC)
-               </label>
-               <div className="relative flex items-center bg-slate-50 border-2 border-slate-100 rounded-[1.5rem] focus-within:border-blue-500 focus-within:bg-white transition-all overflow-hidden h-14">
-                  <CreditCard className="absolute left-4 text-slate-400 z-10" strokeWidth={2.5} size={18} />
-                  <select 
-                      value={selectedMedio}
-                      onChange={e => setSelectedMedio(e.target.value)}
-                      className="w-full h-full bg-transparent pl-12 pr-6 text-sm font-bold text-slate-700 uppercase tracking-wide outline-none appearance-none cursor-pointer"
-                      required
-                  >
-                      {mediosPago.map(m => (
-                          <option key={m.codigo} value={m.codigo}>{m.codigo} - {m.nombre}</option>
-                      ))}
-                  </select>
-               </div>
+            <div className="space-y-4">
+               <SelectorCuentaPuc
+                 label="Medio de Pago"
+                 codigoRaiz="11"
+                 value={selectedMedio}
+                 onChange={(val) => setSelectedMedio(val || '')}
+                 required
+               />
             </div>
 
             <div className="flex gap-4">

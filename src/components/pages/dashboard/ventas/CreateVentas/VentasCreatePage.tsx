@@ -5,12 +5,12 @@ import StatusModal from "../../../../common/StatusModal";
 import InputField from "../../../../common/InputField";
 import { AsyncSearchField } from "../../../../common/AsyncSearchField";
 import SelectField from "../../../../common/SelectField";
+import { SelectorCuentaPuc } from "../../../../common/SelectorCuentaPuc";
 import { useVentasForm } from "../../../../../hooks/useVentasForm";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
 import { buscarTerceros } from "../../../../../services/terceros/terceroService";
 import { searchProductos } from "../../../../../services/producto/productoService";
-import { getMediosPago } from "../../../../../services/venta/ventaService";
 import type { FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../../../../models/Venta";
 
 interface Props {
@@ -31,16 +31,6 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handlePagosChange
   } = useVentasForm(token, initialData);
 
-  const [mediosPago, setMediosPago] = useState<any[]>([]);
-
-  useEffect(() => {
-    getMediosPago().then(res => {
-      if (res.success && res.data) {
-        setMediosPago(res.data);
-      }
-    });
-  }, []);
-
   const addDetalle = () => {
     handleDetallesChange([
       ...formData.detalles,
@@ -56,6 +46,31 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
   const removeDetalle = (index: number) => {
     handleDetallesChange(formData.detalles.filter((_: any, i: number) => i !== index));
+  };
+
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    if (!formData.clienteId) newErrors.clienteId = "El cliente es requerido";
+    if (!formData.fechaElaboracion) newErrors.fechaElaboracion = "La fecha es requerida";
+    
+    formData.detalles.forEach((doc: any, index: number) => {
+      if (!doc.productoId) newErrors[`detalle_${index}_producto`] = "Debe elegir un producto";
+      if (!doc.cantidad || doc.cantidad <= 0) newErrors[`detalle_${index}_cantidad`] = "Cantidad requ.";
+      if (doc.valorUnitario === undefined || doc.valorUnitario < 0) newErrors[`detalle_${index}_valor`] = "Valor req.";
+    });
+
+    if (condicionPago === 'CONTADO' || condicionPago === 'PARCIAL') {
+      (formData.pagos || []).forEach((pago: any, index: number) => {
+        if (!pago.medioPagoCodigo) newErrors[`pago_${index}_medioPago`] = "Requerido";
+        if (!pago.monto || pago.monto <= 0) newErrors[`pago_${index}_monto`] = "Requerido";
+        if (!pago.fechaRecibo && !formData.fechaElaboracion) newErrors[`pago_${index}_fechaRecibo`] = "Requerido";
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const currentTotal = Number(formData.detalles.reduce((acc: number, curr: FacturaDetalleCreateDTO) => {
@@ -155,6 +170,10 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           )}
             <Button 
               onClick={() => {
+                if (!validateForm()) {
+                  setResultModal({ show: true, success: false, message: "Por favor corrija los campos en rojo." });
+                  return;
+                }
                 if (formData.detalles.length === 0) {
                   setResultModal({ show: true, success: false, message: "La factura debe tener al menos un detalle agregado." });
                   return;
@@ -199,6 +218,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 getKey={(c: any) => c.id}
                 onSelect={(c: any) => handleChange({ target: { name: "clienteId", value: c.id } } as any)}
                 required
+                error={errors.clienteId}
               />
 
               <InputField
@@ -218,6 +238,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 icon={Calendar}
                 required
+                error={errors.fechaElaboracion}
               />
             </div>
           </section>
@@ -271,7 +292,6 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             newDetalles[index].productoId = p.id;
                             newDetalles[index].descripcion = p.nombre;
                             newDetalles[index].valorUnitario = p.precios?.[0]?.valor || 0;
-                            // Optionally override amount to 1 on re-select     
                             newDetalles[index].cantidad = 1;
                             newDetalles[index].impuestoCargoNombre = p.impuestoCargoNombre;
                             newDetalles[index].tarifaCargo = p.tarifaCargo;
@@ -279,6 +299,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             newDetalles[index].tarifaRetencion = p.tarifaRetencion;
                             handleDetallesChange(newDetalles);
                           }}
+                          required
+                          error={errors[`detalle_${index}_producto`]}
                         />
                         {(detalle.impuestoCargoNombre || detalle.retencionNombre) && (
                           <div className="flex flex-wrap justify-start gap-2 mt-2 mb-3 px-1">
@@ -321,6 +343,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                           handleDetallesChange(newDetalles);
                         }}
                         required
+                        error={errors[`detalle_${index}_cantidad`]}
                       />
 
                       <InputField
@@ -334,6 +357,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                           handleDetallesChange(newDetalles);
                         }}
                         required
+                        error={errors[`detalle_${index}_valor`]}
                       />
 
                       <InputField
@@ -398,17 +422,16 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <SelectField
+                      <SelectorCuentaPuc
                         label="Medio de Pago"
-                        name="medioPagoCodigo"
+                        codigoRaiz="11"
                         value={pago.medioPagoCodigo}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        onChange={(val) => {
                           const newPagos = [...formData.pagos!];
-                          newPagos[index].medioPagoCodigo = e.target.value;
+                          newPagos[index].medioPagoCodigo = val || "";
                           handlePagosChange(newPagos);
                         }}
-                        options={mediosPago.map(m => ({ id: m.codigo, nombre: `${m.codigo} - ${m.nombre}` }))}
-                        displayExpr={item => item.nombre}
+                        error={errors[`pago_${index}_medioPago`]}
                       />
 
                       <InputField
@@ -424,6 +447,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 disabled={condicionPago === 'CONTADO' && index === 0}
                         required
                         icon={DollarSign}
+                        error={errors[`pago_${index}_monto`]}
                       />
 
                       <InputField
@@ -450,6 +474,7 @@ disabled={condicionPago === 'CONTADO' && index === 0}
                         }}
                         disabled={condicionPago === 'CONTADO' && index === 0}
                         required
+                        error={errors[`pago_${index}_fechaRecibo`]}
                       />
                     </div>
                   </div>

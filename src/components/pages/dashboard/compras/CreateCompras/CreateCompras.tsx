@@ -4,6 +4,7 @@ import { ShoppingCart, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Tr
 import Button from '../../../../common/Button';
 import InputField from '../../../../common/InputField';
 import { AsyncSearchField } from '../../../../common/AsyncSearchField';
+import { SelectorCuentaPuc } from '../../../../common/SelectorCuentaPuc';
 import { buscarTerceros } from '../../../../../services/terceros/terceroService';
 import SelectField from '../../../../common/SelectField';
 import StatusModal from '../../../../common/StatusModal';
@@ -54,6 +55,25 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
     handleDetallesChange(formData.detalles.filter((_: any, i: number) => i !== index));
   };
 
+  const [errors, setErrors] = React.useState<{[key: string]: string}>({});
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    if (!formData.proveedorId) newErrors.proveedorId = "El proveedor es requerido";
+    if (!formData.medioPagoCodigo) newErrors.medioPagoCodigo = "Medio de pago es requerido";
+    if (!formData.fechaElaboracion) newErrors.fechaElaboracion = "La fecha es requerida";
+    
+    formData.detalles.forEach((doc: any, index: number) => {
+      // Si tipoItem === 1 (Producto)
+      if (doc.tipoItem === 1 && !doc.productoId) newErrors[`detalle_${index}_producto`] = "Debe elegir un producto";
+      if (!doc.cantidad || doc.cantidad <= 0) newErrors[`detalle_${index}_cantidad`] = "Cantidad requ.";
+      if (doc.valorUnitario === undefined || doc.valorUnitario < 0) newErrors[`detalle_${index}_valor`] = "Valor req.";
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const itemTypeOptions = [
     { id: 1, label: 'Producto' },
     { id: 2, label: 'Activo Fijo' },
@@ -83,14 +103,9 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
 
       <StatusModal
         show={resultModal.show}
-        onClose={() => {
-          setResultModal({ ...resultModal, show: false });
-          if(resultModal.success) onBack();
-        }}
-        type={resultModal.success ? 'success' : 'error'}
+        success={resultModal.success}
         message={resultModal.message}
-        confirmText="Aceptar"
-        onConfirm={() => {
+        onClose={() => {
           setResultModal({ ...resultModal, show: false });
           if(resultModal.success) onBack();
         }}
@@ -113,6 +128,10 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
           </div>
           <Button
             onClick={() => {
+              if (!validateForm()) {
+                setResultModal({ show: true, success: false, message: 'Por favor corrija los campos en rojo.' });
+                return;
+              }
               if (formData.detalles.length === 0) {
                 setResultModal({ show: true, success: false, message: 'La factura debe tener al menos un detalle agregado.' });
                 return;
@@ -157,6 +176,7 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                 getKey={(c: any) => c.id}
                 onSelect={(c: any) => setProveedorId(c.id)}
                 required
+                error={errors.proveedorId}
               />
 
               <InputField
@@ -167,6 +187,16 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                 onChange={handleChange}
                 icon={Calendar}
                 required
+                error={errors.fechaElaboracion}
+              />
+
+              <SelectorCuentaPuc
+                label="Medio de Pago"
+                codigoRaiz="11"
+                value={formData.medioPagoCodigo || null}
+                onChange={(val) => handleChange({ target: { name: 'medioPagoCodigo', value: val } } as any)}
+                required
+                error={errors.medioPagoCodigo}
               />
             </div>
           </section>
@@ -241,8 +271,12 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                               newDetalles[index].tarifaCargo = p.tarifaCargo;
                               newDetalles[index].retencionNombre = p.retencionNombre;
                               newDetalles[index].tarifaRetencion = p.tarifaRetencion;
+                              newDetalles[index].cuentaContableCodigo = p.cuentaInventarioCodigo || null;
+                              (newDetalles[index] as any).cuentaContableNombre = p.cuentaInventarioNombre || null;
                               handleDetallesChange(newDetalles);
                             }}
+                            required
+                            error={errors[`detalle_${index}_producto`]}
                           />
                         )}
                         {detalle.tipoItem !== 1 && (
@@ -259,6 +293,42 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                           />
                         )}
                         
+                        <div className="mt-3">
+                          {detalle.tipoItem === 1 && (
+                            <InputField
+                              label="Cuenta Contable (Inventario)"
+                              name={`cuenta_${index}`}
+                              value={detalle.cuentaContableCodigo ? `${detalle.cuentaContableCodigo} - ${(detalle as any).cuentaContableNombre || ''}` : '—'}
+                              onChange={() => {}}
+                              disabled
+                            />
+                          )}
+                          {detalle.tipoItem === 2 && (
+                            <SelectorCuentaPuc
+                              label="Cuenta Contable (Activo Fijo)"
+                              codigoRaiz="15"
+                              value={detalle.cuentaContableCodigo || null}
+                              onChange={(val) => {
+                                const newDetalles = [...formData.detalles];
+                                newDetalles[index].cuentaContableCodigo = val;
+                                handleDetallesChange(newDetalles);
+                              }}
+                            />
+                          )}
+                          {detalle.tipoItem === 3 && (
+                            <SelectorCuentaPuc
+                              label="Cuenta Contable (Gasto)"
+                              codigoRaiz="5"
+                              value={detalle.cuentaContableCodigo || null}
+                              onChange={(val) => {
+                                const newDetalles = [...formData.detalles];
+                                newDetalles[index].cuentaContableCodigo = val;
+                                handleDetallesChange(newDetalles);
+                              }}
+                            />
+                          )}
+                        </div>
+
                         {(detalle.impuestoCargoNombre || detalle.retencionNombre) && detalle.tipoItem === 1 && (
                           <div className="flex flex-wrap justify-start gap-2 mt-2 mb-1 px-1">
                             {detalle.impuestoCargoNombre && (
@@ -287,6 +357,8 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="0"
+                          error={errors[`detalle_${index}_cantidad`]}
+                          required
                         />
                         <InputField
                           label="Val. Unitario"
@@ -299,6 +371,8 @@ const CreateCompras: React.FC<Props> = ({ onBack }) => {
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="$ 0"
+                          error={errors[`detalle_${index}_valor`]}
+                          required
                         />
                         <InputField
                           label="% Desc."

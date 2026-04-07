@@ -83,7 +83,7 @@ const ComprasViewerPage: React.FC = () => {
       <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-6">
          
          {/* Encabezado */}
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-6">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Proveedor</p>
                <p className="text-base font-black text-slate-800">{compra.proveedorNombre}</p>
@@ -98,6 +98,10 @@ const ComprasViewerPage: React.FC = () => {
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboración</p>
                <p className="text-sm font-bold text-slate-700">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(compra.fechaElaboracion))}</p>
+            </div>
+            <div>
+               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Medio de Pago</p>
+               <p className="text-sm font-bold text-slate-700 text-indigo-600">{compra.medioPagoCodigo} - {compra.medioPagoNombre || 'N/A'}</p>
             </div>
          </div>
 
@@ -118,6 +122,7 @@ const ComprasViewerPage: React.FC = () => {
                         <thead className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold">
                            <tr>
                               <th className="px-6 py-3">Ítem / Descripción</th>
+                              <th className="px-6 py-3">Cuenta Contable</th>
                               <th className="px-6 py-3 text-center">Cant</th>
                               <th className="px-6 py-3 text-right">V. Unitario</th>
                               <th className="px-6 py-3 text-right">Subtotal</th>
@@ -130,13 +135,16 @@ const ComprasViewerPage: React.FC = () => {
                                    <p className="font-bold">{det.tipoItemNombre}</p>
                                    <p className="text-xs text-slate-500">{det.descripcion || det.productoNombre}</p>
                                  </td>
+                                 <td className="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">
+                                   {det.cuentaContableCodigo ? `${det.cuentaContableCodigo} - ${det.cuentaContableNombre || ''}` : '—'}
+                                 </td>
                                  <td className="px-6 py-4 text-center text-slate-600">{det.cantidad}</td>
                                  <td className="px-6 py-4 text-right text-slate-600">{formatCurrency(det.valorUnitario)}</td>
                                  <td className="px-6 py-4 text-right text-slate-800 font-bold">{formatCurrency(det.valorTotal)}</td>
                               </tr>
                            ))}
                            {(!compra.detalles || compra.detalles.length === 0) && (
-                              <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-400">No hay detalles.</td></tr>
+                              <tr><td colSpan={5} className="px-6 py-8 text-center text-slate-400">No hay detalles.</td></tr>
                            )}
                         </tbody>
                      </table>

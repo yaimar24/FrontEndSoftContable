@@ -1,5 +1,5 @@
 import { apiClient } from "../../api/apiClient";
-import type { PucNodo, PucCreateDTO, PucUpdateDTO } from "../../models/Puc";
+import type { PucNodo, PucCreateDTO, PucUpdateDTO, CuentaPuc } from "../../models/Puc";
 import type { ApiResponse } from "../../models/types/ApiResponse";
 
 export const getPucTree = async (): Promise<ApiResponse<PucNodo[]>> => {
@@ -35,4 +35,23 @@ export const restoreCuentaContable = async (codigo: string): Promise<ApiResponse
     method: "PATCH"
   });
 };
+
+export const getCuentasPuc = async (
+  codigoRaiz: string,
+  soloDetalle: boolean = true,
+  busqueda?: string
+): Promise<ApiResponse<CuentaPuc[]>> => {
+  const params: string[] = [`codigoRaiz=${codigoRaiz}`, `soloDetalle=${soloDetalle}`];
+  if (busqueda) {
+    params.push(`busqueda=${encodeURIComponent(busqueda)}`);
+  }
+  return await apiClient(`/api/Puc/cuentas?${params.join("&")}`);
+};
+
+export const getCuentasIngreso = (b?: string) => getCuentasPuc('41', true, b);
+export const getCuentasCosto = (b?: string) => getCuentasPuc('6', true, b);
+export const getCuentasInventario = (b?: string) => getCuentasPuc('14', true, b);
+export const getCuentasActivoFijo = (b?: string) => getCuentasPuc('15', true, b);
+export const getCuentasGasto = (b?: string) => getCuentasPuc('5', true, b);
+// export const getMediosPago = (b?: string) => getCuentasPuc('11', true, b); // The user says the old ones might continue working, but mentions it as an option. Since ventas uses getMediosPago from ventaService or pucService maybe?, I'll let it be exported just in case.
 
