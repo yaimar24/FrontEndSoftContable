@@ -153,7 +153,7 @@ const PucPage: React.FC = () => {
   };
 
   return (
-    <div className="p-10 max-w-[1600px] mx-auto relative">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto relative">
       {/* Loader global */}
 
       {/* Header */}

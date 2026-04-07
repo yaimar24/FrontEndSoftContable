@@ -16,6 +16,15 @@ export const validators = {
     (value) =>
       value && value.length < len ? msg || `Mínimo ${len} caracteres` : null,
 
+  strongPassword:
+    (msg = "Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&)."): ValidatorFn =>
+    (value) => {
+      if (!value) return null;
+      // Expresión regular para contraseña segura
+      const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return !strongRegex.test(value) ? msg : null;
+    },
+
   onlyNumbers:
     (msg = "Solo números"): ValidatorFn =>
     (value) =>

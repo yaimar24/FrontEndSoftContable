@@ -12,6 +12,7 @@ import { useFilter } from '../../../../hooks/useGenericFilter';
 import CreateCompras from './CreateCompras/CreateCompras';
 import { DocumentViewerModal } from '../../../common/DocumentViewerModal';
 import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
+import PageHeader from "../../../Layout/PageHeader";
 
 const getEstadoInfo = (estado: string | number) => {
   const map: Record<string, { label: string, color: string }> = {
@@ -189,7 +190,7 @@ const ComprasPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
       {loading && <LoadingOverlay message="Procesando..." />}
 
       <StatusModal
@@ -209,33 +210,27 @@ const ComprasPage: React.FC = () => {
         onClose={() => setResultModal({ ...resultModal, show: false })}
       />
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-slate-800 tracking-tighter uppercase flex items-center gap-3">
-            <ShoppingCart className="text-indigo-600" size={28}/> Gestión de Compras
-          </h1>
-          {view === 'lista' && !loading && (
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
-              {compras.length} Facturas registradas
-            </p>
-          )}
-        </div>
-
-        <div className="flex bg-white p-1.5 rounded-3xl border border-slate-200 shadow-sm self-start">
-          <button
-            onClick={() => navigate('/dashboard/factura-compra')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
-          >
-            <FileText size={14} /> Historial de Compras
-          </button>
-          <button
-            onClick={() => navigate('/dashboard/factura-compra?view=formulario')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
-          >
-            <FilePlus size={14} /> Nueva Compra
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Gestión de Compras"
+        subtitle={view === 'lista' && !loading ? `${compras.length} Facturas registradas` : undefined}
+        icon={ShoppingCart}
+        switcher={
+          <>
+            <button
+              onClick={() => navigate('/dashboard/factura-compra')}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              <FileText size={14} /> Historial de Compras
+            </button>
+            <button
+              onClick={() => navigate('/dashboard/factura-compra?view=formulario')}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
+            >
+              <FilePlus size={14} /> Nueva Compra
+            </button>
+          </>
+        }
+      />
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6"> 
         {view === 'lista' ? (

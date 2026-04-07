@@ -48,24 +48,24 @@ const ProductosPage = () => {
   };
 
   return (
-    <div className="p-10 max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
       <PageHeader
         title="Gestión de Productos"
         subtitle={`${productos.length} Ítems en el catálogo`}
         icon={Package}
         switcher={
-          <div className="flex bg-white p-1.5 rounded-[1.5rem] border border-slate-200 shadow-sm">
+          <>
             <button
               onClick={() => setView("lista")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
                 ${
                   view === "lista"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-500 hover:bg-slate-100"
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                    : "text-slate-400 hover:text-slate-600"
                 }`}
             >
               <Layers size={14} />
-              Lista
+              Lista de Productos
             </button>
 
             <button
@@ -73,17 +73,17 @@ const ProductosPage = () => {
                 setSelectedProducto(null); // Asegura que sea un registro nuevo
                 setView("formulario");
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
                 ${
-                  view === "formulario"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-500 hover:bg-slate-100"
+                  view === "formulario" && !selectedProducto
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                    : "text-slate-400 hover:text-slate-600"
                 }`}
             >
               <Plus size={14} />
-              Registrar
+              Registrar Producto
             </button>
-          </div>
+          </>
         }
       />
 

@@ -137,8 +137,20 @@ export function AsyncSearchField<T>({
             error ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-200 focus:ring-blue-500/20 focus:border-blue-500'
           }`}
         />
-        {/* Hidden input to store proper value for form submission, etc if needed */}
-        <input type="hidden" value={value} required={required} />
+        {/* Hidden focusable input to capture proper value for form submission, allowing HTML5 validation tooltips */}
+        <input 
+          type="text" 
+          value={value} 
+          required={required} 
+          onChange={() => {}}
+          className="absolute opacity-0 -z-10 h-0 w-0 bottom-0 left-0" 
+          tabIndex={-1}
+          onFocus={() => {
+            // Give focus back to the visible search input when HTML5 invalidates this field
+            const visible = wrapperRef.current?.querySelector('input:not(.opacity-0)') as HTMLInputElement;
+            visible?.focus();
+          }}
+        />
       </div>
 
       {isOpen && (

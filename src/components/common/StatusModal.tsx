@@ -109,10 +109,11 @@ const StatusModal: React.FC<StatusModalProps> = ({
         <div className={`flex flex-col gap-2 transition-all duration-700 delay-700 ${isAnimate ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
           
           {/* Botón de Acción Principal */}
-          <Button 
-            variant={theme.btnVariant} 
-            onClick={onConfirm || onClose} 
-            fullWidth 
+          <Button
+            type="button"
+            variant={theme.btnVariant}
+            onClick={onConfirm || onClose}
+            fullWidth
             className="py-5 rounded-[2rem] shadow-xl shadow-blue-100"
           >
             {onConfirm ? confirmText : "Entendido"}
@@ -120,8 +121,9 @@ const StatusModal: React.FC<StatusModalProps> = ({
           
           {/* Botón de Acción Secundaria (Solo en Confirmación) */}
           {onConfirm && (
-            <Button 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={onClose}
               fullWidth
               className="border-none bg-transparent text-slate-400 hover:text-slate-600 shadow-none py-2 text-[10px] uppercase tracking-widest font-black"

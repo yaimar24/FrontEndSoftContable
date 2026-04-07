@@ -35,7 +35,13 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   } = useProductosForm(initialData);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+    <form 
+      onSubmit={(e) => {
+        e.preventDefault();
+        setShowConfirm(true);
+      }}
+      className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500"
+    >
       <StatusModal
         show={showConfirm}
         type="confirm"
@@ -62,6 +68,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
       <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={onBack}
             className="p-2 hover:bg-slate-50 rounded-full transition-colors"
           >
@@ -72,7 +79,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             {isEditing ? "Editar Producto" : "Nuevo Producto"}
           </h1>
         </div>
-        <Button onClick={() => setShowConfirm(true)} icon={Save}>
+        <Button type="submit" icon={Save}>
           {isEditing ? "Actualizar" : "Guardar"}
         </Button>
       </div>
@@ -101,6 +108,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.sku}
                 onChange={handleChange}
                 icon={Tag}
+                required
               />
               <SelectField
                 label="Categoría"
@@ -109,6 +117,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.categorias || []}
                 displayExpr={(c) => c.nombre}
+                required
               />
 
               
@@ -153,6 +162,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaIngresoCodigo || null}
                 displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
+                required
               />
               <SelectorCuentaPuc
                 label="Cuenta de Costo"
@@ -160,6 +170,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaCostoCodigo || null}
                 displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
+                required
               />
               <SelectorCuentaPuc
                 label="Cuenta de Inventario"
@@ -167,6 +178,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaInventarioCodigo || null}
                 displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
+                required
               />
             </div>
           </section>
@@ -187,6 +199,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.impuestos || []}
                 displayExpr={(i) => i.nombre}
+                required
               />
               <SelectField
                 label="Retención Sugerida"
@@ -204,12 +217,13 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.unidadesMedida || []}
                 displayExpr={(u) => u.nombre}
+                required
               />
             </div>
           </section>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
