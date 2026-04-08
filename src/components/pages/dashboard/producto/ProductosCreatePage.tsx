@@ -34,12 +34,36 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handleConfirmSave,
   } = useProductosForm(initialData);
 
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    if (!formData.nombre?.trim()) newErrors.nombre = "Requerido";
+    if (!formData.sku?.trim()) newErrors.sku = "Requerido";
+    if (!formData.categoriaId) newErrors.categoriaId = "Requerido";
+    if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
+      newErrors.valor = "Requerido";
+    }
+    if (!formData.cuentaIngresoCodigo) newErrors.cuentaIngresoCodigo = "Requerido";
+    if (!formData.cuentaCostoCodigo) newErrors.cuentaCostoCodigo = "Requerido";
+    if (!formData.cuentaInventarioCodigo) newErrors.cuentaInventarioCodigo = "Requerido";
+    if (!formData.impuestoCargoId) newErrors.impuestoCargoId = "Requerido";
+    if (!formData.unidadMedidaDianId) newErrors.unidadMedidaDianId = "Requerido";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
+    setShowConfirm(true);
+  };
+
   return (
     <form 
-      onSubmit={(e) => {
-        e.preventDefault();
-        setShowConfirm(true);
-      }}
+      onSubmit={handleSubmit}
+      noValidate
       className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500"
     >
       <StatusModal
@@ -100,6 +124,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                   onChange={handleChange}
                   icon={Package}
                   required
+                  error={errors.nombre}
                 />
               </div>
               <InputField
@@ -109,6 +134,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 icon={Tag}
                 required
+                error={errors.sku}
               />
               <SelectField
                 label="Categoría"
@@ -118,6 +144,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 options={parametros?.categorias || []}
                 displayExpr={(c) => c.nombre}
                 required
+                error={errors.categoriaId}
               />
 
               
@@ -147,6 +174,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 }}
                 icon={DollarSign}
                 required
+                error={errors.valor}
               />
             </div>
           </section>
@@ -163,6 +191,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
                 required
+                error={errors.cuentaIngresoCodigo}
               />
               <SelectorCuentaPuc
                 label="Cuenta de Costo"
@@ -171,6 +200,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
                 required
+                error={errors.cuentaCostoCodigo}
               />
               <SelectorCuentaPuc
                 label="Cuenta de Inventario"
@@ -179,6 +209,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
                 required
+                error={errors.cuentaInventarioCodigo}
               />
             </div>
           </section>
@@ -200,6 +231,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 options={parametros?.impuestos || []}
                 displayExpr={(i) => i.nombre}
                 required
+                error={errors.impuestoCargoId}
               />
               <SelectField
                 label="Retención Sugerida"
@@ -218,6 +250,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 options={parametros?.unidadesMedida || []}
                 displayExpr={(u) => u.nombre}
                 required
+                error={errors.unidadMedidaDianId}
               />
             </div>
           </section>
