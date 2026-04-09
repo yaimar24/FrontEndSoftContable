@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Calculator, Users, ShoppingCart, ShoppingBag, Package, Building2, TrendingUp, TrendingDown, ArrowRight, Activity, Wallet, FileText } from 'lucide-react';
+import { Calculator, Users, ShoppingCart, ShoppingBag, Package, Building2, TrendingUp, TrendingDown, Activity, Wallet, FileText } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../utils/jwt';
 import { motion } from 'framer-motion';
