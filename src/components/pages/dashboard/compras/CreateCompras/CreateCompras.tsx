@@ -1,6 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash } from 'lucide-react';
+import { ShoppingCart, Save, ArrowLeft, Tags, Calendar, FileText, Plus, Trash2, Hash } from 'lucide-react';
 import Button from '../../../../common/Button';
 import InputField from '../../../../common/InputField';
 import { AsyncSearchField } from '../../../../common/AsyncSearchField';
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
-  const navigate = useNavigate();
   const {
     formData,
     numeroDisplay,

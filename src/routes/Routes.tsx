@@ -14,13 +14,12 @@ import ReciboCajaViewer from "../components/pages/dashboard/ventas/recibos/Recib
 import ProductosPage from "../components/pages/dashboard/producto/ProductosPage";
 import DashboardHome from "../components/pages/dashboard/DashboardHome";
 import ComprasPage from "../components/pages/dashboard/compras/ComprasPage";
-import CreateCompras from "../components/pages/dashboard/compras/CreateCompras/CreateCompras";
 import ComprasViewerPage from "../components/pages/dashboard/compras/ComprasViewerPage";
 import CompraPrintPage from "../components/pages/dashboard/compras/CompraPrintPage";
 const AppRoutes = () => (
   <Router>
     <Routes>
-      {/* RUTAS PÚBLICAS */}
+      {/* RUTAS Pï¿½BLICAS */}
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
 
@@ -38,10 +37,10 @@ const AppRoutes = () => (
           <Route path="ventas/:id" element={<VentasViewerPage />} />          <Route path="factura-compra" element={<ComprasPage />} />
           <Route path="factura-compra/:id" element={<ComprasViewerPage />} />          <Route path="productos" element={<ProductosPage />} />
         </Route>
-        {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
+        {/* RUTA DE SOLO IMPRESIï¿½N EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />
         <Route path="/purchase-invoice/:id" element={<CompraPrintPage />} />      </Route>
-      {/* REDIRECCIÓN GLOBAL */}
+      {/* REDIRECCIï¿½N GLOBAL */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   </Router>

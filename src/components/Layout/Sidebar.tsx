@@ -10,13 +10,11 @@ import {
   FolderTree,
   Users,
   ShoppingBag,
-  ShoppingCart,
   Receipt,
   Package,
   HelpCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Button from "../common/Button";
 import AuthContext from "../../context/AuthContext";
 import StatusModal from "../common/StatusModal";
 import { useTutorial } from "../../context/TutorialContext";

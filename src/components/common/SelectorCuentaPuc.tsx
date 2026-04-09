@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AsyncSearchField } from './AsyncSearchField';
 import { getCuentasPuc } from '../../services/puc/pucService';
 import type { CuentaPuc } from '../../models/Puc';
-import { BookMarked } from 'lucide-react';
 
 interface SelectorCuentaPucProps {
   label: string;

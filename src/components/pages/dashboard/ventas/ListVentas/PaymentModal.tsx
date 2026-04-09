@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, DollarSign, Calendar, Target, AlignLeft } from 'lucide-react';
+import { DollarSign, Calendar, Target, AlignLeft } from 'lucide-react';
 import Modal from '../../../../common/Modal';
 import InputField from '../../../../common/InputField';
 import { SelectorCuentaPuc } from '../../../../common/SelectorCuentaPuc';
 import Button from '../../../../common/Button';
 import { registrarPago } from '../../../../../services/venta/ventaService';
 import type { FacturaVentaReadDTO } from '../../../../../models/Venta';
-import type { PucNodo } from '../../../../../models/Puc';
 import StatusModal from '../../../../common/StatusModal';
 
 interface PaymentModalProps {
