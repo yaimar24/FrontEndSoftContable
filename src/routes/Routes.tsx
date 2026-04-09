@@ -1,4 +1,4 @@
-ï»¿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "../components/pages/dashboard/Dashboard";
 import LoginForm from "../components/pages/login/LoginForm";
 import ProtectedRoute from "./ProtectedRoute"; // Importa el protector
@@ -20,7 +20,7 @@ import CompraPrintPage from "../components/pages/dashboard/compras/CompraPrintPa
 const AppRoutes = () => (
   <Router>
     <Routes>
-      {/* RUTAS PÃšBLICAS */}
+      {/* RUTAS PÚBLICAS */}
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
 
@@ -38,10 +38,10 @@ const AppRoutes = () => (
           <Route path="ventas/:id" element={<VentasViewerPage />} />          <Route path="factura-compra" element={<ComprasPage />} />
           <Route path="factura-compra/:id" element={<ComprasViewerPage />} />          <Route path="productos" element={<ProductosPage />} />
         </Route>
-        {/* RUTA DE SOLO IMPRESIÃ“N EXTERNA AL LAYOUT DEL DASHBOARD */}
+        {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />
         <Route path="/purchase-invoice/:id" element={<CompraPrintPage />} />      </Route>
-      {/* REDIRECCIÃ“N GLOBAL */}
+      {/* REDIRECCIÓN GLOBAL */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   </Router>

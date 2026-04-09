@@ -115,7 +115,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
         }}
       />
 
-      <div className="flex justify-between items-center bg-white p-6 rounded-4xl shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-compra-sticky-header flex justify-between items-center bg-white p-6 rounded-4xl shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors" title="Volver">
             <ArrowLeft size={24} className="text-slate-400" />
@@ -151,7 +151,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-compra-encabezado bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <FileText size={18} className="text-indigo-500" /> Datos de Encabezado
             </h3>
@@ -206,7 +206,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-compra-detalle bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Tags size={18} className="text-emerald-500" /> Líneas de Detalle

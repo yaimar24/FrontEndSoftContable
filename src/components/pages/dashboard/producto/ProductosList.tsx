@@ -91,7 +91,7 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+      <div className="tuto-productos-export flex flex-col lg:flex-row justify-between items-center gap-4">
         {/* Espacio para FilterGroup si lo necesitas, igual que en Terceros */}
         <div className="flex-1" /> 
         
@@ -101,9 +101,11 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
         />
       </div>
 
-      <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o código  De referencia" />
+      <div className="tuto-productos-search">
+        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o código  De referencia" />
+      </div>
 
-      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-productos-table bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
     </div>

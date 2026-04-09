@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Calculator, Users, ShoppingCart, ShoppingBag, Package, Building2, TrendingUp, TrendingDown, ArrowRight, Activity, Wallet, FileText, Loader2 } from 'lucide-react';
+import { Calculator, Users, ShoppingCart, ShoppingBag, Package, Building2, TrendingUp, TrendingDown, ArrowRight, Activity, Wallet, FileText } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../utils/jwt';
 import { motion } from 'framer-motion';
 import { getDashboardDatos, type DashboardDTO } from '../../../services/dashboard/dashboardService';
 import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip } from 'recharts';
+import LoadingOverlay from '../../shared/LoadingOverlay';
 
 const formatCurrency = (val: number) => 
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
@@ -66,11 +67,7 @@ const DashboardHome = () => {
   };
 
   if (loading) {
-     return (
-        <div className="w-full h-full min-h-screen bg-slate-50 flex items-center justify-center">
-            <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-        </div>
-     );
+     return <LoadingOverlay message="Cargando dashboard..." />;
   }
 
   const d = data!;
@@ -83,7 +80,7 @@ const DashboardHome = () => {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200"
+          className="tuto-dash-header flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200"
         >
           <div className="flex items-center gap-6">
             <div className="relative">
@@ -117,7 +114,7 @@ const DashboardHome = () => {
           {/* Top Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Ventas Mes */}
-            <motion.div variants={itemVariants} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+            <motion.div variants={itemVariants} className="tuto-dash-ventas bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
                 <TrendingUp size={120} />
               </div>
@@ -132,7 +129,7 @@ const DashboardHome = () => {
             </motion.div>
 
             {/* Compras Mes */}
-            <motion.div variants={itemVariants} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+            <motion.div variants={itemVariants} className="tuto-dash-compras bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
                 <TrendingDown size={120} />
               </div>

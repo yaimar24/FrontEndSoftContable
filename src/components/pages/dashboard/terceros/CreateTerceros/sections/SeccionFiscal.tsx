@@ -26,7 +26,7 @@ export const SeccionFiscal: React.FC<Props> = ({
   const selectedIds = formData.responsabilidadesFiscalesIds || [];
 
   return (
-    <section className="lg:col-span-3 bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-8 shadow-sm">
+    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-8 shadow-sm">
       <div className="flex flex-col gap-1">
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
           <Globe size={14} className="text-blue-600" /> Datos Tributarios y Facturación
@@ -41,7 +41,6 @@ export const SeccionFiscal: React.FC<Props> = ({
           onChange={onChange}
           error={errors.correoFacturacion}
           icon={Mail}
-          required
         />
 
         <InputField
@@ -53,7 +52,6 @@ export const SeccionFiscal: React.FC<Props> = ({
           placeholder="000000"
           onlyNumbers
           icon={MapPin}
-          required
         />
 
         <SelectField

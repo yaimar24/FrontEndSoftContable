@@ -13,6 +13,7 @@ import CreateCompras from './CreateCompras/CreateCompras';
 import { DocumentViewerModal } from '../../../common/DocumentViewerModal';
 import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import PageHeader from "../../../Layout/PageHeader";
+import { useTutorial } from '../../../../context/TutorialContext';
 
 const getEstadoInfo = (estado: string | number) => {
   const map: Record<string, { label: string, color: string }> = {
@@ -50,14 +51,52 @@ const ComprasPage: React.FC = () => {
   const { searchTerm, setSearchTerm, filteredData } = useFilter(compras, {
     searchFields: ["numero", "proveedorNombre"],
   });
+  
+  const { setSteps } = useTutorial();
 
   useEffect(() => {
     if (view === 'lista') {
+      setSteps([
+        {
+          target: '.tuto-header',
+          content: 'Este es el módulo de Compras. Desde aquí puedes gestionar todas las facturas de compra de tu institución.',
+        },
+        {
+          target: '.tuto-switch-history',
+          content: 'Visualiza el historial completo de compras registradas.',
+        },
+        {
+          target: '.tuto-switch-new',
+          content: 'Registra una nueva factura de compra a un proveedor.',
+        },
+        {
+          target: '.tuto-search',
+          content: 'Busca facturas por número o nombre del proveedor.',
+        },
+        {
+          target: '.tuto-table',
+          content: 'Listado de compras con acciones: editar (borradores), registrar (confirmar), anular, vista previa PDF y ver detalles.',
+        }
+      ]);
       fetchCompras();
     } else {
+      setSteps([
+        {
+          target: '.tuto-compra-sticky-header',
+          content: 'Barra superior fija: aquí ves el total estimado y el botón para guardar la factura.',
+        },
+        {
+          target: '.tuto-compra-encabezado',
+          content: 'Rellena los datos básicos: número de compra, proveedor, fecha y medio de pago.',
+        },
+        {
+          target: '.tuto-compra-detalle',
+          content: 'Agrega los ítems de la compra. Puedes elegir entre productos, activos fijos o gastos, y asignar las cuentas contables correspondientes.',
+        }
+      ]);
       setLoading(false);
     }
-  }, [view]);
+  }, [view, setSteps]);
 
   const fetchCompras = async () => {
     try {
@@ -210,36 +249,40 @@ const ComprasPage: React.FC = () => {
         onClose={() => setResultModal({ ...resultModal, show: false })}
       />
 
-      <PageHeader
-        title="Gestión de Compras"
-        subtitle={view === 'lista' && !loading ? `${compras.length} Facturas registradas` : undefined}
-        icon={ShoppingCart}
-        switcher={
-          <>
-            <button
-              onClick={() => navigate('/dashboard/factura-compra')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              <FileText size={14} /> Historial de Compras
-            </button>
-            <button
-              onClick={() => navigate('/dashboard/factura-compra?view=formulario')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
-            >
-              <FilePlus size={14} /> Nueva Compra
-            </button>
-          </>
-        }
-      />
+      <div className="tuto-header">
+        <PageHeader
+          title="Gestión de Compras"
+          subtitle={view === 'lista' && !loading ? `${compras.length} Facturas registradas` : undefined}
+          icon={ShoppingCart}
+          switcher={
+            <>
+              <button
+                onClick={() => navigate('/dashboard/factura-compra')}
+                className={`tuto-switch-history flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'lista' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                <FileText size={14} /> Historial de Compras
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/factura-compra?view=formulario')}
+                className={`tuto-switch-new flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all ${view === 'formulario' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-400 hover:text-slate-600'}`}       
+              >
+                <FilePlus size={14} /> Nueva Compra
+              </button>
+            </>
+          }
+        />
+      </div>
 
-      <main className="animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6"> 
+      <main className="tuto-form-container animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6"> 
         {view === 'lista' ? (
           <>
             {error && <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold">{error}</div>}
 
-            <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+            <div className="tuto-search">
+              <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+            </div>
 
-            <div className="bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+            <div className="tuto-table bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
               <Table columns={columns} data={filteredData} />
             </div>
           </>

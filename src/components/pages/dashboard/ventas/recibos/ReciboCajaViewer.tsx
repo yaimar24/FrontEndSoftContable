@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getReciboCajaById } from "../../../../../services/venta/ventaService";
 import type { ReciboCajaRead } from "../../../../../models/Venta";
@@ -44,7 +44,7 @@ export const ReciboCajaViewer = () => {
       <div className="print:hidden">
         <PageHeader 
           title="Detalle de Recibo de Caja" 
-          subtitle="PrevisualizaciÃ³n del comprobante de pago" 
+          subtitle="Previsualización del comprobante de pago" 
           actions={
             <Button
               variant="primary"
@@ -96,7 +96,7 @@ export const ReciboCajaViewer = () => {
 
             <div className="space-y-4 md:border-l-2 border-slate-100 md:pl-8">
               <div>
-                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de OperaciÃ³n</p>
+                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de Operación</p>
                 <span className={`inline-block px-3 py-1 font-black text-xs uppercase border rounded-lg ${recibo.esAbono ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                   {recibo.esAbono ? 'ABONO' : 'PAGO TOTAL'}
                 </span>

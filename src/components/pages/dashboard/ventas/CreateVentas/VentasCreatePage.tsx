@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Receipt, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash, Wallet, DollarSign } from "lucide-react";
 import Button from "../../../../common/Button";
 import StatusModal from "../../../../common/StatusModal";
@@ -141,7 +141,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         }}
       />
 
-      <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-ventas-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors" title="Volver">    
             <ArrowLeft size={24} className="text-slate-400" />
@@ -189,7 +189,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-ventas-encabezado bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <FileText size={18} className="text-blue-500" /> Datos de Encabezado
             </h3>
@@ -244,7 +244,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-ventas-detalle bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Tags size={18} className="text-emerald-500" /> Líneas de Detalle
@@ -388,7 +388,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
 
           {/* Sección de Medios de Pago */}
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+          <section className="tuto-ventas-pagos bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Wallet size={18} className="text-blue-500" /> Condición y Medio de Pago

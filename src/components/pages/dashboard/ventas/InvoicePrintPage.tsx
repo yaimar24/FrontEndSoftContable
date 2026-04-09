@@ -1,4 +1,4 @@
-ï»¿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowLeft, Printer, Download } from "lucide-react";
 import { getVentaById } from "../../../../services/venta/ventaService";
@@ -49,7 +49,7 @@ const InvoicePrintPage: React.FC = () => {
   if (!factura) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontrÃ³ la factura</h2>
+        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontró la factura</h2>
       </div>
     );
   }
@@ -59,7 +59,7 @@ const InvoicePrintPage: React.FC = () => {
       {/* Header bar (no printable) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm print:hidden sticky top-0 z-50">
         <Button variant="outline" onClick={() => window.close()} icon={ArrowLeft}>
-          Cerrar PestaÃ±a
+          Cerrar Pestaña
         </Button>
         <h1 className="text-sm font-black text-slate-700 uppercase tracking-widest hidden md:block">
           Factura #{factura.numero}

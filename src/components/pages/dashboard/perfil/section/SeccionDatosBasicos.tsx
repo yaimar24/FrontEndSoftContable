@@ -51,12 +51,12 @@ export const SeccionDatosBasicos = ({ formData, ciudades, onChange }: any) => {
         </div>
       </div>
 
-      <InputField label="Nombre Instituci�n" name="nombreColegio" value={formData.nombreColegio || ""} onChange={onChange} icon={Building2} />
+      <InputField label="Nombre Institución" name="nombreColegio" value={formData.nombreColegio || ""} onChange={onChange} icon={Building2} />
       <div className="grid grid-cols-2 gap-4">
         <InputField label="NIT" name="nit" value={formData.nit || ""} onChange={onChange} icon={Hash} onlyNumbers />
-        <InputField label="Tel�fono" name="telefono" value={formData.telefono || ""} onChange={onChange} icon={Phone} />
+        <InputField label="Teléfono" name="telefono" value={formData.telefono || ""} onChange={onChange} icon={Phone} />
       </div>
-      <InputField label="Direcci�n" name="direccion" value={formData.direccion || ""} onChange={onChange} icon={MapPin} />
+      <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={onChange} icon={MapPin} />
       <SelectField
         label="Ciudad" name="ciudadId" value={formData.ciudadId} onChange={onChange}
         options={ciudades || []} displayExpr={(c: Ciudad) => c.nombre} placeholder="Seleccionar ciudad"

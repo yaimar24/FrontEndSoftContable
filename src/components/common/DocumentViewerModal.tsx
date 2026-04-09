@@ -1,4 +1,4 @@
-﻿import React, { useRef } from "react";
+import React, { useRef } from "react";
 import type { ReactNode } from "react";
 import { X, FileText, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

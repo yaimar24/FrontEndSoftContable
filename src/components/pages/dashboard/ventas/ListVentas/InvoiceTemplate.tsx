@@ -1,4 +1,4 @@
-Ôªøimport React from 'react';
+import React from 'react';
 import type { FacturaVentaReadDTO } from '../../../../../models/Venta';
 import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../../../utils/jwt';
 import { useAuth } from '../../../../../hooks/useAuth';
@@ -20,7 +20,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
     console.error("Error parsing perfil", e);
   }
 
-  const nombreColegio = perfil?.nombreColegio || getNombreColegioFromToken(token) || "Mi Instituci√≥n";   
+  const nombreColegio = perfil?.nombreColegio || getNombreColegioFromToken(token) || "Mi InstituciÛn";   
   const nitColegio = perfil?.nit || perfil?.identificacion || 'N/A';
   const telefonoColegio = perfil?.telefono || 'N/A';
   const direccionColegio = perfil?.direccion || 'N/A';
@@ -69,13 +69,13 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
           )}
           <h1 className="text-xl font-black text-blue-900 uppercase tracking-wider">{nombreColegio}</h1>
           <p className="text-xs text-slate-500 font-medium">NIT: {nitColegio}</p>
-          <p className="text-xs text-slate-500 font-medium">Tel√©fono: {telefonoColegio} | Dir: {direccionColegio}</p>
+          <p className="text-xs text-slate-500 font-medium">TelÈfono: {telefonoColegio} | Dir: {direccionColegio}</p>
         </div>
 
         <div className="text-right">
           <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tighter mb-2">VENTA</h2>
           <div className="inline-block bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg text-left">
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">VENTA N¬∞</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">VENTA N∞</p>
             <p className="text-lg font-black text-blue-600">{factura.numero}</p>
           </div>
         </div>
@@ -87,12 +87,12 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
           <h3 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4 border-b border-slate-200 pb-2">Facturar A</h3>
           <p className="font-black text-base text-slate-800 mb-1">{factura.clienteNombre}</p>
           <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">ID / NIT:</span> {factura.clienteId}</p>
-          <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">Tel√©fono:</span> {factura.clienteTelefono || 'N/A'}</p>
-          <p className="text-xs text-slate-600 font-medium"><span className="text-slate-400">Direcci√≥n:</span> {factura.clienteDireccion || 'N/A'}</p>        </div>
+          <p className="text-xs text-slate-600 font-medium mb-1"><span className="text-slate-400">TelÈfono:</span> {factura.clienteTelefono || 'N/A'}</p>
+          <p className="text-xs text-slate-600 font-medium"><span className="text-slate-400">DirecciÛn:</span> {factura.clienteDireccion || 'N/A'}</p>        </div>
 
         <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex flex-col justify-center">
           <div className="grid grid-cols-2 gap-y-4">            <div>
-              <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Fecha Expedici√≥n</p>
+              <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Fecha ExpediciÛn</p>
               <p className="text-xs font-bold text-slate-800">{formatDate(factura.fechaElaboracion)}</p>
             </div>
             <div>
@@ -103,8 +103,8 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Medio de Pago</p>
                 <p className="text-xs font-bold text-slate-800">
                   {factura.recibos && factura.recibos.length > 0
-                    ? (factura.recibos.length > 1 ? "M√∫ltiples (Dividido)" : factura.recibos[0].medioPagoNombre || factura.recibos[0].medioPagoCodigo)
-                    : "A Cr√©dito / Pendiente"}
+                    ? (factura.recibos.length > 1 ? "M˙ltiples (Dividido)" : factura.recibos[0].medioPagoNombre || factura.recibos[0].medioPagoCodigo)
+                    : "A CrÈdito / Pendiente"}
                 </p>
             </div>
           </div>
@@ -116,12 +116,12 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
         <table className="w-full text-left border-collapse">
           <thead className="bg-[#1e3a8a] text-white">
             <tr>
-              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest w-[10%]">√çtem</th>
-              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest w-[30%]">Descripci√≥n</th>
+              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest w-[10%]">Õtem</th>
+              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest w-[30%]">DescripciÛn</th>
               <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-center border-l border-blue-800/50 w-[8%]">Cant.</th>
               <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-right border-l border-blue-800/50 w-[15%]">V. Unitario</th>
               <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-center border-l border-blue-800/50 w-[10%]">Cargo</th>
-              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-center border-l border-blue-800/50 w-[10%]">Retenci√≥n</th>
+              <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-center border-l border-blue-800/50 w-[10%]">RetenciÛn</th>
               <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-right border-l border-blue-800/50 w-[17%]">V. Total</th>
             </tr>
           </thead>

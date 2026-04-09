@@ -142,8 +142,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 <Button type="button" variant="outline" fullWidth onClick={onClose} disabled={loading}>
                     Cancelar
                 </Button>
-                <Button type="submit" variant="primary" fullWidth disabled={loading}>
-                    {loading ? 'Procesando...' : 'Confirmar Pago'}
+                <Button type="submit" variant="primary" fullWidth isLoading={loading}>
+                    Confirmar Pago
                 </Button>
             </div>
         </form>
