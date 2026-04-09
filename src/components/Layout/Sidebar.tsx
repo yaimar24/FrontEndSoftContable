@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   User,
@@ -11,11 +11,15 @@ import {
   Users,
   ShoppingBag,
   ShoppingCart,
+  Receipt,
+  Package,
+  HelpCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../common/Button";
 import AuthContext from "../../context/AuthContext";
 import StatusModal from "../common/StatusModal";
+import { useTutorial } from "../../context/TutorialContext";
 
 interface SidebarProps {
   nombreColegio: string | null;
@@ -27,36 +31,40 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     return path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
   };
   const displayLogoUrl = getFullUrl(logoUrl);
-  // isCollapsed controla el estado visual (ancho)
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  // isManuallyClosed rastrea si el usuario usó el botón para cerrarlo
-  const [isManuallyClosed, setIsManuallyClosed] = useState(false);
+  // isPinned determina si la barra de navegación se mantiene desplegada y fija.
+  // isHovered detecta si el ratón está encima para expandir temporalmente.
+  const [isPinned, setIsPinned] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isCollapsed = !isPinned && !isHovered;
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { startTutorial, stopTutorial } = useTutorial();
+
+  const isDashboardHome = location.pathname === '/dashboard';
+
+  // Detener tutorial al cambiar de ruta
+  useEffect(() => {
+    stopTutorial();
+  }, [location.pathname, stopTutorial]);
 
   // --- LÓGICA DE EXPANSIÓN POR HOVER ---
 
   const handleMouseEnter = () => {
-    // Si estaba colapsado (ya sea manual o por defecto), lo abrimos al entrar
-    if (isCollapsed) {
-      setIsCollapsed(false);
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    // Si el usuario lo había cerrado manualmente, lo volvemos a colapsar al salir
-    if (isManuallyClosed) {
-      setIsCollapsed(true);
-    }
+    setIsHovered(false);
   };
 
   const toggleCollapse = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    setIsManuallyClosed(newState); // Registramos que el usuario tomó acción manual
+    setIsPinned(!isPinned);
   };
 
   // --- LÓGICA DE CIERRE DE SESIÓN ---
@@ -91,7 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
     { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
     { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag },
-    { path: "/dashboard/productos", name: "Productos", icon:  ShoppingCart },
+    { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt  },
+    { path: "/dashboard/productos", name: "Productos", icon:  Package  },   
   ];
 
   return (
@@ -109,9 +118,9 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
         {/* BOTÓN COLAPSAR (MANUAL) */}
         <button
           onClick={toggleCollapse}
-          className="absolute -right-3 top-12 bg-white border border-slate-100 rounded-full p-1.5 shadow-md hover:scale-110 transition-transform text-slate-400 hover:text-blue-600 z-50"
+          className="tuto-collapse absolute -right-3 top-12 bg-white border border-slate-100 rounded-full p-1.5 shadow-md hover:scale-110 transition-transform text-slate-400 hover:text-blue-600 z-50"
         >
-          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          {!isPinned ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
 
         {/* HEADER: LOGO */}
@@ -159,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
         </div>
 
         {/* NAVEGACIÓN */}
-        <nav className="flex-1 px-4 py-4 space-y-1">
+        <nav className="tuto-menu flex-1 px-4 py-4 space-y-1">
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
@@ -197,19 +206,57 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
           ))}
         </nav>
 
-        {/* FOOTER: BOTÓN DE LOGOUT */}
-        <div className="p-4 border-t border-slate-50">
-          <Button
-            variant="danger"
-            fullWidth
-            isLoading={isLoggingOut}
-            loadingText={isCollapsed ? "" : "Saliendo..."}
-            icon={LogOut}
-            onClick={handleLogoutIntent}
-            className={isCollapsed ? "px-0 justify-center h-12" : "h-12"}
+        {/* FOOTER: BOTÓN DE AYUDA Y LOGOUT */}
+        <div className="p-4 border-t border-slate-100 mt-auto space-y-2">
+          {/* BOTÓN DE AYUDA */}
+          {!isDashboardHome && (
+          <button
+            onClick={startTutorial}
+            className={`tuto-help w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-2xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all font-bold group relative`}
           >
-            {!isCollapsed && "Finalizar sesión"}
-          </Button>
+            <HelpCircle size={22} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
+            {!isCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-[13px] uppercase tracking-widest whitespace-nowrap"
+              >
+                Ayuda / Tutorial
+              </motion.span>
+            )}
+            
+            {/* Tooltip para estado colapsado */}
+            {isCollapsed && (
+              <div className="absolute left-16 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 font-medium tracking-normal">
+                Ayuda / Tutorial
+              </div>
+            )}
+          </button>
+          )}
+        
+          <button
+            onClick={handleLogoutIntent}
+            disabled={isLoggingOut}
+            className={`tuto-logout w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-2xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all font-bold group relative`}
+          >
+            <LogOut size={22} strokeWidth={2.5} className="group-hover:-translate-x-1 transition-transform" />
+            {!isCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-[13px] uppercase tracking-widest whitespace-nowrap"
+              >
+                {isLoggingOut ? "Saliendo..." : "Cerrar sesión"}
+              </motion.span>
+            )}
+            
+            {/* Tooltip para estado colapsado */}
+            {isCollapsed && (
+              <div className="absolute left-16 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 font-medium tracking-normal">
+                {isLoggingOut ? "Saliendo..." : "Cerrar sesión"}
+              </div>
+            )}
+          </button>
         </div>
       </motion.aside>
 

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRecibosCaja } from "../../../../../services/venta/ventaService";
 import type { ReciboCajaRead } from "../../../../../models/Venta";
@@ -93,7 +93,7 @@ export const RecibosList = () => {
     {
       header: "Referencia",
       render: (v: ReciboCajaRead) => (
-        <span className="text-[10px] text-slate-500">{v.referencia || "—"}</span>
+        <span className="text-[10px] text-slate-500">{v.referencia || "�"}</span>
       )
     },
     {

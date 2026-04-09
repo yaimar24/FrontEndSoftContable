@@ -50,7 +50,7 @@ const PucItem: React.FC<Props> = ({ nodo, onAddChild, onEditNode, onDeleteNode, 
           {!nodo.esDetalle && (
             <button
               onClick={(e) => { e.stopPropagation(); onAddChild({ codigo: nodo.codigo, nombre: nodo.nombre }, nodo.hijos); }}
-              title="A�adir sub-cuenta"
+              title="Añadir sub-cuenta"
               className="p-2 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 hover:scale-110 transition-all flex items-center justify-center"
             >
               <Plus size={14} />

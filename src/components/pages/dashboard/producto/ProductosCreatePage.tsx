@@ -7,11 +7,13 @@ import {
   ShieldCheck,
   DollarSign,
   Box,
+  BookMarked,
 } from "lucide-react";
 import Button from "../../../common/Button";
 import StatusModal from "../../../common/StatusModal";
 import InputField from "../../../common/InputField";
 import SelectField from "../../../common/SelectField";
+import { SelectorCuentaPuc } from "../../../common/SelectorCuentaPuc";
 import { useProductosForm } from "../../../../hooks/useProductosForm";
 
 interface Props {
@@ -32,8 +34,38 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handleConfirmSave,
   } = useProductosForm(initialData);
 
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    if (!formData.nombre?.trim()) newErrors.nombre = "Requerido";
+    if (!formData.sku?.trim()) newErrors.sku = "Requerido";
+    if (!formData.categoriaId) newErrors.categoriaId = "Requerido";
+    if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
+      newErrors.valor = "Requerido";
+    }
+    if (!formData.cuentaIngresoCodigo) newErrors.cuentaIngresoCodigo = "Requerido";
+    if (!formData.cuentaCostoCodigo) newErrors.cuentaCostoCodigo = "Requerido";
+    if (!formData.cuentaInventarioCodigo) newErrors.cuentaInventarioCodigo = "Requerido";
+    if (!formData.impuestoCargoId) newErrors.impuestoCargoId = "Requerido";
+    if (!formData.unidadMedidaDianId) newErrors.unidadMedidaDianId = "Requerido";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
+    setShowConfirm(true);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+    <form 
+      onSubmit={handleSubmit}
+      noValidate
+      className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500"
+    >
       <StatusModal
         show={showConfirm}
         type="confirm"
@@ -57,9 +89,10 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
       />
 
       {/* Header Sticky */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-producto-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={onBack}
             className="p-2 hover:bg-slate-50 rounded-full transition-colors"
           >
@@ -70,14 +103,14 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             {isEditing ? "Editar Producto" : "Nuevo Producto"}
           </h1>
         </div>
-        <Button onClick={() => setShowConfirm(true)} icon={Save}>
+        <Button type="submit" icon={Save}>
           {isEditing ? "Actualizar" : "Guardar"}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-producto-identificacion bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <Box size={18} className="text-blue-500" /> Identificación del
               Ítem
@@ -91,6 +124,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                   onChange={handleChange}
                   icon={Package}
                   required
+                  error={errors.nombre}
                 />
               </div>
               <InputField
@@ -99,6 +133,8 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.sku}
                 onChange={handleChange}
                 icon={Tag}
+                required
+                error={errors.sku}
               />
               <SelectField
                 label="Categoría"
@@ -107,13 +143,15 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.categorias || []}
                 displayExpr={(c) => c.nombre}
+                required
+                error={errors.categoriaId}
               />
 
               
             </div>
           </section>
 
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-producto-precio bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <DollarSign size={18} className="text-emerald-500" /> Precio
               General
@@ -123,23 +161,63 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 label="Valor"
                 name="valor"
                 type="number"
-                value={formData.precios[0]?.valor}
+                value={formData.precios?.[0]?.valor || 0}
                 onChange={(e) => {
-                  const newPrecios = [...formData.precios];
-                  newPrecios[0].valor = e.target.value;
+                  const newPrecios = [...(formData.precios || [])];
+                  if (newPrecios.length === 0) {
+                    newPrecios.push({ nombreLista: "General", valor: 0, incluyeIva: false });
+                  }
+                  newPrecios[0].valor = Number(e.target.value);
                   handleChange({
                     target: { name: "precios", value: newPrecios },
                   });
                 }}
                 icon={DollarSign}
                 required
+                error={errors.valor}
               />
             </div>
           </section>
+
+          <section className="tuto-producto-cuentas bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+            <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
+              <BookMarked size={18} className="text-amber-500" /> Cuentas Contables (PUC)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <SelectorCuentaPuc
+                label="Cuenta de Ingreso"
+                codigoRaiz="41"
+                value={formData.cuentaIngresoCodigo || null}
+                displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
+                required
+                error={errors.cuentaIngresoCodigo}
+              />
+              <SelectorCuentaPuc
+                label="Cuenta de Costo"
+                codigoRaiz="6"
+                value={formData.cuentaCostoCodigo || null}
+                displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
+                required
+                error={errors.cuentaCostoCodigo}
+              />
+              <SelectorCuentaPuc
+                label="Cuenta de Inventario"
+                codigoRaiz="14"
+                value={formData.cuentaInventarioCodigo || null}
+                displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
+                onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
+                required
+                error={errors.cuentaInventarioCodigo}
+              />
+            </div>
+          </section>
+
         </div>
 
         <div className="space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-producto-fiscal bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <ShieldCheck size={18} className="text-purple-500" /> Datos
               Fiscales
@@ -152,6 +230,8 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.impuestos || []}
                 displayExpr={(i) => i.nombre}
+                required
+                error={errors.impuestoCargoId}
               />
               <SelectField
                 label="Retención Sugerida"
@@ -169,12 +249,14 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 options={parametros?.unidadesMedida || []}
                 displayExpr={(u) => u.nombre}
+                required
+                error={errors.unidadMedidaDianId}
               />
             </div>
           </section>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

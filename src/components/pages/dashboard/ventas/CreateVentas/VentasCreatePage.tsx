@@ -1,16 +1,16 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Receipt, Save, ArrowLeft, Tags, User, Calendar, FileText, Plus, Trash2, Hash, Wallet, DollarSign } from "lucide-react";
 import Button from "../../../../common/Button";
 import StatusModal from "../../../../common/StatusModal";
 import InputField from "../../../../common/InputField";
 import { AsyncSearchField } from "../../../../common/AsyncSearchField";
 import SelectField from "../../../../common/SelectField";
+import { SelectorCuentaPuc } from "../../../../common/SelectorCuentaPuc";
 import { useVentasForm } from "../../../../../hooks/useVentasForm";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
-import { searchClientes } from "../../../../../services/terceros/terceroService";
+import { buscarTerceros } from "../../../../../services/terceros/terceroService";
 import { searchProductos } from "../../../../../services/producto/productoService";
-import { getMediosPago } from "../../../../../services/venta/ventaService";
 import type { FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../../../../models/Venta";
 
 interface Props {
@@ -31,16 +31,6 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handlePagosChange
   } = useVentasForm(token, initialData);
 
-  const [mediosPago, setMediosPago] = useState<any[]>([]);
-
-  useEffect(() => {
-    getMediosPago().then(res => {
-      if (res.success && res.data) {
-        setMediosPago(res.data);
-      }
-    });
-  }, []);
-
   const addDetalle = () => {
     handleDetallesChange([
       ...formData.detalles,
@@ -56,6 +46,31 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
   const removeDetalle = (index: number) => {
     handleDetallesChange(formData.detalles.filter((_: any, i: number) => i !== index));
+  };
+
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    if (!formData.clienteId) newErrors.clienteId = "El cliente es requerido";
+    if (!formData.fechaElaboracion) newErrors.fechaElaboracion = "La fecha es requerida";
+    
+    formData.detalles.forEach((doc: any, index: number) => {
+      if (!doc.productoId) newErrors[`detalle_${index}_producto`] = "Debe elegir un producto";
+      if (!doc.cantidad || doc.cantidad <= 0) newErrors[`detalle_${index}_cantidad`] = "Cantidad requ.";
+      if (doc.valorUnitario === undefined || doc.valorUnitario < 0) newErrors[`detalle_${index}_valor`] = "Valor req.";
+    });
+
+    if (condicionPago === 'CONTADO' || condicionPago === 'PARCIAL') {
+      (formData.pagos || []).forEach((pago: any, index: number) => {
+        if (!pago.medioPagoCodigo) newErrors[`pago_${index}_medioPago`] = "Requerido";
+        if (!pago.monto || pago.monto <= 0) newErrors[`pago_${index}_monto`] = "Requerido";
+        if (!pago.fechaRecibo && !formData.fechaElaboracion) newErrors[`pago_${index}_fechaRecibo`] = "Requerido";
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const currentTotal = Number(formData.detalles.reduce((acc: number, curr: FacturaDetalleCreateDTO) => {
@@ -126,7 +141,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         }}
       />
 
-      <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-ventas-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors" title="Volver">    
             <ArrowLeft size={24} className="text-slate-400" />
@@ -155,6 +170,10 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           )}
             <Button 
               onClick={() => {
+                if (!validateForm()) {
+                  setResultModal({ show: true, success: false, message: "Por favor corrija los campos en rojo." });
+                  return;
+                }
                 if (formData.detalles.length === 0) {
                   setResultModal({ show: true, success: false, message: "La factura debe tener al menos un detalle agregado." });
                   return;
@@ -170,7 +189,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-ventas-encabezado bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <FileText size={18} className="text-blue-500" /> Datos de Encabezado
             </h3>
@@ -190,15 +209,15 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.clienteId}
                 displayValue={formData.clienteId ? "Cliente Seleccionado" : ""}
                 placeholder="Nombre o ID del Cliente..."
-                icon={User}
                 fetcher={async (q) => {
-                  const res = await searchClientes(q);
+                  const res = await buscarTerceros("CLIENTE", q, true);
                   return res.success && res.data ? res.data : [];
                 }}
-                getDisplayValue={(c: any) => c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.nombreCompleto} - ${c.identificacion}`}
+                getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
                 getKey={(c: any) => c.id}
                 onSelect={(c: any) => handleChange({ target: { name: "clienteId", value: c.id } } as any)}
                 required
+                error={errors.clienteId}
               />
 
               <InputField
@@ -218,13 +237,14 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 icon={Calendar}
                 required
+                error={errors.fechaElaboracion}
               />
             </div>
           </section>
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-ventas-detalle bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Tags size={18} className="text-emerald-500" /> Líneas de Detalle
@@ -258,10 +278,10 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         <AsyncSearchField
                           label="Producto"
                           value={detalle.productoId}
-                          displayValue={detalle.productoId ? "Producto agregado" : ""}
+                          displayValue={detalle.descripcion || ""}
                           placeholder="Buscar nombre o referencia"
                           fetcher={async (q) => {
-                            const res = await searchProductos(q);
+                            const res = await searchProductos(q, true);
                             return res.success && res.data ? res.data : [];
                           }}
                           getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}
@@ -271,7 +291,6 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             newDetalles[index].productoId = p.id;
                             newDetalles[index].descripcion = p.nombre;
                             newDetalles[index].valorUnitario = p.precios?.[0]?.valor || 0;
-                            // Optionally override amount to 1 on re-select     
                             newDetalles[index].cantidad = 1;
                             newDetalles[index].impuestoCargoNombre = p.impuestoCargoNombre;
                             newDetalles[index].tarifaCargo = p.tarifaCargo;
@@ -279,6 +298,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             newDetalles[index].tarifaRetencion = p.tarifaRetencion;
                             handleDetallesChange(newDetalles);
                           }}
+                          required
+                          error={errors[`detalle_${index}_producto`]}
                         />
                         {(detalle.impuestoCargoNombre || detalle.retencionNombre) && (
                           <div className="flex flex-wrap justify-start gap-2 mt-2 mb-3 px-1">
@@ -314,36 +335,48 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         label="Cant."
                         name="cantidad"
                         type="number"
-                        value={detalle.cantidad}
-                        onChange={(e) => {
+                        min={0}
+                        step="0.01"
+                        value={detalle.cantidad === 0 ? '' : detalle.cantidad}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].cantidad = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Number(val));
                           handleDetallesChange(newDetalles);
                         }}
                         required
+                        error={errors[`detalle_${index}_cantidad`]}
                       />
 
                       <InputField
                         label="V. Unitario"
                         name="valorUnitario"
                         type="number"
-                        value={detalle.valorUnitario}
-                        onChange={(e) => {
+                        min={0}
+                        step="0.01"
+                        value={detalle.valorUnitario === 0 ? '' : detalle.valorUnitario}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].valorUnitario = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].valorUnitario = val === '' ? 0 : Math.max(0, Number(val));
                           handleDetallesChange(newDetalles);
                         }}
                         required
+                        error={errors[`detalle_${index}_valor`]}
                       />
 
                       <InputField
                         label="% Dcto"
                         name="porcentajeDescuento"
                         type="number"
-                        value={detalle.porcentajeDescuento || ""}
-                        onChange={(e) => {
+                        min={0}
+                        max={100}
+                        step="0.01"
+                        value={detalle.porcentajeDescuento === 0 ? '' : detalle.porcentajeDescuento}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
-                          newDetalles[index].porcentajeDescuento = Number(e.target.value);
+                          const val = e.target.value;
+                          newDetalles[index].porcentajeDescuento = val === '' ? 0 : Math.min(100, Math.max(0, Number(val)));
                           handleDetallesChange(newDetalles);
                         }}
                       />
@@ -355,7 +388,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
 
           {/* Sección de Medios de Pago */}
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+          <section className="tuto-ventas-pagos bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Wallet size={18} className="text-blue-500" /> Condición y Medio de Pago
@@ -398,17 +431,16 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <SelectField
+                      <SelectorCuentaPuc
                         label="Medio de Pago"
-                        name="medioPagoCodigo"
+                        codigoRaiz="11"
                         value={pago.medioPagoCodigo}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        onChange={(val) => {
                           const newPagos = [...formData.pagos!];
-                          newPagos[index].medioPagoCodigo = e.target.value;
+                          newPagos[index].medioPagoCodigo = val || "";
                           handlePagosChange(newPagos);
                         }}
-                        options={mediosPago.map(m => ({ id: m.codigo, nombre: `${m.codigo} - ${m.nombre}` }))}
-                        displayExpr={item => item.nombre}
+                        error={errors[`pago_${index}_medioPago`]}
                       />
 
                       <InputField
@@ -424,6 +456,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 disabled={condicionPago === 'CONTADO' && index === 0}
                         required
                         icon={DollarSign}
+                        error={errors[`pago_${index}_monto`]}
                       />
 
                       <InputField
@@ -450,6 +483,7 @@ disabled={condicionPago === 'CONTADO' && index === 0}
                         }}
                         disabled={condicionPago === 'CONTADO' && index === 0}
                         required
+                        error={errors[`pago_${index}_fechaRecibo`]}
                       />
                     </div>
                   </div>

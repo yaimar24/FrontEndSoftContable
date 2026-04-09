@@ -30,12 +30,14 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar nombreColegio={nombre} logoUrl={logoUrl} />
-      <main className="flex-1 flex flex-col">
+    <div className="flex min-h-screen bg-slate-50 print:bg-white print:!block">
+      <div className="print:hidden">
+        <Sidebar nombreColegio={nombre} logoUrl={logoUrl} />
+      </div>
+      <main className="flex-1 flex flex-col print:!block print:overflow-visible print:p-0 print:m-0">
       
 
-        <section className="p-8 overflow-y-auto">
+        <section className="p-8 overflow-y-auto print:p-0 print:overflow-visible print:m-0">
           <Outlet />
         </section>
       </main>

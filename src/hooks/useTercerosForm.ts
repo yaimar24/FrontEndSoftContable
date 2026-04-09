@@ -25,7 +25,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     nombres: "",
     apellidos: "",
     nombreComercial: "",
-    email: "",
+    email: null,
     indicativo: "+57",
     codigoPostal: "",
     contactoNombres: "",
@@ -34,9 +34,9 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     colegioId: "",
     categoriaId: 0,
     regimenIvaId: 0,
-    ciudadId: 0,
-    direccion: "",
-    telefono: "",
+    ciudadId: null,
+    direccion: null,
+    telefono: null,
     responsabilidadesFiscalesIds: [],
   });
 
@@ -121,19 +121,19 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
             nombreComercial: [validators.required()] 
           }),
       
-      email: [validators.required(), validators.email?.()],
-      telefono: [validators.required()],
-
-      // Ubicación
-      ciudadId: [validators.requiredSelect("La ciudad es obligatoria")],
-      direccion: [validators.required()],
-
       // Sección Fiscal
-      correoFacturacion: [validators.required(), validators.email?.()],
-      codigoPostal: [validators.required()],
       categoriaId: [validators.requiredSelect("La categoría es obligatoria")],
       regimenIvaId: [validators.requiredSelect("El régimen es obligatorio")],
     };
+
+    // Agregar validador de formato email sólo si el campo email tiene algún valor
+    if (formData.email && formData.email.trim() !== "") {
+        schema.email = [validators.email?.()];
+    }
+
+    if (formData.correoFacturacion && formData.correoFacturacion.trim() !== "") {
+        schema.correoFacturacion = [validators.email?.()];
+    }
 
     const validationErrors = validateForm(formData, schema) as Record<string, string>;
 
@@ -153,11 +153,17 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     setIsSaving(true);
 
     try {
-      const payload = { ...formData, colegioId };
-      
+        const payload: Record<string, any> = { ...formData, colegioId };
+        
+        // Convert empty strings to null for optional fields to match backend requirements
+        if (!payload.email || payload.email.trim() === "") payload.email = null;
+        if (!payload.telefono || payload.telefono.trim() === "") payload.telefono = null;
+        if (!payload.direccion || payload.direccion.trim() === "") payload.direccion = null;
+        if (!payload.ciudadId || payload.ciudadId === 0) payload.ciudadId = null;
+
       const result = initialData?.id
         ? await updateTercero(initialData.id, { ...payload, id: initialData.id } as any)
-        : await vincularTercero(payload);
+        : await vincularTercero(payload as any);
 
       setResultModal({
         show: true,

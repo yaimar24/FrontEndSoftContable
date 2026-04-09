@@ -18,6 +18,12 @@ export interface ProductoReadDTO {
   unidadMedidaNombre: string;
   impuestoCargoNombre: string;
   tarifaIva: number;
+  cuentaIngresoCodigo?: string | null;
+  cuentaIngresoNombre?: string | null;
+  cuentaCostoCodigo?: string | null;
+  cuentaCostoNombre?: string | null;
+  cuentaInventarioCodigo?: string | null;
+  cuentaInventarioNombre?: string | null;
   precios: {
     id?: string;
     nombreLista: string;
@@ -38,6 +44,10 @@ export interface ProductoCreateDTO {
   impuestoCargoId: number;
   retencionId?: number | null;
   
+  cuentaIngresoCodigo?: string | null;
+  cuentaCostoCodigo?: string | null;
+  cuentaInventarioCodigo?: string | null;
+
   // Datos que el Service inyecta pero que el DTO puede requerir
   colegioId?: string; 
   usuarioId?: string;

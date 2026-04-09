@@ -1,4 +1,4 @@
-ï»¿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Printer, Download, Banknote, FileText } from "lucide-react";
 import { getVentaById } from "../../../../services/venta/ventaService";
@@ -52,7 +52,7 @@ const VentasViewerPage: React.FC = () => {
   if (!factura) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontrÃ³ la factura</h2>
+        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontró la factura</h2>
         <Button onClick={() => navigate('/dashboard/ventas')} variant="primary">Volver a Ventas</Button>
       </div>
     );
@@ -73,7 +73,7 @@ const VentasViewerPage: React.FC = () => {
   const canPay = factura.saldo > 0 && factura.estadoNombre !== "Anulada";
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20 print:bg-white print:p-0 print:min-h-0 print:m-0">
       {/* Header bar (no printable) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-40 print:hidden">
         <div className="flex items-center gap-4">
@@ -123,7 +123,7 @@ const VentasViewerPage: React.FC = () => {
                <p className="text-sm text-slate-500 font-medium">NIT: {factura.colegioNit}</p>
             </div>
             <div>
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha ElaboraciÃ³n</p>
+               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboración</p>
                <p className="text-sm font-bold text-slate-700">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(factura.fechaElaboracion))}</p>
             </div>
          </div>

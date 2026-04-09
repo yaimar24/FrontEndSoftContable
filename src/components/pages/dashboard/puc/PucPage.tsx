@@ -11,6 +11,7 @@ import Modal from "../../../common/Modal";
 import StatusModal from "../../../common/StatusModal";
 import InputField from "../../../common/InputField";
 import Button from "../../../common/Button";
+import { useTutorial } from "../../../../context/TutorialContext";
 
 const PucPage: React.FC = () => {
   const [tree, setTree] = useState<PucNodo[]>([]);
@@ -30,6 +31,8 @@ const PucPage: React.FC = () => {
   // Hidden state
   const [showHiddenModal, setShowHiddenModal] = useState(false);
   const [hiddenNodes, setHiddenNodes] = useState<PucNodo[]>([]);
+
+  const { setSteps } = useTutorial();
 
   const [statusModal, setStatusModal] = useState<{
     show: boolean;
@@ -120,7 +123,33 @@ const PucPage: React.FC = () => {
     (async () => {
       await fetchData();
     })();
-  }, [fetchData]);
+    setSteps([
+      {
+        target: '.tuto-puc-header',
+        content: 'Este es el módulo del Plan Único de Cuentas (PUC). Desde aquí puedes ver, buscar y administrar toda la estructura contable de tu institución.',
+      },
+      {
+        target: '.tuto-puc-search',
+        content: 'Usa esta barra para buscar cuentas por código o nombre rápidamente.',
+      },
+      {
+        target: '.tuto-puc-refresh',
+        content: 'Recarga la información del plan de cuentas desde el servidor.',
+      },
+      {
+        target: '.tuto-puc-hidden',
+        content: 'Accede a las cuentas ocultas y restaura las que necesites.',
+      },
+      {
+        target: '.tuto-puc-new',
+        content: 'Crea una nueva clase contable de primer nivel para tu plan de cuentas.',
+      },
+      {
+        target: '.tuto-puc-tree',
+        content: 'Este es el árbol de cuentas. Haz clic en cada cuenta para expandirla y ver sus cuentas hijas. Cada cuenta tiene opciones para crear subcuentas, editar o ocultar.',
+      }
+    ]);
+  }, [fetchData, setSteps]);
 
   const filteredTree = useMemo(() => {
     if (!searchTerm) return tree;
@@ -153,52 +182,58 @@ const PucPage: React.FC = () => {
   };
 
   return (
-    <div className="p-10 max-w-[1600px] mx-auto relative">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto relative">
       {/* Loader global */}
 
       {/* Header */}
-      <PageHeader
-        title="Plan de Cuentas"
-        subtitle="Catálogo institucional de cuentas"
-        actions={
-          <div className="flex items-center gap-3">
-            <SearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="BUSCAR CUENTA..."
-              className="md:w-64"
-            />
+      <div className="tuto-puc-header">
+        <PageHeader
+          title="Plan de Cuentas"
+          subtitle="Catálogo institucional de cuentas"
+          actions={
+            <div className="flex items-center gap-3">
+              <div className="tuto-puc-search">
+                <SearchBar
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="BUSCAR CUENTA..."
+                  className="md:w-64"
+                />
+              </div>
 
-            <button
-              onClick={fetchData}
-              className="p-4 bg-white border-2 border-slate-100 rounded-[1.5rem] text-slate-400 hover:text-blue-600 transition-all active:scale-95 disabled:opacity-50"
-            >
-              <RefreshCcw
-                size={20}
-              />
-            </button>
+              <button
+                onClick={fetchData}
+                className="tuto-puc-refresh p-4 bg-white border-2 border-slate-100 rounded-[1.5rem] text-slate-400 hover:text-blue-600 transition-all active:scale-95 disabled:opacity-50"
+              >
+                <RefreshCcw
+                  size={20}
+                />
+              </button>
 
-            <button
-              onClick={handleShowHidden}
-              title="Cuentas Ocultas"
-              className="p-4 bg-white border-2 border-slate-100 rounded-[1.5rem] text-slate-400 hover:text-slate-600 transition-all active:scale-95 disabled:opacity-50"
-            >
-              <EyeOff size={20} />
-            </button>
+              <button
+                onClick={handleShowHidden}
+                title="Cuentas Ocultas"
+                className="tuto-puc-hidden p-4 bg-white border-2 border-slate-100 rounded-[1.5rem] text-slate-400 hover:text-slate-600 transition-all active:scale-95 disabled:opacity-50"
+              >
+                <EyeOff size={20} />
+              </button>
 
-            <Button
-              variant="primary"
-              icon={FolderPlus}
-              onClick={() => handleOpenModal(undefined, tree)}
-            >
-              Nueva Clase
-            </Button>
-          </div>
-        }
-      />
+              <div className="tuto-puc-new">
+                <Button
+                  variant="primary"
+                  icon={FolderPlus}
+                  onClick={() => handleOpenModal(undefined, tree)}
+                >
+                  Nueva Clase
+                </Button>
+              </div>
+            </div>
+          }
+        />
+      </div>
 
       {/* Árbol PUC */}
-<div className="bg-white rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
+<div className="tuto-puc-tree bg-white rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
         {filteredTree.length > 0 ? (
           <div className="max-w-5xl">
             {filteredTree.map((nodo) => (

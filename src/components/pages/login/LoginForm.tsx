@@ -16,6 +16,7 @@ const LoginForm = () => {
     password: "",
     rememberMe: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState({
     show: false,
@@ -111,6 +112,9 @@ const LoginForm = () => {
             onChange={handleChange}
             placeholder="••••••••"
             icon={Lock}
+            showToggle={true}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
             required
           />
 

@@ -153,30 +153,36 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
     <div className="space-y-6">
       {/* Filtros y Exportación */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <FilterGroup
-          activeId={activeFilters.categoria || "all"}
-          onChange={(id) => updateFilter("categoria", id)}
-          options={[
-            { id: "all", label: "Todos" },
-            { id: 1, label: "Clientes" },
-            { id: 2, label: "Proveedores" },
-          ]}
-        />
-        <ExportButtons
-          onExportExcel={() => exportToExcel(exportConfig)}
-          onExportPDF={() => exportToPDF(exportConfig)}
-        />
+        <div className="tuto-terceros-filter">
+          <FilterGroup
+            activeId={activeFilters.categoria || "all"}
+            onChange={(id) => updateFilter("categoria", id)}
+            options={[
+              { id: "all", label: "Todos" },
+              { id: 1, label: "Clientes" },
+              { id: 2, label: "Proveedores" },
+            ]}
+          />
+        </div>
+        <div className="tuto-terceros-export">
+          <ExportButtons
+            onExportExcel={() => exportToExcel(exportConfig)}
+            onExportPDF={() => exportToPDF(exportConfig)}
+          />
+        </div>
       </div>
 
       {/* Buscador Reutilizable */}
-      <SearchBar 
-        value={searchTerm}
-        onChange={setSearchTerm}
-        placeholder="Buscar por identificación, nombre o razón social..."
-      />
+      <div className="tuto-terceros-search">
+        <SearchBar 
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Buscar por identificación, nombre o razón social..."
+        />
+      </div>
 
       {/* Tabla con Estilo Blanco y Sombra */}
-      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-terceros-table bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
 

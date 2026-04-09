@@ -45,7 +45,11 @@ const Step3Account: React.FC<Step3Props> = ({
 
   const schema = {
     email: [validators.required()],
-    password: [validators.required(), validators.minLength(6)],
+    password: [
+      validators.required(),
+      validators.minLength(8, "La contraseña debe tener al menos 8 caracteres"),
+      validators.strongPassword()
+    ],
     confirmPassword: [validators.required(), passwordsMatch()],
   };
 
@@ -128,19 +132,24 @@ const Step3Account: React.FC<Step3Props> = ({
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputField
-            label="Contraseña"
-            type="password"
-            name="password"
-            value={localFormData.password ?? ""}
-            onChange={handleLocalChange}
-            placeholder="••••••••"
-            required
-            showToggle
-            showPassword={showPassword}
-            setShowPassword={setShowPassword}
-            error={errors.password}
-          />
+          <div>
+            <InputField
+              label="Contraseña"
+              type="password"
+              name="password"
+              value={localFormData.password ?? ""}
+              onChange={handleLocalChange}
+              placeholder="••••••••"
+              required
+              showToggle
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+              error={errors.password}
+            />
+            <p className="text-[10px] text-slate-400 mt-2 ml-1">
+              Mín. 8 caracteres, al menos 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (@$!%*?&).
+            </p>
+          </div>
 
           <InputField
             label="Confirmar Contraseña"
