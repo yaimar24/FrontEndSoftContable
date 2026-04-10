@@ -81,8 +81,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="Registrar Pago" subtitle={`Factura #${factura.numero}`}>
-        <form onSubmit={handleSubmit} className="space-y-6 min-w-[500px]">
-            <div className="bg-blue-50/50 p-4 rounded-3xl border border-blue-100 flex flex-col gap-1 text-center">
+        <form onSubmit={handleSubmit} className="space-y-4 min-w-[500px]">
+            <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex flex-col gap-1 text-center">
                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Saldo Pendiente</p>
                <p className="text-3xl font-black text-blue-600">${factura.saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 })}</p>
             </div>

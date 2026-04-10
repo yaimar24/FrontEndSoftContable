@@ -122,7 +122,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+    <div className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500">
       <StatusModal
         show={showConfirm}
         type="confirm"
@@ -141,7 +141,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         }}
       />
 
-      <div className="tuto-ventas-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-ventas-sticky-header flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors" title="Volver">    
             <ArrowLeft size={24} className="text-slate-400" />
@@ -187,9 +187,9 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </div>
         </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <section className="tuto-ventas-encabezado bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1 space-y-4">
+          <section className="tuto-ventas-encabezado bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <FileText size={18} className="text-blue-500" /> Datos de Encabezado
             </h3>
@@ -210,7 +210,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 displayValue={formData.clienteId ? "Cliente Seleccionado" : ""}
                 placeholder="Nombre o ID del Cliente..."
                 fetcher={async (q) => {
-                  const res = await buscarTerceros("CLIENTE", q, true);
+                  const res = await buscarTerceros("CLIENTE,PROVEEDOR", q, true);
                   return res.success && res.data ? res.data : [];
                 }}
                 getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
@@ -243,8 +243,8 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
-          <section className="tuto-ventas-detalle bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="lg:col-span-2 space-y-4">
+          <section className="tuto-ventas-detalle bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Tags size={18} className="text-emerald-500" /> Líneas de Detalle
@@ -388,7 +388,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
 
           {/* Sección de Medios de Pago */}
-          <section className="tuto-ventas-pagos bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+          <section className="tuto-ventas-pagos bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mt-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Wallet size={18} className="text-blue-500" /> Condición y Medio de Pago

@@ -24,11 +24,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, subtitle, childre
   return (
     <div className="fixed inset-0 bg-slate-500/20 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
       <div 
-        className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden outline-none"
+        className="bg-white rounded-2xl w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera Estándar */}
-        <div className="p-8 pb-0 flex justify-between items-start">
+        <div className="p-5 pb-0 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter leading-none">
               {title}
@@ -50,7 +50,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, subtitle, childre
         </div>
 
         {/* Contenido Inyectado */}
-        <div className="p-8 pt-6">
+        <div className="p-5 pt-6">
           {children}
         </div>
       </div>

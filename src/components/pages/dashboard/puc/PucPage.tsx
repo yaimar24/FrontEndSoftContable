@@ -182,7 +182,7 @@ const PucPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto relative">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto relative">
       {/* Loader global */}
 
       {/* Header */}
@@ -233,7 +233,7 @@ const PucPage: React.FC = () => {
       </div>
 
       {/* Árbol PUC */}
-<div className="tuto-puc-tree bg-white rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
+<div className="tuto-puc-tree bg-white rounded-2xl p-6 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
         {filteredTree.length > 0 ? (
           <div className="max-w-5xl">
             {filteredTree.map((nodo) => (
@@ -270,7 +270,7 @@ const PucPage: React.FC = () => {
 
       {/* Edit Modal */}
       <Modal isOpen={!!editNode} onClose={() => setEditNode(undefined)} title={`Editar Cuenta: ${editNode?.codigo}`}>
-        <form onSubmit={handleUpdateNode} className="space-y-6 min-w-[400px]">
+        <form onSubmit={handleUpdateNode} className="space-y-4 min-w-[400px]">
             {editNode?.esGlobal && (
                <div className="bg-amber-50 text-amber-600 p-4 rounded-xl flex gap-3">
                  <Globe size={24} className="shrink-0" />

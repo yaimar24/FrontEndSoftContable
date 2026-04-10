@@ -25,7 +25,7 @@ export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onCha
     : formData.logoPath ? getFullUrl(formData.logoPath) : null;
 
   return (
-    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-6 shadow-sm">
+    <section className="bg-white p-5 rounded-2xl border border-slate-100 space-y-4 shadow-sm">
       <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
         <Building2 size={14} className="text-blue-500" /> Datos Principales
       </h3>
@@ -34,7 +34,7 @@ export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onCha
         <label className="mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
           Identidad Institucional (Logo)
         </label>
-        <div className="relative w-32 h-32 rounded-[2rem] border-2 border-dashed border-slate-300 bg-slate-50 shadow-sm overflow-hidden hover:border-blue-600 transition-all flex items-center justify-center cursor-pointer group">
+        <div className="relative w-32 h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 shadow-sm overflow-hidden hover:border-blue-600 transition-all flex items-center justify-center cursor-pointer group">
           {logoPreview ? (
             <div className="relative w-full h-full p-2 animate-in zoom-in-95 duration-300">
               <img

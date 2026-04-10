@@ -132,12 +132,12 @@ export const RegisterForm: React.FC = () => {
   return (
     <>
  
-      <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border-t-[8px] border-[#1e3a8a] max-w-4xl mx-auto">
-        <div className="p-8 text-center border-b border-slate-100">
+      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-[8px] border-[#1e3a8a] max-w-4xl mx-auto">
+        <div className="p-5 text-center border-b border-slate-100">
           <img src="sicpie.png" alt="SICPIE" className="h-16 mx-auto mb-2" />
         </div>
 
-        <div className="p-6 md:p-12">
+        <div className="p-6 md:p-5">
           {step === 1 && isReady && (
             <Step1BasicInfo
               formData={formData}

@@ -9,7 +9,7 @@ export interface TerceroCreateDTO {
   nombreComercial?: string;
   email?: string | null;
   colegioId: string;
-  categoriaId: number;
+  categoriaIds: number[];
   regimenIvaId: number;
   departamentoId?: number | null;
   municipioId?: number | null;
@@ -34,7 +34,7 @@ export interface TerceroupdateDTO {
   nombreComercial?: string;
   email?: string | null;
   colegioId: string;
-  categoriaId: number;
+  categoriaIds: number[];
   regimenIvaId: number;
   departamentoId?: number | null;
   municipioId?: number | null;

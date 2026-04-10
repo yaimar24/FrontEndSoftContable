@@ -49,7 +49,7 @@ const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, pr
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
+    <div className="space-y-5 animate-in fade-in slide-in-from-right-4">
       
       {/* HEADER UNIFICADO (AZUL) */}
       <div className="flex items-center space-x-3">
@@ -63,7 +63,7 @@ const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, pr
       </div>
 
       {/* SECCIÓN FORMULARIO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField 
           label="Nombre Representante" 
           name="nombreRepresentante" 

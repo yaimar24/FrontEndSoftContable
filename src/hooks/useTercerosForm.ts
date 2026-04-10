@@ -32,7 +32,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     contactoApellidos: "",
     correoFacturacion: "",
     colegioId: "",
-    categoriaId: 0,
+    categoriaIds: [],
     regimenIvaId: 0,
     municipioId: null,
     direccion: null,
@@ -70,6 +70,10 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
           initialData.responsabilidadesFiscalesIds ||
           initialData.responsabilidades?.map((r: any) => r.id) ||
           [],
+        categoriaIds:
+          initialData.categoriaIds ||
+          initialData.categorias?.map((c: any) => c.id) ||
+          [],
       });
     }
   }, [initialData]);
@@ -104,6 +108,20 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     });
   };
 
+  const handleCategoriaChange = (id: number) => {
+    if (errors.categoriaIds) {
+      setErrors(prev => ({ ...prev, categoriaIds: "" }));
+    }
+
+    setFormData((prev) => {
+      const currentIds = prev.categoriaIds || [];
+      const newIds = currentIds.includes(id)
+        ? currentIds.filter((i) => i !== id)
+        : [...currentIds, id];
+      return { ...prev, categoriaIds: newIds };
+    });
+  };
+
   const handleSaveClick = () => {
     const schema: Record<string, any[]> = {
       // Usamos requiredSelect para que el valor 0 dispare el error
@@ -122,7 +140,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
           }),
       
       // Sección Fiscal
-      categoriaId: [validators.requiredSelect("La categoría es obligatoria")],
+      categoriaIds: [(val: any[]) => (!val || val.length === 0) ? "Debe seleccionar al menos una categoría" : null],
       regimenIvaId: [validators.requiredSelect("El régimen es obligatorio")],
     };
 
@@ -185,6 +203,6 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   return {
     formData, parametros, isSaving, errors,
     showConfirm, resultModal, setShowConfirm, setResultModal,
-    handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave,
+    handleChange, handleCheckboxChange, handleCategoriaChange, handleSaveClick, handleConfirmSave,
   };
 };

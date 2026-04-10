@@ -75,7 +75,7 @@ const CompraPrintPage: React.FC = () => {
       </div>
 
       {/* Main Print Area */}
-      <div className="flex-1 overflow-auto p-8 print:p-0 flex justify-center custom-scrollbar">
+      <div className="flex-1 overflow-auto p-5 print:p-0 flex justify-center custom-scrollbar">
         <div className="bg-white shadow-xl print:shadow-none min-h-[1056px] w-[816px] origin-top">
           <CompraInvoiceTemplate factura={factura} />
         </div>

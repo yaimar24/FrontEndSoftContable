@@ -92,7 +92,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
   }, 0).toFixed(2));
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+    <div className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500">
       <StatusModal
         show={showConfirm}
         onClose={() => setShowConfirm(false)}
@@ -147,9 +147,9 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <section className="tuto-compra-encabezado bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1 space-y-4">
+          <section className="tuto-compra-encabezado bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <FileText size={18} className="text-indigo-500" /> Datos de Encabezado
             </h3>
@@ -170,7 +170,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 displayValue={formData.proveedorId ? "Proveedor Seleccionado" : ""}
                 placeholder="Nombre o ID del Proveedor..."
                 fetcher={async (q) => {
-                  const res = await buscarTerceros("PROVEEDOR", q, true);
+                  const res = await buscarTerceros("CLIENTE,PROVEEDOR", q, true);
                   return res.success && res.data ? res.data : [];
                 }}
                 getDisplayValue={(c: any) => c.nombreCompleto ? `${c.nombreCompleto} - ${c.identificacion}` : (c.nombreComercial ? `${c.nombreComercial} - ${c.identificacion}` : `${c.identificacion}`)}
@@ -203,8 +203,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
           </section>
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
-          <section className="tuto-compra-detalle bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="lg:col-span-2 space-y-4">
+          <section className="tuto-compra-detalle bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
                 <Tags size={18} className="text-emerald-500" /> Líneas de Detalle

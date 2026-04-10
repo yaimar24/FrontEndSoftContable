@@ -3,6 +3,7 @@ import { Globe, Mail, ShieldCheck, MapPin } from "lucide-react";
 import type { TerceroCreateDTO } from "../../../../../../models/Tercero";
 import InputField from "../../../../../common/InputField";
 import SelectField from "../../../../../common/SelectField";
+import CheckboxCard from "../../../../../common/CheckboxCard";
 import type { Parametros } from "../../../../../../models/Parametros";
 import type { ResponsabilidadFiscal } from "../../../../../../models/Colegio";
 
@@ -14,6 +15,7 @@ interface Props {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
   onCheckboxChange: (id: number) => void;
+  onCategoriaChange?: (id: number) => void;
 }
 
 export const SeccionFiscal: React.FC<Props> = ({
@@ -22,18 +24,20 @@ export const SeccionFiscal: React.FC<Props> = ({
   errors,
   onChange,
   onCheckboxChange,
+  onCategoriaChange,
 }) => {
   const selectedIds = formData.responsabilidadesFiscalesIds || [];
+  const selectedCategoriaIds = formData.categoriaIds || [];
 
   return (
-    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-8 shadow-sm">
-      <div className="flex flex-col gap-1">
-        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-          <Globe size={14} className="text-blue-600" /> Datos Tributarios y Facturación
+    <section className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm h-full space-y-4">
+      <div className="flex flex-col gap-1 pb-3 mb-4 border-b border-slate-50">
+        <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+          <Globe size={16} className="text-blue-600" /> Datos Tributarios y Facturación
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <InputField
           label="Correo Facturación"
           name="correoFacturacion"
@@ -55,17 +59,6 @@ export const SeccionFiscal: React.FC<Props> = ({
         />
 
         <SelectField
-          label="Categoría"
-          name="categoriaId"
-          value={formData.categoriaId ?? ""}
-          onChange={onChange}
-          error={errors.categoriaId}
-          options={parametros?.categorias || []}
-          displayExpr={(c) => c.nombre}
-          placeholder="Seleccione Categoría"
-        />
-
-        <SelectField
           label="Régimen IVA"
           name="regimenIvaId"
           value={formData.regimenIvaId ?? ""}
@@ -75,6 +68,42 @@ export const SeccionFiscal: React.FC<Props> = ({
           displayExpr={(r) => r.nombre}
           placeholder="Seleccione Régimen"
         />
+      </div>
+
+      <div className="space-y-4">
+        {/* Categorías Section */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 ml-1">
+            <ShieldCheck size={14} className="text-slate-400" />
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+              Categorías del Tercero <span className="text-blue-500 font-bold">(Selección Múltiple)</span>
+            </label>
+          </div>
+          
+          {errors.categoriaIds && (
+            <p className="text-[10px] text-red-500 font-bold uppercase ml-1 animate-pulse">
+              {errors.categoriaIds}
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {parametros?.categorias?.map((cat: any) => {
+            const isChecked = selectedCategoriaIds.includes(cat.id);
+            const hasGroupError = !!errors.categoriaIds;
+
+            return (
+              <CheckboxCard
+                key={cat.id}
+                label={cat.nombre}
+                checked={isChecked}
+                onChange={() => onCategoriaChange && onCategoriaChange(cat.id)}
+                colorTheme="indigo"
+                hasError={hasGroupError}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -99,32 +128,14 @@ export const SeccionFiscal: React.FC<Props> = ({
             const hasGroupError = !!errors.responsabilidadesFiscalesIds;
 
             return (
-              <div
+              <CheckboxCard
                 key={resp.id}
-                onClick={() => onCheckboxChange(resp.id)}
-                className={`flex items-center p-4 rounded-2xl border transition-all duration-200 cursor-pointer 
-                ${isChecked 
-                    ? "bg-blue-50/30 border-blue-200 shadow-sm" 
-                    : hasGroupError 
-                      ? "bg-red-50/10 border-red-200" 
-                      : "bg-white border-slate-100 hover:border-slate-200"
-                }`}
-              >
-                <div className="flex items-center gap-3 w-full pointer-events-none">
-                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
-                    isChecked ? "bg-blue-600 border-blue-600" : "bg-white border-slate-300"
-                  }`}>
-                    {isChecked && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                  </div>
-                  <span
-                    className={`text-[11px] font-bold uppercase tracking-tight transition-colors ${
-                      isChecked ? "text-blue-700" : "text-slate-600"
-                    }`}
-                  >
-                    {resp.nombre}
-                  </span>
-                </div>
-              </div>
+                label={resp.nombre}
+                checked={isChecked}
+                onChange={() => onCheckboxChange(resp.id)}
+                colorTheme="blue"
+                hasError={hasGroupError}
+              />
             );
           })}
         </div>

@@ -20,7 +20,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const {
     formData, parametros, errors,
     showConfirm, resultModal, setShowConfirm, setResultModal,
-    handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave
+    handleChange, handleCheckboxChange, handleCategoriaChange, handleSaveClick, handleConfirmSave
   } = useTercerosForm(token, initialData);
 
   const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
@@ -36,7 +36,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
+    <div className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500">
 
       <StatusModal 
         show={showConfirm} type="confirm" onConfirm={handleConfirmSave} 
@@ -49,13 +49,13 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         onClose={() => { setResultModal(m => ({ ...m, show: false })); if(resultModal.success) onBack(); }} 
       />
 
-      <div className="tuto-terceros-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-terceros-sticky-header flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
-          <button onClick={onBack} className="p-2 hover:bg-slate-50 rounded-full transition-colors">
-            <ArrowLeft size={24} className="text-slate-400" />
+          <button onClick={onBack} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors">
+            <ArrowLeft size={20} className="text-slate-500" />
           </button>
-          <h1 className="text-xl font-black text-slate-800 uppercase flex items-center gap-2">
-            <Users size={28} className="text-blue-600" /> 
+          <h1 className="text-lg font-black text-slate-800 uppercase flex items-center gap-2 tracking-tight">
+            <Users size={22} className="text-blue-600" /> 
             {isEditing ? 'Editar Tercero' : 'Nuevo Tercero'}
           </h1>
         </div>
@@ -64,15 +64,18 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="tuto-terceros-identificacion">
           <SeccionIdentificacion formData={formData} parametros={parametros} errors={errors} onChange={handleChange} />
         </div>
-        <div className="lg:col-span-2 space-y-6">
-          <section className="tuto-terceros-info bg-white p-8 rounded-[2.5rem] border border-slate-100">
-            <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
-              <UserCircle size={18} className="text-blue-500"/> Información General
-            </h3>
+        <div className="lg:col-span-2 space-y-5">
+          <section className="tuto-terceros-info bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex flex-col gap-1 pb-3 mb-4 border-b border-slate-50">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-xs uppercase tracking-widest">
+                <UserCircle size={16} className="text-blue-500"/> Información General
+              </h3>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {formData.tipoPersonaId === 1 ? (
                 <>
@@ -89,11 +92,14 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             </div>
           </section>
 
-          <section className="tuto-terceros-ubicacion bg-white p-8 rounded-[2.5rem] border border-slate-100">
-            <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
-              <MapPin size={18} className="text-blue-500"/> Ubicación
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <section className="tuto-terceros-ubicacion bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex flex-col gap-1 pb-3 mb-4 border-b border-slate-50">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-xs uppercase tracking-widest">
+                <MapPin size={16} className="text-blue-500"/> Ubicación
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <SelectField 
                 label="Departamento" 
                 name="departamentoId" 
@@ -120,7 +126,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
         </div>
         <div className="tuto-terceros-fiscal lg:col-span-3">
-          <SeccionFiscal formData={formData} parametros={parametros} errors={errors} onChange={handleChange} onCheckboxChange={handleCheckboxChange} />
+          <SeccionFiscal formData={formData} parametros={parametros} errors={errors} onChange={handleChange} onCheckboxChange={handleCheckboxChange} onCategoriaChange={handleCategoriaChange} />
         </div>
       </div>
     </div>

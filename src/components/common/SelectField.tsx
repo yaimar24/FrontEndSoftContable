@@ -22,8 +22,8 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, name, value, onChange,
       onChange={onChange}
       required={required}
       disabled={disabled}
-      className={`w-full bg-slate-50 border-2 rounded-2xl p-4 outline-none focus:ring-2 transition-all ${
-        error ? "border-red-500 focus:ring-red-500" : "border-slate-100 focus:ring-blue-500"
+      className={`w-full bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none focus:ring-2 transition-all ${
+        error ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
       }`}
     >
       <option value="" disabled>{placeholder || "Selecciona una opción"}</option>

@@ -31,7 +31,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-slate-100 flex flex-col w-full max-w-5xl h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden print:shadow-none print:h-auto print:rounded-none print:w-full print:max-w-none print:bg-white"
+            className="bg-slate-100 flex flex-col w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden print:shadow-none print:h-auto print:rounded-none print:w-full print:max-w-none print:bg-white"
           >
             {/* Header - Not visible in print */}
             <div className="flex items-center justify-between px-8 py-5 bg-white border-b border-slate-200 print:hidden">
@@ -58,7 +58,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
             </div>
 
             {/* Document Content Container */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar print:overflow-visible print:p-0 bg-slate-100 print:bg-white">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 custom-scrollbar print:overflow-visible print:p-0 bg-slate-100 print:bg-white">
               <div 
                 ref={containerRef}
                 className="bg-white mx-auto shadow-sm print:shadow-none print:max-w-none min-h-[1056px] max-w-[816px] origin-top"

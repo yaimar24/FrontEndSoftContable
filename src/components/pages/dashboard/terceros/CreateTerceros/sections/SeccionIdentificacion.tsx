@@ -13,14 +13,14 @@ interface Props {
 }
 
 export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, errors, onChange }) => (
-  <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-6 shadow-sm">
-    <div className="flex flex-col gap-1">
-      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-        <ShieldCheck size={14} className="text-blue-600"/> Identificación Legal
+  <section className="bg-white p-6 rounded-2xl border border-slate-100 space-y-4 shadow-sm h-full">
+    <div className="flex flex-col gap-1 pb-2 border-b border-slate-50">
+      <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+        <ShieldCheck size={16} className="text-blue-600"/> Identificación Legal
       </h3>
     </div>
 
-    <div className="space-y-4">
+    <div className="space-y-3">
       <SelectField 
         label="Tipo Persona" 
         name="tipoPersonaId" 
@@ -46,7 +46,7 @@ export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, e
       <div className="flex gap-3">
         <div className="flex-1">
           <InputField 
-            label="Número de Identificación" 
+            label="Número" 
             name="identificacion" 
             value={formData.identificacion || ""} 
             onChange={onChange} 
@@ -57,7 +57,7 @@ export const SeccionIdentificacion: React.FC<Props> = ({ formData, parametros, e
           />
         </div>
 
-        <div className="w-24">
+        <div className="w-20 pl-2 border-l border-slate-100">
           <InputField 
             label="DV" 
             name="dv" 

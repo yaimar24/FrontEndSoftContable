@@ -85,7 +85,7 @@ const VentasPage = () => {
   };
 
   return (
-    <div className="tuto-ventas-form min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="tuto-ventas-form min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto">
       {loading && <LoadingOverlay message="Sincronizando Facturas..." />}
 
       <div className="tuto-ventas-header">

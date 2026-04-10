@@ -93,7 +93,7 @@ export const RecibosList = () => {
     {
       header: "Referencia",
       render: (v: ReciboCajaRead) => (
-        <span className="text-[10px] text-slate-500">{v.referencia || "—"}</span>
+        <span className="text-[10px] text-slate-500">{v.referencia || "ï¿½"}</span>
       )
     },
     {
@@ -110,7 +110,7 @@ export const RecibosList = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader 
         title="Recibos de Caja" 
         subtitle="Listado general de los comprobantes de pago recibidos" 
@@ -120,7 +120,7 @@ export const RecibosList = () => {
         <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por recibo, factura o cliente..." />
       </div>
 
-      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
     </div>

@@ -71,8 +71,8 @@ const InputField: React.FC<InputFieldProps> = ({
       <div className="relative group">
         {Icon && (
           <Icon 
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors z-10" 
-            size={20} 
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors z-10" 
+            size={18} 
           />
         )}
 
@@ -91,11 +91,11 @@ const InputField: React.FC<InputFieldProps> = ({
           max={max}
           step={step}
           inputMode={onlyNumbers ? (allowDecimals ? "decimal" : "numeric") : undefined}
-          className={`w-full bg-slate-50 border-2 rounded-2xl p-4 focus:ring-2 outline-none transition-all
-            ${Icon ? 'pl-12' : ''}
-            ${showToggle ? 'pr-12' : ''}
-            ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-100 focus:ring-blue-500'}
-            ${type === 'checkbox' ? 'w-5 h-5 cursor-pointer accent-blue-600' : ''}
+          className={`w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 outline-none transition-all
+            ${Icon ? 'pl-11' : ''}
+            ${showToggle ? 'pr-11' : ''}
+            ${error ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'}
+            ${type === 'checkbox' ? 'w-3.5 h-3.5 cursor-pointer accent-blue-600' : ''}
             ${disabled ? 'opacity-60 cursor-not-allowed' : ''}
           `}
           required={required}

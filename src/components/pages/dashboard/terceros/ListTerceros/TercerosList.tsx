@@ -32,7 +32,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
   } = useFilter(localData, {
     searchFields: ["nombres", "apellidos", "nombreComercial", "identificacion"],
     customFilters: {
-      categoria: (item, value) => item.categoriaId === value,
+      categoria: (item, value) => value === "all" || (item.categoriaIds && item.categoriaIds.includes(value as number)),
     },
   });
 
@@ -60,7 +60,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
       },
       { header: "EMAIL", dataKey: "email" },
       { header: "TELÉFONO", dataKey: "telefono" },
-      { header: "CATEGORÍA", dataKey: (t) => (t.categoriaId === 1 ? "CLIENTE" : "PROVEEDOR") },
+      { header: "CATEGORÍA", dataKey: (t) => (t.categoriaIds?.includes(1) && t.categoriaIds?.includes(2) ? "CLIENTE/PROVEEDOR" : t.categoriaIds?.includes(1) ? "CLIENTE" : t.categoriaIds?.includes(2) ? "PROVEEDOR" : "N/A") },
       { header: "ESTADO", dataKey: (t) => (t.activo ? "ACTIVO" : "DESVINCULADO") },
     ],
   };
@@ -98,9 +98,16 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
                 {(esNatural ? `${t.nombres} ${t.apellidos}` : t.nombreComercial) || "SIN NOMBRE"}
               </span>
               <div className="flex gap-1.5 mt-1">
-                <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${t.categoriaId === 1 ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
-                  {t.categoriaId === 1 ? "Cliente" : "Proveedor"}
-                </span>
+                {t.categoriaIds?.includes(1) && (
+                  <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase bg-emerald-100 text-emerald-700`}>
+                    Cliente
+                  </span>
+                )}
+                {t.categoriaIds?.includes(2) && (
+                  <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase bg-amber-100 text-amber-700`}>
+                    Proveedor
+                  </span>
+                )}
                 <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase ${t.activo ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700"}`}>
                   {t.activo ? "Activo" : "Desvinculado"}
                 </span>
@@ -150,7 +157,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Filtros y Exportación */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div className="tuto-terceros-filter">
@@ -182,7 +189,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
       </div>
 
       {/* Tabla con Estilo Blanco y Sombra */}
-      <div className="tuto-terceros-table bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-terceros-table bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
 

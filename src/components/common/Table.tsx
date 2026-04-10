@@ -54,7 +54,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
       {/* Este div controla el scroll interno horizontal */}
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full border-collapse min-w-max">
@@ -83,7 +83,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
               ))
             ) : (
                <tr>
-                 <td colSpan={columns.length} className="p-10 text-center text-slate-400 text-sm font-bold uppercase tracking-widest">
+                 <td colSpan={columns.length} className="p-6 text-center text-slate-400 text-sm font-bold uppercase tracking-widest">
                     No hay registros disponibles
                  </td>
                </tr>

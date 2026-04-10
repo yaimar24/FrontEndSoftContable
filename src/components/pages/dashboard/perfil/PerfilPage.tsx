@@ -56,7 +56,7 @@ const PerfilPage: React.FC = () => {
   }, [setSteps]);
 
   return (
-    <div className="p-10 max-w-[1600px] mx-auto relative">
+    <div className="p-6 max-w-[1600px] mx-auto relative">
 
       {/* Modals */}
       <StatusModal
@@ -93,13 +93,21 @@ const PerfilPage: React.FC = () => {
       </div>
 
       {/* Form Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 opacity-100">
-        <div className="space-y-6">
-          <div className="tuto-perfil-datos">
-            <SeccionDatosBasicos
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 opacity-100 items-start">
+        <div className="tuto-perfil-datos">
+          <SeccionDatosBasicos
+            formData={formData}
+            departamentos={parametros?.departamentos ?? []}
+            municipios={parametros?.municipios ?? []}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <div className="tuto-perfil-fiscal">
+            <SeccionFiscal
               formData={formData}
-              departamentos={parametros?.departamentos ?? []}
-              municipios={parametros?.municipios ?? []}
+              parametros={parametros ?? ({} as Parametros)}
               onChange={handleChange}
             />
           </div>
@@ -111,14 +119,6 @@ const PerfilPage: React.FC = () => {
               onRepChange={handleRepChange}
             />
           </div>
-        </div>
-
-        <div className="tuto-perfil-fiscal">
-          <SeccionFiscal
-            formData={formData}
-            parametros={parametros ?? ({} as Parametros)}
-            onChange={handleChange}
-          />
         </div>
       </div>
     </div>

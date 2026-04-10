@@ -94,7 +94,7 @@ const Step3Account: React.FC<Step3Props> = ({
       </div>
 
       {/* Tarjeta de Plan */}
-      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-[2.5rem] border-2 border-dashed border-slate-200 shadow-inner">
+      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border-2 border-dashed border-slate-200 shadow-inner">
         {/*   <div className="flex justify-between items-center mb-4">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">
             Plan de Suscripción
@@ -119,7 +119,7 @@ const Step3Account: React.FC<Step3Props> = ({
       </div>
 
       {/* Inputs */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         <InputField
           label="Correo Electrónico Administrador"
           type="email"
@@ -131,7 +131,7 @@ const Step3Account: React.FC<Step3Props> = ({
           error={errors.email}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <InputField
               label="Contraseña"
@@ -171,7 +171,7 @@ const Step3Account: React.FC<Step3Props> = ({
           <label className="mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
             Identidad Institucional (Logo)
           </label>
-          <div className="relative w-44 h-44 rounded-[2.5rem] border-2 border-dashed border-slate-300 bg-white shadow-xl overflow-hidden hover:border-[#1e3a8a] transition-all flex items-center justify-center cursor-pointer group">
+          <div className="relative w-44 h-44 rounded-2xl border-2 border-dashed border-slate-300 bg-white shadow-xl overflow-hidden hover:border-[#1e3a8a] transition-all flex items-center justify-center cursor-pointer group">
             {logoPreview ? (
               <div className="relative w-full h-full p-4 animate-in zoom-in-95 duration-300">
                 <img
