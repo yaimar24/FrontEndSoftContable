@@ -22,15 +22,15 @@ const CheckboxCard: React.FC<CheckboxCardProps> = ({
     blue: {
       bgActive: 'bg-blue-50/30',
       borderActive: 'border-blue-200',
-      textActive: 'text-blue-700',
-      boxActive: 'bg-blue-600 border-blue-600',
+      textActive: 'text-blue-600',
+      boxActive: 'bg-blue-500 border-blue-500',
       iconActive: 'text-blue-400',
     },
     indigo: {
       bgActive: 'bg-indigo-50/30',
       borderActive: 'border-indigo-200',
-      textActive: 'text-indigo-700',
-      boxActive: 'bg-indigo-600 border-indigo-600',
+      textActive: 'text-indigo-600',
+      boxActive: 'bg-indigo-500 border-indigo-500',
       iconActive: 'text-indigo-400',
     }
   };
@@ -49,23 +49,23 @@ const CheckboxCard: React.FC<CheckboxCardProps> = ({
         }`}
     >
       <div className="flex items-center gap-3 w-full pointer-events-none">
-        <div className={`w-4 h-4 rounded-md border flex-shrink-0 flex items-center justify-center transition-colors ${
-          checked ? colors.boxActive : "bg-white border-slate-300"
+        <div className={`w-3.5 h-3.5 rounded-[4px] border flex-shrink-0 flex items-center justify-center transition-colors ${
+          checked ? colors.boxActive : "bg-white border-slate-300 shadow-sm"
         }`}>
           {checked && <div className="w-1.5 h-1.5 bg-white rounded-sm" />}
         </div>
         
         <div className="flex flex-col justify-center">
           <span
-            className={`text-[10.5px] leading-tight font-black uppercase tracking-tight transition-colors ${
-              checked ? colors.textActive : "text-slate-600"
+            className={`text-[10px] uppercase tracking-widest font-black transition-colors ${
+              checked ? colors.textActive : "text-slate-400"
             }`}
           >
             {label}
           </span>
           {Icon && (
             <Icon
-              size={14}
+              size={13}
               className={`mt-0.5 ${checked ? colors.iconActive : "text-slate-300"}`}
             />
           )}

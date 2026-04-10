@@ -4,7 +4,7 @@ import { getReciboCajaById } from "../../../../../services/venta/ventaService";
 import type { ReciboCajaRead } from "../../../../../models/Venta";
 import { useGlobalLoading as useLoading } from "../../../../../context/LoadingContext";
 import PageHeader from "../../../../Layout/PageHeader";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, Printer, Banknote } from "lucide-react";
 import Button from "../../../../common/Button";
 
 export const ReciboCajaViewer = () => {
@@ -44,7 +44,8 @@ export const ReciboCajaViewer = () => {
       <div className="print:hidden">
         <PageHeader 
           title="Detalle de Recibo de Caja" 
-          subtitle="Previsualizaci�n del comprobante de pago" 
+          subtitle="Previsualización del comprobante de pago" 
+          icon={Banknote}
           actions={
             <Button
               variant="primary"

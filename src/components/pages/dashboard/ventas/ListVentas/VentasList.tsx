@@ -112,19 +112,20 @@ const VentasList: React.FC<Props> = ({ data = [], onPreview, onDetails }) => {
 
   return (
     <div className="space-y-4">
-      <div className="tuto-ventas-export flex flex-col lg:flex-row justify-between items-center gap-4">
-        <div className="flex-1" />
-        <ExportButtons
-          onExportExcel={() => exportToExcel(exportConfig)}
-          onExportPDF={() => exportToPDF(exportConfig)}
-        />
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div className="tuto-ventas-search w-full lg:w-1/3">
+          <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o cliente" />
+        </div>
+
+        <div className="tuto-ventas-export w-full sm:w-auto self-end">
+          <ExportButtons
+            onExportExcel={() => exportToExcel(exportConfig)}
+            onExportPDF={() => exportToPDF(exportConfig)}
+          />
+        </div>
       </div>
 
-      <div className="tuto-ventas-search">
-        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o cliente" />
-      </div>
-
-      <div className="tuto-ventas-table bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-ventas-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
     </div>

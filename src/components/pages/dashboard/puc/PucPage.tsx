@@ -5,7 +5,7 @@ import PucItem from "./PucItem";
 import type { PucNodo } from "../../../../models/Puc";
 import PageHeader from "../../../Layout/PageHeader";
 import SearchBar from "../../../common/SearchBar";
-import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye } from "lucide-react";
+import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye, BookOpen } from "lucide-react";
 import { hideCuentaContable, restoreCuentaContable, updateCuentaContable, getHiddenPuc } from "../../../../services/puc/pucService";
 import Modal from "../../../common/Modal";
 import StatusModal from "../../../common/StatusModal";
@@ -186,10 +186,11 @@ const PucPage: React.FC = () => {
       {/* Loader global */}
 
       {/* Header */}
-      <div className="tuto-puc-header">
+            <div className="tuto-puc-header">
         <PageHeader
           title="Plan de Cuentas"
           subtitle="Catálogo institucional de cuentas"
+          icon={BookOpen}
           actions={
             <div className="flex items-center gap-3">
               <div className="tuto-puc-search">

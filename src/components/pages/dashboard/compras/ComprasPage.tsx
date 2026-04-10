@@ -278,11 +278,13 @@ const ComprasPage: React.FC = () => {
           <>
             {error && <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold">{error}</div>}
 
-            <div className="tuto-search">
-              <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+              <div className="tuto-search w-full lg:w-1/3">
+                <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+              </div>
             </div>
 
-            <div className="tuto-table bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+            <div className="tuto-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
               <Table columns={columns} data={filteredData} />
             </div>
           </>

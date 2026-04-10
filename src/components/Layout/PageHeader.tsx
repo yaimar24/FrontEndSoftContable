@@ -18,18 +18,18 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   switcher,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           {Icon && (
-            <Icon className="text-blue-600" size={32} strokeWidth={2.5} />
+            <Icon className="text-blue-600 shrink-0" size={32} strokeWidth={2.5} />
           )}
-          <h1 className="text-4xl font-black text-slate-800 uppercase tracking-tighter leading-none">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-800 uppercase tracking-tighter leading-none">
             {title}
           </h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 pl-0 sm:pl-[44px]">
           {subtitle && (
             <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">
               {subtitle}

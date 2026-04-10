@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Save } from "lucide-react";
+import { Save, Building2 } from "lucide-react";
 import { useAuth } from "../../../../hooks/useAuth";
 
 import StatusModal from "../../../common/StatusModal";
@@ -79,6 +79,7 @@ const PerfilPage: React.FC = () => {
         <PageHeader
           title="Perfil Institucional"
           subtitle="Configuración de la entidad"
+          icon={Building2}
           actions={
             <div className="tuto-perfil-save">
               <Button
