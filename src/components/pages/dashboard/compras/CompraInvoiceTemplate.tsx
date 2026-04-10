@@ -54,7 +54,7 @@ export const CompraInvoiceTemplate: React.FC<CompraInvoiceTemplateProps> = ({ fa
     .map(d => ({ nombre: d.retencionNombre, tarifa: d.tarifaRetencion, valor: d.impuestoRetencion }));
 
   return (
-    <div className="w-full h-full bg-white print:p-0 p-8 sm:p-12 text-slate-800 text-sm">
+    <div className="w-full h-full bg-white print:p-0 p-5 sm:p-5 text-slate-800 text-sm">
       {/* Header Panel */}
       <div className="flex justify-between items-start border-b-2 border-slate-200 pb-8 mb-8">
         <div className="flex flex-col gap-2">
@@ -80,7 +80,7 @@ export const CompraInvoiceTemplate: React.FC<CompraInvoiceTemplateProps> = ({ fa
       </div>
 
       {/* Info Grid */}
-      <div className="grid grid-cols-2 gap-8 mb-10">
+      <div className="grid grid-cols-2 gap-5 mb-10">
         <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
           <h3 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4 border-b border-slate-200 pb-2">PROVEEDOR</h3>
           <p className="font-black text-base text-slate-800 mb-1">{factura.proveedorNombre}</p>

@@ -229,7 +229,7 @@ const ComprasPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto">
       {loading && <LoadingOverlay message="Procesando..." />}
 
       <StatusModal
@@ -273,16 +273,18 @@ const ComprasPage: React.FC = () => {
         />
       </div>
 
-      <main className="tuto-form-container animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6"> 
+      <main className="tuto-form-container animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-4"> 
         {view === 'lista' ? (
           <>
             {error && <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold">{error}</div>}
 
-            <div className="tuto-search">
-              <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+              <div className="tuto-search w-full lg:w-1/3">
+                <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por número o proveedor" />
+              </div>
             </div>
 
-            <div className="tuto-table bg-white rounded-4xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+            <div className="tuto-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
               <Table columns={columns} data={filteredData} />
             </div>
           </>

@@ -37,7 +37,7 @@ const Dashboard = () => {
       <main className="flex-1 flex flex-col print:!block print:overflow-visible print:p-0 print:m-0">
       
 
-        <section className="p-8 overflow-y-auto print:p-0 print:overflow-visible print:m-0">
+        <section className="p-5 overflow-y-auto print:p-0 print:overflow-visible print:m-0">
           <Outlet />
         </section>
       </main>

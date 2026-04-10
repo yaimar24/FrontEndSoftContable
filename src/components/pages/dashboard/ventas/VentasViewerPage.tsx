@@ -52,7 +52,7 @@ const VentasViewerPage: React.FC = () => {
   if (!factura) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontró la factura</h2>
+        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontrï¿½ la factura</h2>
         <Button onClick={() => navigate('/dashboard/ventas')} variant="primary">Volver a Ventas</Button>
       </div>
     );
@@ -108,10 +108,10 @@ const VentasViewerPage: React.FC = () => {
       </div>
 
       {/* Main Content Area (Not the printable, but the Dashboard View) */}
-      <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden space-y-6">
+      <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden space-y-4">
          
          {/* Encabezado */}
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-6">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Cliente</p>
                <p className="text-base font-black text-slate-800">{factura.clienteNombre}</p>
@@ -123,16 +123,16 @@ const VentasViewerPage: React.FC = () => {
                <p className="text-sm text-slate-500 font-medium">NIT: {factura.colegioNit}</p>
             </div>
             <div>
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboración</p>
+               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboraciï¿½n</p>
                <p className="text-sm font-bold text-slate-700">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(factura.fechaElaboracion))}</p>
             </div>
          </div>
 
          {/* Grid de Tablas: Productos y Recibos */}
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             
             {/* Left Column: Productos (Colspan 2) */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4">
                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
                      <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">

@@ -14,7 +14,7 @@ interface TableProps<T> {
   itemsPerPage?: number;
 }
 
-export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) => {
+export const Table = <T,>({ columns, data, itemsPerPage = 10 }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -54,7 +54,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
   };
 
   return (
-    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
       {/* Este div controla el scroll interno horizontal */}
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full border-collapse min-w-max">
@@ -63,7 +63,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
               {columns.map((col, i) => (
                 <th
                   key={i}
-                  className={`p-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap ${col.className || ''}`}
+                  className={`px-5 py-5 text-left text-[9.5px] font-black text-slate-400 uppercase tracking-[0.15em] whitespace-nowrap ${col.className || ''}`}
                 >
                   {col.header}
                 </th>
@@ -75,7 +75,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
               currentData.map((item, i) => (
                 <tr key={i} className="group transition-colors hover:bg-blue-50/20">
                   {columns.map((col, j) => (
-                    <td key={j} className={`p-6 text-sm text-slate-600 font-medium ${col.className || ''}`}>
+                    <td key={j} className={`px-5 py-4.5 sm:py-5 text-xs text-slate-600 font-medium ${col.className || ''}`}>
                       {col.render(item)}
                     </td>
                   ))}
@@ -83,7 +83,7 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
               ))
             ) : (
                <tr>
-                 <td colSpan={columns.length} className="p-10 text-center text-slate-400 text-sm font-bold uppercase tracking-widest">
+                 <td colSpan={columns.length} className="px-4 py-8 text-center text-slate-400 text-xs font-bold uppercase tracking-wide">
                     No hay registros disponibles
                  </td>
                </tr>
@@ -94,33 +94,33 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
 
       {/* Pagination Container */}
       {totalPages > 0 && (
-        <div className="border-t border-slate-100 bg-slate-50/30 p-6 flex items-center justify-between">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+        <div className="border-t border-slate-100 bg-slate-50/30 px-4 py-3 flex flex-wrap gap-3 items-center justify-between">
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
               Mostrando {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, data.length)} de {data.length}
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 rounded-2xl border-2 border-slate-100 bg-white flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all disabled:opacity-50 disabled:hover:border-slate-100 disabled:hover:text-slate-400 disabled:hover:bg-white active:scale-95"
+                  className="w-8 h-8 rounded-lg border-2 border-slate-100 bg-white flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all disabled:opacity-50 active:scale-95"
                 >
-                    <ChevronLeft size={18} />
+                    <ChevronLeft size={16} />
                 </button>
 
                 <div className="flex items-center gap-1">
                     {generatePageNumbers().map((page, idx) => (
                         page === '...' ? (
-                            <div key={`ellipsis-${idx}`} className="w-10 h-10 flex items-center justify-center text-slate-300">
+                            <div key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-slate-300">
                                 <MoreHorizontal size={14} />
                             </div>
                         ) : (
                             <button
                                 key={`page-${page}`}
                                 onClick={() => setCurrentPage(page as number)}
-                                className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-black transition-all active:scale-95 border-2 ${
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black transition-all active:scale-95 border-2 ${
                                     currentPage === page 
-                                    ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/30' 
+                                    ? 'bg-blue-500 text-white border-blue-500 shadow-sm' 
                                     : 'bg-white text-slate-500 border-slate-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100'
                                 }`}
                             >
@@ -133,9 +133,9 @@ export const Table = <T,>({ columns, data, itemsPerPage = 5 }: TableProps<T>) =>
                 <button 
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 rounded-2xl border-2 border-slate-100 bg-white flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all disabled:opacity-50 disabled:hover:border-slate-100 disabled:hover:text-slate-400 disabled:hover:bg-white active:scale-95"
+                  className="w-8 h-8 rounded-lg border-2 border-slate-100 bg-white flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50 transition-all disabled:opacity-50 active:scale-95"
                 >
-                    <ChevronRight size={18} />
+                    <ChevronRight size={16} />
                 </button>
             </div>
         </div>

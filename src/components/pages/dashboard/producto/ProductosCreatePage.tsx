@@ -64,7 +64,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     <form 
       onSubmit={handleSubmit}
       noValidate
-      className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500"
+      className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500"
     >
       <StatusModal
         show={showConfirm}
@@ -89,7 +89,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
       />
 
       {/* Header Sticky */}
-      <div className="tuto-producto-sticky-header flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm sticky top-4 z-20 border border-slate-100">
+      <div className="tuto-producto-sticky-header flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -108,9 +108,9 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <section className="tuto-producto-identificacion bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 space-y-4">
+          <section className="tuto-producto-identificacion bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <Box size={18} className="text-blue-500" /> Identificación del
               Ítem
@@ -151,7 +151,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             </div>
           </section>
 
-          <section className="tuto-producto-precio bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <section className="tuto-producto-precio bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <DollarSign size={18} className="text-emerald-500" /> Precio
               General
@@ -179,7 +179,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             </div>
           </section>
 
-          <section className="tuto-producto-cuentas bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-6">
+          <section className="tuto-producto-cuentas bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mt-6">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <BookMarked size={18} className="text-amber-500" /> Cuentas Contables (PUC)
             </h3>
@@ -216,8 +216,8 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
         </div>
 
-        <div className="space-y-6">
-          <section className="tuto-producto-fiscal bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="space-y-4">
+          <section className="tuto-producto-fiscal bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
               <ShieldCheck size={18} className="text-purple-500" /> Datos
               Fiscales

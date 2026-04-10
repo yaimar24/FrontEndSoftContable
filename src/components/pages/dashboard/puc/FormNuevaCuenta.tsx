@@ -60,7 +60,7 @@ const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onCl
       title="Nueva Cuenta" 
       subtitle={padre ? `Depende de: ${padre.codigo}` : 'Nivel Principal'}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 gap-5">
           <InputField
             label="Código de Cuenta"

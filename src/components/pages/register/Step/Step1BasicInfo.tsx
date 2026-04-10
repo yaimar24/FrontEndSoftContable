@@ -80,7 +80,7 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
+    <div className="space-y-5 animate-in fade-in slide-in-from-right-4">
       {/* Header */}
       <div className="flex items-center space-x-3">
         <div className="bg-blue-100 p-2.5 rounded-xl text-[#1e3a8a]">
@@ -91,7 +91,7 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <InputField
           label="Nombre de la Institución"
           name="nombreColegio"

@@ -13,13 +13,13 @@ interface Props {
 }
 
 export const SeccionRepresentante: React.FC<Props> = ({ representantes, tiposId, onRepChange }) => (
-  <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-6 shadow-sm">
+  <section className="bg-white p-5 rounded-2xl border border-slate-100 space-y-4 shadow-sm">
     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
       <UserCheck size={14} className="text-purple-500"/> Representante Legal
     </h3>
 
     {representantes.map((rep, index) => (
-      <div key={rep.id ?? index} className="space-y-4 bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
+      <div key={rep.id ?? index} className="space-y-4 bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
         <InputField
           label="Nombre"
           name="nombre"

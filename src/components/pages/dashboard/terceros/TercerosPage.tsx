@@ -93,7 +93,7 @@ const TercerosPage = () => {
   };
 
   return (
-    <div className="tuto-form-terceros min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="tuto-form-terceros min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-4 max-w-[1600px] mx-auto">
       {loading && <LoadingOverlay message="Sincronizando..." />}
       
       <div className="tuto-header-terceros">

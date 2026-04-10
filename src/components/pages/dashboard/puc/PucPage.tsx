@@ -5,7 +5,7 @@ import PucItem from "./PucItem";
 import type { PucNodo } from "../../../../models/Puc";
 import PageHeader from "../../../Layout/PageHeader";
 import SearchBar from "../../../common/SearchBar";
-import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye } from "lucide-react";
+import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye, BookOpen } from "lucide-react";
 import { hideCuentaContable, restoreCuentaContable, updateCuentaContable, getHiddenPuc } from "../../../../services/puc/pucService";
 import Modal from "../../../common/Modal";
 import StatusModal from "../../../common/StatusModal";
@@ -182,14 +182,15 @@ const PucPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto relative">
+    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto relative">
       {/* Loader global */}
 
       {/* Header */}
-      <div className="tuto-puc-header">
+            <div className="tuto-puc-header">
         <PageHeader
           title="Plan de Cuentas"
           subtitle="Catálogo institucional de cuentas"
+          icon={BookOpen}
           actions={
             <div className="flex items-center gap-3">
               <div className="tuto-puc-search">
@@ -233,7 +234,7 @@ const PucPage: React.FC = () => {
       </div>
 
       {/* Árbol PUC */}
-<div className="tuto-puc-tree bg-white rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
+<div className="tuto-puc-tree bg-white rounded-2xl p-6 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
         {filteredTree.length > 0 ? (
           <div className="max-w-5xl">
             {filteredTree.map((nodo) => (
@@ -270,7 +271,7 @@ const PucPage: React.FC = () => {
 
       {/* Edit Modal */}
       <Modal isOpen={!!editNode} onClose={() => setEditNode(undefined)} title={`Editar Cuenta: ${editNode?.codigo}`}>
-        <form onSubmit={handleUpdateNode} className="space-y-6 min-w-[400px]">
+        <form onSubmit={handleUpdateNode} className="space-y-4 min-w-[400px]">
             {editNode?.esGlobal && (
                <div className="bg-amber-50 text-amber-600 p-4 rounded-xl flex gap-3">
                  <Globe size={24} className="shrink-0" />

@@ -78,9 +78,9 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans p-4">
-      <div className="bg-white rounded-3xl shadow-2xl border-t-[6px] border-[#1e3a8a] w-full max-w-md overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-2xl border-t-[6px] border-[#1e3a8a] w-full max-w-md overflow-hidden">
         {/* Logo */}
-        <div className="p-8 text-center bg-white border-b border-slate-100">
+        <div className="p-5 text-center bg-white border-b border-slate-100">
           <img
             src="/sicpie.png"
             alt="Logo SICPIE"
@@ -92,7 +92,7 @@ const LoginForm = () => {
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <InputField
             label="Correo Electrónico"
             type="email"

@@ -4,7 +4,7 @@ import { getReciboCajaById } from "../../../../../services/venta/ventaService";
 import type { ReciboCajaRead } from "../../../../../models/Venta";
 import { useGlobalLoading as useLoading } from "../../../../../context/LoadingContext";
 import PageHeader from "../../../../Layout/PageHeader";
-import { ArrowLeft, Printer } from "lucide-react";
+import { ArrowLeft, Printer, Banknote } from "lucide-react";
 import Button from "../../../../common/Button";
 
 export const ReciboCajaViewer = () => {
@@ -40,11 +40,12 @@ export const ReciboCajaViewer = () => {
   if (!recibo) return null;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-4 max-w-4xl mx-auto">
       <div className="print:hidden">
         <PageHeader 
           title="Detalle de Recibo de Caja" 
-          subtitle="Previsualización del comprobante de pago" 
+          subtitle="PrevisualizaciÃ³n del comprobante de pago" 
+          icon={Banknote}
           actions={
             <Button
               variant="primary"
@@ -64,14 +65,14 @@ export const ReciboCajaViewer = () => {
         </button>
       </div>
 
-      <div className="bg-white border-2 border-slate-200/60 p-10 rounded-[2rem] shadow-xl shadow-slate-200/50 print:shadow-none print:border-none print:p-0">
-        <div className="border-4 border-slate-800 p-8 rounded-3xl print:p-0 print:border-none">
+      <div className="bg-white border-2 border-slate-200/60 p-6 rounded-2xl shadow-xl shadow-slate-200/50 print:shadow-none print:border-none print:p-0">
+        <div className="border-4 border-slate-800 p-5 rounded-2xl print:p-0 print:border-none">
           <div className="text-center border-b-4 border-slate-800 pb-6 mb-6">
             <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">Recibo de Caja</h1>
             <h2 className="text-4xl font-black text-blue-600 mt-2 tracking-tight">{recibo.numero}</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm font-medium">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm font-medium">
             <div className="space-y-4">
               <div>
                 <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Cliente</p>
@@ -96,7 +97,7 @@ export const ReciboCajaViewer = () => {
 
             <div className="space-y-4 md:border-l-2 border-slate-100 md:pl-8">
               <div>
-                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de Operación</p>
+                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de Operaciï¿½n</p>
                 <span className={`inline-block px-3 py-1 font-black text-xs uppercase border rounded-lg ${recibo.esAbono ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                   {recibo.esAbono ? 'ABONO' : 'PAGO TOTAL'}
                 </span>

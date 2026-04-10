@@ -157,10 +157,10 @@ const ComprasViewerPage: React.FC = () => {
       </div>
 
       {/* Main Content Area (Printable Dashboard View) */}
-      <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-6">
+      <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-4">
          
          {/* Encabezado */}
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-6">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Proveedor</p>
                <p className="text-base font-black text-slate-800">{compra.proveedorNombre}</p>
@@ -183,10 +183,10 @@ const ComprasViewerPage: React.FC = () => {
          </div>
 
          {/* Grid de Tablas: Productos */}
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             
             {/* Left Column: Productos (Colspan 2) */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4">
                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
                      <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
@@ -230,7 +230,7 @@ const ComprasViewerPage: React.FC = () => {
             </div>
 
             {/* Right Column: Resumen Totales */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-4">
                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                   <h3 className="font-black text-slate-700 mb-6 uppercase tracking-widest text-sm flex items-center gap-2">
                      <FileText size={18} className="text-slate-400"/> Resumen

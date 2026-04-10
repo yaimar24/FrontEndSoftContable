@@ -80,9 +80,9 @@ const DashboardHome = () => {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="tuto-dash-header flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200"
+          className="tuto-dash-header flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white p-6 sm:p-5 rounded-2xl shadow-sm border border-slate-200"
         >
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-blue-100 rounded-full blur-md transform scale-110"></div>
               {logoUrl ? (
@@ -109,12 +109,12 @@ const DashboardHome = () => {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="space-y-8"
+          className="space-y-5"
         >
           {/* Top Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Ventas Mes */}
-            <motion.div variants={itemVariants} className="tuto-dash-ventas bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+            <motion.div variants={itemVariants} className="tuto-dash-ventas bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
                 <TrendingUp size={120} />
               </div>
@@ -129,7 +129,7 @@ const DashboardHome = () => {
             </motion.div>
 
             {/* Compras Mes */}
-            <motion.div variants={itemVariants} className="tuto-dash-compras bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+            <motion.div variants={itemVariants} className="tuto-dash-compras bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
                 <TrendingDown size={120} />
               </div>
@@ -144,7 +144,7 @@ const DashboardHome = () => {
             </motion.div>
 
             {/* Cartera */}
-            <motion.div variants={itemVariants} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+            <motion.div variants={itemVariants} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
                <div className="absolute -right-4 -top-4 opacity-5">
                 <Wallet size={120} />
               </div>
@@ -160,9 +160,9 @@ const DashboardHome = () => {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Chart Area */}
-            <motion.div variants={itemVariants} className="col-span-1 lg:col-span-3 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm overflow-hidden min-h-[300px]">
+            <motion.div variants={itemVariants} className="col-span-1 lg:col-span-3 bg-white p-6 sm:p-5 rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[300px]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
                  <h2 className="text-sm font-black text-slate-400 tracking-widest uppercase flex items-center gap-2">
                     <Activity size={18} className="text-indigo-500" />
@@ -190,7 +190,7 @@ const DashboardHome = () => {
             </motion.div>
 
             {/* List Activity */}
-            <motion.div variants={itemVariants} className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <motion.div variants={itemVariants} className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">Últimos Movimientos</h2>
               </div>
@@ -233,7 +233,7 @@ const DashboardHome = () => {
             </motion.div>
 
             {/* Side Modules & Counters */}
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="space-y-4">
               {/* Counters */}
               <div className="grid grid-cols-1 gap-4">
                  <div onClick={() => navigate('/dashboard/terceros')} className="cursor-pointer bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between hover:-translate-y-1 transition-transform group">
