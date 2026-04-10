@@ -72,7 +72,7 @@ const TercerosPage = () => {
         },
         {
           target: '.tuto-terceros-ubicacion',
-          content: 'Selecciona la ciudad y escribe la dirección del tercero.',
+          content: 'Selecciona el municipio y escribe la dirección del tercero.',
         },
         {
           target: '.tuto-terceros-fiscal',

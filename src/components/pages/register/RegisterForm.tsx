@@ -23,7 +23,7 @@ const initialData: RegistroFormData = {
   nombreColegio: "",
   nit: "",
   direccion: "",
-  ciudadId: 0,
+  municipioId: 0,
   telefono: "",
   actividadEconomicaId: "",
   tarifaIca: "",
@@ -143,7 +143,8 @@ export const RegisterForm: React.FC = () => {
               formData={formData}
               handleChange={handleChange}
               nextStep={nextStep}
-              ciudades={parametros.ciudades}
+              departamentos={parametros.departamentos}
+              municipios={parametros.municipios}
               actividadesEconomicas={parametros.actividadesEconomicas}
             />
           )}

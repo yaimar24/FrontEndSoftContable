@@ -9,9 +9,15 @@ import type { Colegio } from "../../../../models/Colegio";
 import Button from "../../../common/Button";
 
 // Interfaces Locales
-interface Ciudad {
+interface Departamento {
   id: number;
   nombre: string;
+}
+
+interface Municipio {
+  id: number;
+  nombre: string;
+  departamentoId: number;
 }
 
 interface ActividadEconomica {
@@ -24,7 +30,8 @@ interface Step1Props {
   formData: Partial<Colegio>;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   nextStep: () => void;
-  ciudades: Ciudad[];
+  departamentos: Departamento[];
+  municipios: Municipio[];
   actividadesEconomicas: ActividadEconomica[];
 }
 
@@ -32,11 +39,17 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
   formData,
   handleChange,
   nextStep,
-  ciudades,
+  departamentos,
+  municipios,
   actividadesEconomicas,
 }) => {
   // Tipamos el estado de errores explícitamente
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
+
+  const municipiosFiltrados = municipios.filter(
+    (m) => m.departamentoId === Number(selectedDepartamentoId)
+  );
 
   const schema = {
     nombreColegio: [validators.required()],
@@ -51,7 +64,7 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
       validators.onlyNumbers(),
       validators.minLength(7),
     ],
-    ciudadId: [validators.requiredSelect()],
+    municipioId: [validators.requiredSelect()],
     actividadEconomicaId: [validators.requiredSelect()],
   };
 
@@ -122,14 +135,28 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
         />
 
         <SelectField
-          label="Ciudad"
-          name="ciudadId"
-          value={formData.ciudadId || ""}
+          label="Departamento"
+          name="departamentoId"
+          value={selectedDepartamentoId}
+          onChange={(e: any) => {
+            setSelectedDepartamentoId(e.target.value);
+            handleChange({ target: { name: "municipioId", value: "" } } as any);
+          }}
+          options={departamentos || []}
+          placeholder="Selecciona Departamento"
+          displayExpr={(d: Departamento) => d.nombre}
+        />
+
+        <SelectField
+          label="Municipio"
+          name="municipioId"
+          value={formData.municipioId || ""}
           onChange={handleChange}
-          options={ciudades}
-          placeholder="Selecciona Ciudad"
-          error={errors.ciudadId}
-          displayExpr={(c: Ciudad) => c.nombre} // Tipado en la expresión
+          options={municipiosFiltrados}
+          placeholder="Selecciona Municipio"
+          error={errors.municipioId}
+          displayExpr={(c: Municipio) => c.nombre} // Tipado en la expresión
+          disabled={!selectedDepartamentoId}
         />
 
         <SelectField

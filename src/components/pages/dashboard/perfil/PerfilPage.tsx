@@ -42,7 +42,7 @@ const PerfilPage: React.FC = () => {
       },
       {
         target: '.tuto-perfil-datos',
-        content: 'Completa los datos básicos como NIT, nombre, teléfono, ciudad y dirección de la institución.',
+        content: 'Completa los datos básicos como NIT, nombre, teléfono, municipio y dirección de la institución.',
       },
       {
         target: '.tuto-perfil-representante',
@@ -98,7 +98,8 @@ const PerfilPage: React.FC = () => {
           <div className="tuto-perfil-datos">
             <SeccionDatosBasicos
               formData={formData}
-              ciudades={parametros?.ciudades ?? []}
+              departamentos={parametros?.departamentos ?? []}
+              municipios={parametros?.municipios ?? []}
               onChange={handleChange}
             />
           </div>

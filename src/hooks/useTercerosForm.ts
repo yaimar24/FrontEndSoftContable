@@ -34,7 +34,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     colegioId: "",
     categoriaId: 0,
     regimenIvaId: 0,
-    ciudadId: null,
+    municipioId: null,
     direccion: null,
     telefono: null,
     responsabilidadesFiscalesIds: [],
@@ -159,7 +159,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
         if (!payload.email || payload.email.trim() === "") payload.email = null;
         if (!payload.telefono || payload.telefono.trim() === "") payload.telefono = null;
         if (!payload.direccion || payload.direccion.trim() === "") payload.direccion = null;
-        if (!payload.ciudadId || payload.ciudadId === 0) payload.ciudadId = null;
+        if (!payload.municipioId || payload.municipioId === 0) payload.municipioId = null;
 
       const result = initialData?.id
         ? await updateTercero(initialData.id, { ...payload, id: initialData.id } as any)
