@@ -1,10 +1,24 @@
 import { Building2, MapPin, Phone, Hash, Upload } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import InputField from '../../../../common/InputField';
 import SelectField from '../../../../common/SelectField';
-import type { Ciudad } from '../../../../../models/Colegio';
+import type { Municipio, Departamento } from '../../../../../models/Colegio';
 
-export const SeccionDatosBasicos = ({ formData, ciudades, onChange }: any) => {
+export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onChange }: any) => {
   const getFullUrl = (path: string) => path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
+
+  const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
+
+  useEffect(() => {
+    // Load pre-selected departamento if returning from API details
+    if (formData.departamentoId) {
+      setSelectedDepartamentoId(String(formData.departamentoId));
+    }
+  }, [formData.departamentoId]);
+
+  const municipiosFiltrados = (municipios || []).filter(
+    (m: Municipio) => m.departamentoId === Number(selectedDepartamentoId)
+  );
 
   const logoPreview = formData.logo instanceof File
     ? URL.createObjectURL(formData.logo)
@@ -58,8 +72,17 @@ export const SeccionDatosBasicos = ({ formData, ciudades, onChange }: any) => {
       </div>
       <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={onChange} icon={MapPin} />
       <SelectField
-        label="Ciudad" name="ciudadId" value={formData.ciudadId} onChange={onChange}
-        options={ciudades || []} displayExpr={(c: Ciudad) => c.nombre} placeholder="Seleccionar ciudad"
+        label="Departamento" name="departamentoId" value={selectedDepartamentoId}
+        onChange={(e: any) => {
+          setSelectedDepartamentoId(e.target.value);
+          onChange({ target: { name: "municipioId", value: "" } });
+        }}
+        options={departamentos || []} displayExpr={(d: Departamento) => d.nombre} placeholder="Seleccionar departamento"
+      />
+      <SelectField
+        label="Municipio" name="municipioId" value={formData.municipioId} onChange={onChange}
+        options={municipiosFiltrados} displayExpr={(c: Municipio) => c.nombre} placeholder="Seleccionar municipio"
+        disabled={!selectedDepartamentoId}
       />
     </section>
   );

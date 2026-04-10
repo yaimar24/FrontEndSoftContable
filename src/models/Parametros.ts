@@ -1,10 +1,11 @@
 import type { Categorias } from "./Categoria";
-import type { ActividadEconomica, Ciudad, RegimenIva, ResponsabilidadFiscal, TipoIdentificacion, Tributo } from "./Colegio";
+import type { ActividadEconomica, Departamento, Municipio, RegimenIva, ResponsabilidadFiscal, TipoIdentificacion, Tributo } from "./Colegio";
 import type { TiposPersona } from "./TipoPersona";
 
 
 export interface Parametros {
-  ciudades: Ciudad[];
+  departamentos: Departamento[];
+  municipios: Municipio[];
   actividadesEconomicas: ActividadEconomica[];
   tiposIdentificacion: TipoIdentificacion[];
   regimenesIva: RegimenIva[];

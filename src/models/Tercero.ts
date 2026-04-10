@@ -11,7 +11,8 @@ export interface TerceroCreateDTO {
   colegioId: string;
   categoriaId: number;
   regimenIvaId: number;
-  ciudadId?: number | null;
+  departamentoId?: number | null;
+  municipioId?: number | null;
   direccion?: string | null;
   telefono?: string | null;
   indicativo?: string;
@@ -35,7 +36,8 @@ export interface TerceroupdateDTO {
   colegioId: string;
   categoriaId: number;
   regimenIvaId: number;
-  ciudadId?: number | null;
+  departamentoId?: number | null;
+  municipioId?: number | null;
   direccion?: string | null;
   telefono?: string | null;
   indicativo?: string;

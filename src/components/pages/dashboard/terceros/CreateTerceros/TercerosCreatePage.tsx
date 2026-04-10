@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Save, ArrowLeft, UserCircle, MapPin, Building2, Mail, Phone } from 'lucide-react';
 import { useAuth } from '../../../../../hooks/useAuth';
 import Button from '../../../../common/Button';
@@ -23,6 +23,17 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     handleChange, handleCheckboxChange, handleSaveClick, handleConfirmSave
   } = useTercerosForm(token, initialData);
 
+  const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
+
+  useEffect(() => {
+    if (formData.departamentoId) {
+      setSelectedDepartamentoId(String(formData.departamentoId));
+    }
+  }, [formData.departamentoId]);
+
+  const municipiosFiltrados = (parametros?.municipios || []).filter(
+    (m: any) => m.departamentoId === Number(selectedDepartamentoId)
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 animate-in fade-in duration-500">
@@ -83,7 +94,27 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <MapPin size={18} className="text-blue-500"/> Ubicación
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <SelectField label="Ciudad" name="ciudadId" value={formData.ciudadId ?? ""} onChange={handleChange} error={errors.ciudadId} options={parametros?.ciudades || []} displayExpr={c => c.nombre} />
+              <SelectField 
+                label="Departamento" 
+                name="departamentoId" 
+                value={selectedDepartamentoId} 
+                onChange={(e: any) => {
+                  setSelectedDepartamentoId(e.target.value);
+                  handleChange({ target: { name: "municipioId", value: "" } } as any);
+                }} 
+                options={parametros?.departamentos || []} 
+                displayExpr={(d: any) => d.nombre} 
+              />
+              <SelectField 
+                label="Municipio" 
+                name="municipioId" 
+                value={formData.municipioId ?? ""} 
+                onChange={handleChange} 
+                error={errors.municipioId} 
+                options={municipiosFiltrados} 
+                displayExpr={(c: any) => c.nombre} 
+                disabled={!selectedDepartamentoId}
+              />
               <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={handleChange} error={errors.direccion} icon={MapPin} />
             </div>
           </section>

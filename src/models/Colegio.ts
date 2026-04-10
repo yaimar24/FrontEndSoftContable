@@ -1,9 +1,15 @@
 import type { User } from "./User";
 
-export interface Ciudad {
+export interface Departamento {
   id: number;
   nombre: string;
-  codigo: string;
+}
+
+export interface Municipio {
+  id: number;
+  nombre: string;
+  codigo?: string;
+  departamentoId: number;
 }
 
 export interface RegimenIva {
@@ -30,7 +36,8 @@ export interface ResponsabilidadFiscal {
 }
 
 export interface RegistroParametrosDTO {
-  ciudades: Ciudad[];
+  departamentos: Departamento[];
+  municipios: Municipio[];
   regimenesIva: RegimenIva[];
   tributos: Tributo[];
   responsabilidadesFiscales: ResponsabilidadFiscal[];
@@ -51,8 +58,11 @@ export interface Colegio {
   fechaCertificado: string; // ISO string
   representanteLegal: string;
   cedula: string;
-  ciudadId: number;
-  ciudad?: Ciudad;
+  municipioId: number;
+  municipioNombre?: string;
+  departamentoId?: number;
+  departamentoNombre?: string;
+  municipio?: Municipio;
   regimenIvaId: number;
   regimenIva?: RegimenIva;
   tipoIdentificacionId: number;

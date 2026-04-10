@@ -8,9 +8,10 @@ interface SelectFieldProps {
   placeholder?: string;
   displayExpr: (item: any) => string; 
   required?: boolean;
+  disabled?: boolean;
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({ label, name, value, onChange, options, error, placeholder, displayExpr, required }) => (
+const SelectField: React.FC<SelectFieldProps> = ({ label, name, value, onChange, options, error, placeholder, displayExpr, required, disabled }) => (
   <div className="flex flex-col space-y-1">
     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
       {label} {required && <span className="text-red-500">*</span>}
@@ -20,6 +21,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, name, value, onChange,
       value={value || ""}
       onChange={onChange}
       required={required}
+      disabled={disabled}
       className={`w-full bg-slate-50 border-2 rounded-2xl p-4 outline-none focus:ring-2 transition-all ${
         error ? "border-red-500 focus:ring-red-500" : "border-slate-100 focus:ring-blue-500"
       }`}
