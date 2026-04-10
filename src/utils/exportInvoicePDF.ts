@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { FacturaVentaReadDTO } from "../models/Venta";
-import type { FacturaCompraReadDTO } from "../models/FacturaCompra";
+import type { FacturaVentaReadDTO } from "../domain/models/Venta";
+import type { FacturaCompraReadDTO } from "../domain/models/FacturaCompra";
 import { getNombreColegioFromToken, getLogoUrlFromToken } from "./jwt";
 
 export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaCompraReadDTO, token: string | null) => {
