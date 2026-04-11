@@ -6,6 +6,7 @@ import { useGlobalLoading as useLoading } from "../../../../../application/conte
 import PageHeader from "../../../../components/organisms/PageHeader";
 import { ArrowLeft, Printer, Banknote } from "lucide-react";
 import Button from "../../../../components/atoms/Button";
+import { AsientosContablesSection } from "../../../../components/organisms/AsientosContablesSection";
 
 export const ReciboCajaViewer = () => {
   const { id } = useParams<{ id: string }>();
@@ -131,7 +132,21 @@ export const ReciboCajaViewer = () => {
           </div>
         </div>
       </div>
+
+      <div className="bg-white border-2 border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 print:hidden mt-8 overflow-hidden">
+        <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
+            <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+              <Banknote size={18} className="text-blue-500" />
+              Comprobantes contables
+            </h3>
+        </div>
+        <div className="p-6">
+            <AsientosContablesSection tipoDocumento="ReciboCaja" documentoId={recibo.id} />
+        </div>
+      </div>
+
     </div>
   );
 };
 export default ReciboCajaViewer;
+

@@ -4,10 +4,11 @@ import Button from '../../../components/atoms/Button';
 import LoadingOverlay from '../../../components/shared/LoadingOverlay';
 import { getCompraById, registrarFacturaCompra, anularFacturaCompra } from '../../../../data/services/compra/compraService';
 import type { FacturaCompraReadDTO } from '../../../../domain/models/FacturaCompra';
-import { ArrowLeft, Printer, ShoppingCart, FileText, CheckCircle, XCircle, Edit2, Download } from 'lucide-react';
 import StatusModal from '../../../components/organisms/StatusModal';
 import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import { exportInvoiceToPDF } from '../../../../utils/exportInvoicePDF';
+import { AsientosContablesSection } from '../../../components/organisms/AsientosContablesSection';
+import { FileText, Banknote, ShoppingCart, CheckCircle, XCircle, Edit2, Download, ArrowLeft, Printer } from 'lucide-react';
 
 const ComprasViewerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -260,6 +261,19 @@ const ComprasViewerPage: React.FC = () => {
                      </div>
                   </div>
                </div>
+
+               {/* Comprobantes contables Section */}
+               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-4">
+                  <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
+                     <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                        <Banknote size={18} className="text-blue-500" />
+                        Comprobantes contables
+                     </h3>
+                  </div>
+                  <div className="p-4">
+                     <AsientosContablesSection tipoDocumento="FacturaCompra" documentoId={compra.id} />
+                  </div>
+               </div>
             </div>
 
          </div>
@@ -274,3 +288,4 @@ const ComprasViewerPage: React.FC = () => {
 };
 
 export default ComprasViewerPage;
+

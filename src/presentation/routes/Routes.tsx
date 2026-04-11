@@ -16,6 +16,11 @@ import DashboardHome from "@/presentation/pages/dashboard/DashboardHome";
 import ComprasPage from "@/presentation/pages/dashboard/compras/ComprasPage";
 import ComprasViewerPage from "@/presentation/pages/dashboard/compras/ComprasViewerPage";
 import CompraPrintPage from "@/presentation/pages/dashboard/compras/CompraPrintPage";
+import { ContabilidadPage } from "@/presentation/pages/contabilidad/ContabilidadPage";
+import { ContabilidadDetailPage } from "@/presentation/pages/contabilidad/ContabilidadDetailPage";
+import { ContabilidadNuevoPage } from "@/presentation/pages/contabilidad/ContabilidadNuevoPage";
+import { ContabilidadConfiguracionPage } from "@/presentation/pages/contabilidad/ContabilidadConfiguracionPage";
+import { ContabilidadLibroAuxiliarPage } from "@/presentation/pages/contabilidad/ContabilidadLibroAuxiliarPage";
 const AppRoutes = () => (
   <Router>
     <Routes>
@@ -36,6 +41,11 @@ const AppRoutes = () => (
           <Route path="ventas/recibos/:id" element={<ReciboCajaViewer />} />
           <Route path="ventas/:id" element={<VentasViewerPage />} />          <Route path="factura-compra" element={<ComprasPage />} />
           <Route path="factura-compra/:id" element={<ComprasViewerPage />} />          <Route path="productos" element={<ProductosPage />} />
+          <Route path="asientos-contables" element={<ContabilidadPage />} />
+          <Route path="asientos-contables/nuevo" element={<ContabilidadNuevoPage />} />
+          <Route path="asientos-contables/configuracion" element={<ContabilidadConfiguracionPage />} />
+          <Route path="asientos-contables/libro-auxiliar" element={<ContabilidadLibroAuxiliarPage />} />
+          <Route path="asientos-contables/:id" element={<ContabilidadDetailPage />} />
         </Route>
         {/* RUTA DE SOLO IMPRESI�N EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />

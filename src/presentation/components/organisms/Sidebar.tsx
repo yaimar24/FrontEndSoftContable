@@ -6,12 +6,14 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   GraduationCap,
   FolderTree,
   Users,
   ShoppingBag,
   Receipt,
   Package,
+  BookOpen,
   HelpCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,6 +47,15 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
   const { startTutorial, stopTutorial } = useTutorial();
 
   const isDashboardHome = location.pathname === '/dashboard';
+
+  const [openSubMenus, setOpenSubMenus] = useState<Record<string, boolean>>({
+    '/dashboard/asientos-contables': location.pathname.startsWith('/dashboard/asientos-contables')
+  });
+
+  const toggleSubMenu = (e: React.MouseEvent, path: string) => {
+    e.preventDefault();
+    setOpenSubMenus(prev => ({ ...prev, [path]: !prev[path] }));
+  };
 
   // Detener tutorial al cambiar de ruta
   useEffect(() => {
@@ -84,21 +95,29 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     }, 800);
   };
 
-  const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-3 rounded-2xl font-bold transition-all relative group ${
-      isActive
-        ? "bg-blue-50 text-[#1e3a8a]"
-        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-    }`;
+  const linkClass = (isActive: boolean, isSubItem?: boolean) => {
+    let base = "flex items-center gap-3 px-3 py-3 rounded-2xl font-bold transition-all relative group ";
+    if (isSubItem && !isCollapsed) {
+      base += "ml-6 p-2 text-[12px] ";
+    }
+    base += isActive
+      ? "bg-blue-50 text-[#1e3a8a] "
+      : "text-slate-500 hover:bg-slate-50 hover:text-slate-800 ";
+    return base;
+  };
 
   const menuItems = [
     { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard },
     { path: "/dashboard/perfil", name: "Perfil", icon: User },
     { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
     { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
+    { path: "/dashboard/productos", name: "Productos", icon:  Package  },   
     { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag },
     { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt  },
-    { path: "/dashboard/productos", name: "Productos", icon:  Package  },   
+    { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true },
+    { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
+    { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
+    { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
   ];
 
   return (
@@ -166,25 +185,40 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
         </div>
 
         {/* NAVEGACIÓN */}
-        <nav className="tuto-menu flex-1 px-4 py-4 space-y-1">
-          {menuItems.map((item) => (
+        <nav className="tuto-menu flex-1 px-4 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
+          {menuItems.map((item) => {
+            if (item.isSubItem && item.parent && !openSubMenus[item.parent]) return null;
+            return (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === "/dashboard"}
-              className={linkClass}
+              end={item.path === "/dashboard" || item.path === "/dashboard/asientos-contables"}
+              className={({ isActive }) => linkClass(isActive, item.isSubItem)} 
+              style={{ display: isCollapsed && item.isSubItem ? 'none' : 'flex' }}
             >
               {({ isActive }) => (
                 <>
-                  <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                  {item.isSubItem ? (
+                     <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1"></div>
+                  ) : (
+                    <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />    
+                  )}
                   {!isCollapsed && (
                     <motion.span
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="text-[13px] whitespace-nowrap"
+                      className="text-[13px] whitespace-nowrap flex-1"
                     >
                       {item.name}
                     </motion.span>
+                  )}
+                  {item.hasSubItems && !isCollapsed && (
+                    <button 
+                      onClick={(e) => toggleSubMenu(e, item.path)}
+                      className={`p-1 rounded-md transition-colors ${openSubMenus[item.path] ? 'bg-blue-100 text-blue-700' : 'hover:bg-slate-200 text-slate-400'} z-10`}
+                    >
+                      {openSubMenus[item.path] ? <ChevronDown size={15} strokeWidth={3} /> : <ChevronRight size={15} strokeWidth={2.5} />}
+                    </button>
                   )}
                   {isActive && (
                     <motion.div
@@ -192,7 +226,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
                       className="absolute left-0 w-1 h-6 bg-[#1e3a8a] rounded-r-full"
                     />
                   )}
-                  {/* Tooltip visible solo cuando está colapsado y NO se está haciendo hover general */}
+                  {/* Tooltip visible solo cuando esta colapsado y NO se esta haciendo hover general */}
                   {isCollapsed && (
                     <div className="absolute left-16 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
                       {item.name}
@@ -201,7 +235,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
                 </>
               )}
             </NavLink>
-          ))}
+          )})}
         </nav>
 
         {/* FOOTER: BOTÓN DE AYUDA Y LOGOUT */}
@@ -273,3 +307,4 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
 };
 
 export default Sidebar;
+

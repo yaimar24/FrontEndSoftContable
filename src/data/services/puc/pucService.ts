@@ -37,12 +37,15 @@ export const restoreCuentaContable = async (codigo: string): Promise<ApiResponse
 };
 
 export const getCuentasPuc = async (
-  codigoRaiz: string,
+  codigoRaiz: string = '',
   soloDetalle: boolean = true,
   busqueda?: string,
   skipGlobalLoader: boolean = false
 ): Promise<ApiResponse<CuentaPuc[]>> => {
-  const params: string[] = [`codigoRaiz=${codigoRaiz}`, `soloDetalle=${soloDetalle}`];
+  const params: string[] = [`soloDetalle=${soloDetalle}`];
+  if (codigoRaiz) {
+    params.push(`codigoRaiz=${codigoRaiz}`);
+  }
   if (busqueda) {
     params.push(`busqueda=${encodeURIComponent(busqueda)}`);
   }
@@ -55,4 +58,5 @@ export const getCuentasInventario = (b?: string) => getCuentasPuc('14', true, b)
 export const getCuentasActivoFijo = (b?: string) => getCuentasPuc('15', true, b);
 export const getCuentasGasto = (b?: string) => getCuentasPuc('5', true, b);
 // export const getMediosPago = (b?: string) => getCuentasPuc('11', true, b); // The user says the old ones might continue working, but mentions it as an option. Since ventas uses getMediosPago from ventaService or pucService maybe?, I'll let it be exported just in case.
+
 
