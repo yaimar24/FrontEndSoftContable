@@ -9,6 +9,7 @@ import Button from "../../../components/atoms/Button";
 import { exportInvoiceToPDF } from "../../../../utils/exportInvoicePDF";        
 import { AsientosContablesSection } from "../../../components/organisms/AsientosContablesSection";
 import { PaymentModal } from "./ListVentas/PaymentModal";
+import { PlanCuotasSection } from "../../../components/organisms/PlanCuotasSection";
 
 const VentasViewerPage: React.FC = () => {
   const { id } = useParams();
@@ -112,7 +113,7 @@ const VentasViewerPage: React.FC = () => {
       <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden space-y-4">
          
          {/* Encabezado */}
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Cliente</p>
                <p className="text-base font-black text-slate-800">{factura.clienteNombre}</p>
@@ -124,8 +125,24 @@ const VentasViewerPage: React.FC = () => {
                <p className="text-sm text-slate-500 font-medium">NIT: {factura.colegioNit}</p>
             </div>
             <div>
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboraci�n</p>
+               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboración</p>
                <p className="text-sm font-bold text-slate-700">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(factura.fechaElaboracion))}</p>
+            </div>
+            <div>
+               {factura.esCredito ? (
+                 <>
+                   <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">Tipo de Pago</p>
+                   <p className="text-sm font-bold text-emerald-700">A Crédito</p>
+                   <p className="text-sm text-slate-500 font-medium">Frecuencia: {factura.frecuenciaPagoNombre}</p>
+                   <p className="text-sm text-slate-500 font-medium">Cuotas: {factura.numeroCuotas}</p>
+                 </>
+               ) : (
+                 <>
+                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tipo de Pago / Medio</p>
+                   <p className="text-sm font-bold text-slate-700">Contado</p>
+                   <p className="text-sm font-bold text-emerald-600">{factura.medioPagoNombre || 'N/A'}</p>
+                 </>
+               )}
             </div>
          </div>
 
@@ -175,7 +192,16 @@ const VentasViewerPage: React.FC = () => {
                      </table>
                   </div>
                </div>
-
+               {/* Plan de Cuotas (solo si es crédito) */}
+               {factura.esCredito && factura.cuotas && factura.cuotas.length > 0 && (
+                 <PlanCuotasSection
+                   cuotas={factura.cuotas}
+                   cuotasPendientes={factura.cuotasPendientes ?? null}
+                   cuotasVencidas={factura.cuotasVencidas ?? null}
+                   proximaCuotaValor={factura.proximaCuotaValor ?? null}
+                   proximaCuotaVencimiento={factura.proximaCuotaVencimiento ?? null}
+                 />
+               )}
                {/* Tabla de Recibos Vinculados */}
                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                   <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">

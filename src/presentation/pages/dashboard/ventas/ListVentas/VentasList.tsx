@@ -14,19 +14,19 @@ interface Props {
 
 const getEstadoInfo = (estado: string | number) => {
   const map: Record<string, { label: string, color: string }> = {
-    '1': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    '0': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    '1': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
     '2': { label: 'Aprobada', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     '3': { label: 'Enviada', color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
     '4': { label: 'Pagada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
     '5': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
-    '6': { label: 'Pendiente Abono', color: 'bg-amber-50 text-amber-600 border-amber-100' },
     
     'Borrador': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    'Pendiente': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
     'Aprobada': { label: 'Aprobada', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     'Enviada': { label: 'Enviada', color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
     'Pagada': { label: 'Pagada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-    'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
-    'PendienteConAbono': { label: 'Pendiente Abono', color: 'bg-amber-50 text-amber-600 border-amber-100' }
+    'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' }
   };
   return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
 };
@@ -82,6 +82,29 @@ const VentasList: React.FC<Props> = ({ data = [], onPreview, onDetails }) => {
       render: (v: FacturaVentaReadDTO) => (
         <span className={`font-bold ${v.saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>${v.saldo?.toLocaleString()}</span>
       )
+    },
+    {
+      header: "Cuotas",
+      render: (v: FacturaVentaReadDTO) => {
+        if (!v.esCredito || !v.cuotas) return <span className="text-[10px] text-slate-400 font-bold px-2 py-0.5 bg-slate-50 rounded-md border border-slate-100 uppercase tracking-wider">Contado</span>;
+        
+        const totalCuotas = v.cuotas.length;
+        const cuotasPagadas = v.cuotas.filter(c => c.estadoId === 2).length;
+        const vencidas = v.cuotasVencidas || 0;
+        
+        return (
+          <div className="flex flex-col gap-1 items-start">
+             <span className="text-[10px] font-black text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+               {cuotasPagadas}/{totalCuotas} Pagadas
+             </span>
+             {vencidas > 0 && (
+               <span className="text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                 ⚠️ {vencidas} Vencid.
+               </span>
+             )}
+          </div>
+        );
+      }
     },
     {
       header: "Estado",

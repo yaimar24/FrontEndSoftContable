@@ -92,7 +92,7 @@ export const ReciboCajaViewer = () => {
               </div>
               <div>
                 <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Medio de Pago</p>
-                <p className="text-base font-bold text-slate-800">{recibo.medioPagoCodigo} - {recibo.medioPagoNombre}</p>
+                <p className="text-base font-bold text-slate-800">{recibo.medioPagoId} - {recibo.medioPagoNombre}</p>
               </div>
             </div>
 

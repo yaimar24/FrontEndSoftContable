@@ -8,3 +8,12 @@ export const getParametros = async (): Promise<ApiResponse<Parametros>> => {
   });
 };
 
+export interface ParametrosFacturacionDTO {
+  mediosPago: { id: number; nombre: string }[];
+  frecuenciasPago: { id: number; nombre: string }[];
+}
+
+export const getParametrosFacturacion = async (): Promise<ApiResponse<ParametrosFacturacionDTO>> => {
+  return await apiClient("/api/Parametros/facturacion");
+};
+

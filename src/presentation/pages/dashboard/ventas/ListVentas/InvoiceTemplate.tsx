@@ -102,7 +102,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Medio de Pago</p>
                 <p className="text-xs font-bold text-slate-800">
                   {factura.recibos && factura.recibos.length > 0
-                    ? (factura.recibos.length > 1 ? "M�ltiples (Dividido)" : factura.recibos[0].medioPagoNombre || factura.recibos[0].medioPagoCodigo)
+                    ? (factura.recibos.length > 1 ? "Múltiples (Dividido)" : factura.recibos[0].medioPagoNombre || String(factura.recibos[0].medioPagoId))
                     : "A Cr�dito / Pendiente"}
                 </p>
             </div>

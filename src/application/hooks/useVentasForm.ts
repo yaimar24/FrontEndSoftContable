@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FacturaVentaCreateDTO, FacturaDetalleCreateDTO } from "../../domain/models/Venta";
 import { createVenta, updateVenta, getProximoNumeroFactura } from "../../data/services/venta/ventaService";
+import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
 import { getColegioIdFromToken } from "../../utils/jwt";
 
 export const useVentasForm = (token: string | null, initialData?: any) => {
@@ -12,6 +13,10 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     vendedorId: colegioId,
     colegioId: colegioId,
     fechaElaboracion: initialData?.fechaElaboracion ? new Date(initialData.fechaElaboracion).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    esCredito: initialData?.esCredito || false,
+    frecuenciaPago: initialData?.frecuenciaPago || null,
+    numeroCuotas: initialData?.numeroCuotas || null,
+    medioPagoId: initialData?.medioPagoId || null,
     detalles: initialData?.detalles || [],
     pagos: initialData?.pagos || [],
   });
@@ -20,8 +25,15 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);
+  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });
 
   useEffect(() => {
+    getParametrosFacturacion().then(res => {
+      if (res.success && res.data) {
+        setParametrosFacturacion(res.data);
+      }
+    });
+
     if (formData.tipoFacturaId && !initialData?.id) {
       getProximoNumeroFactura(formData.tipoFacturaId).then(res => {
         if (res.success && res.data) {
@@ -79,6 +91,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     loading,
     showConfirm,
     resultModal,
+    parametrosFacturacion,
     setShowConfirm,
     setResultModal,
     handleChange,

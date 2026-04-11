@@ -5,7 +5,6 @@ import StatusModal from "../../../../components/organisms/StatusModal";
 import InputField from "../../../../components/atoms/InputField";
 import { AsyncSearchField } from "../../../../components/organisms/AsyncSearchField";
 import SelectField from "../../../../components/atoms/SelectField";
-import { SelectorCuentaPuc } from "../../../../components/organisms/SelectorCuentaPuc";
 import { useVentasForm } from "../../../../../application/hooks/useVentasForm";
 import { useAuth } from "../../../../../application/hooks/useAuth";
 import { getNombreColegioFromToken } from "../../../../../utils/jwt";
@@ -23,6 +22,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const { token } = useAuth();  const nombreColegio = getNombreColegioFromToken(token) || "Colegio (Automático)";  const {
     formData,    numeroDisplay,    showConfirm,
     resultModal,
+    parametrosFacturacion,
     setShowConfirm,
     setResultModal,
     handleChange,
@@ -61,12 +61,17 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
       if (doc.valorUnitario === undefined || doc.valorUnitario < 0) newErrors[`detalle_${index}_valor`] = "Valor req.";
     });
 
-    if (condicionPago === 'CONTADO' || condicionPago === 'PARCIAL') {
-      (formData.pagos || []).forEach((pago: any, index: number) => {
-        if (!pago.medioPagoCodigo) newErrors[`pago_${index}_medioPago`] = "Requerido";
-        if (!pago.monto || pago.monto <= 0) newErrors[`pago_${index}_monto`] = "Requerido";
-        if (!pago.fechaRecibo && !formData.fechaElaboracion) newErrors[`pago_${index}_fechaRecibo`] = "Requerido";
-      });
+    if (formData.esCredito) {
+      if (!formData.frecuenciaPago) newErrors.frecuenciaPago = "Requerido";
+      if (!formData.numeroCuotas || formData.numeroCuotas < 1) newErrors.numeroCuotas = "Mín. 1";
+    } else {
+      if (condicionPago === 'CONTADO') {
+        (formData.pagos || []).forEach((pago: any, index: number) => {
+          if (!pago.medioPagoId) newErrors[`pago_${index}_medioPago`] = "Requerido";
+          if (!pago.monto || pago.monto <= 0) newErrors[`pago_${index}_monto`] = "Requerido";
+          if (!pago.fechaRecibo && !formData.fechaElaboracion) newErrors[`pago_${index}_fechaRecibo`] = "Requerido";
+        });
+      }
     }
 
     setErrors(newErrors);
@@ -85,41 +90,19 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const currentTotalPagos = Number((formData.pagos || []).reduce((acc: number, curr: ReciboCajaCreate) => acc + (curr.monto || 0), 0).toFixed(2));
   const saldoPendiente = Number(Math.max(0, currentTotal - currentTotalPagos).toFixed(2));
 
-  const [condicionPago, setCondicionPago] = useState<'CREDITO' | 'CONTADO' | 'PARCIAL'>(
-    (formData.pagos && formData.pagos.length > 0) 
-      ? (currentTotalPagos >= currentTotal ? 'CONTADO' : 'PARCIAL') 
-      : 'CREDITO'
+  const [condicionPago, setCondicionPago] = useState<'CREDITO' | 'CONTADO'>(
+    formData.esCredito ? 'CREDITO' : 'CONTADO'
   );
 
   useEffect(() => {
-    if (condicionPago === 'CONTADO') {
-      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoCodigo: "", monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" };
+    if (condicionPago === 'CONTADO' && !formData.esCredito) {
+      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: null, monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" };
       handlePagosChange([{ ...p, monto: currentTotal }]);
     } else if (condicionPago === 'CREDITO') {
       handlePagosChange([]);
-    } else if (condicionPago === 'PARCIAL' && (!formData.pagos || formData.pagos.length === 0)) {
-      handlePagosChange([{ medioPagoCodigo: "", monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" }]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [condicionPago, currentTotal]);
-
-  const addPago = () => {
-    const newPagos = formData.pagos || [];
-    handlePagosChange([
-      ...newPagos,
-      {
-        medioPagoCodigo: "",
-        monto: saldoPendiente > 0 ? saldoPendiente : 0,
-        fechaRecibo: formData.fechaElaboracion,
-        referencia: "",
-        observacion: ""
-      } as ReciboCajaCreate
-    ]);
-  };
-
-  const removePago = (index: number) => {
-    handlePagosChange((formData.pagos || []).filter((_: any, i: number) => i !== index));
-  };
+  }, [condicionPago, currentTotal, formData.esCredito]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500">
@@ -387,7 +370,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
             )}
           </section>
 
-          {/* Sección de Medios de Pago */}
+          {/* Sección de Condición y Medios de Pago */}
           <section className="tuto-ventas-pagos bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mt-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-700 flex items-center gap-2 text-sm uppercase tracking-widest">
@@ -400,46 +383,70 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 label="Condición de Pago"
                 name="condicionPago"
                 value={condicionPago}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCondicionPago(e.target.value as any)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const isCredito = e.target.value === 'CREDITO';
+                  setCondicionPago(e.target.value as any);
+                  handleChange({ target: { name: 'esCredito', value: isCredito } } as any);
+                  if (isCredito) {
+                    handleChange({ target: { name: 'medioPagoId', value: null } } as any);
+                    handlePagosChange([]);
+                  } else {
+                    handleChange({ target: { name: 'frecuenciaPago', value: null } } as any);
+                    handleChange({ target: { name: 'numeroCuotas', value: null } } as any);
+                  }
+                }}
                 options={[
-                  { id: 'CREDITO', nombre: 'A Crédito (Borrador / Sin Abono Inicial)' },
                   { id: 'CONTADO', nombre: 'De Contado (Pago Total)' },
-                  { id: 'PARCIAL', nombre: 'Pago Parcial (Abono Inicial)' }
+                  { id: 'CREDITO', nombre: 'A Crédito (Pago a plazos)' }
                 ]}
                 displayExpr={(item) => item.nombre}
               />
             </div>
 
             {condicionPago === 'CREDITO' ? (
-              <div className="text-center py-8 px-4 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50">
-                <DollarSign size={32} className="mx-auto text-slate-300 mb-2" />
-                <p className="text-sm font-bold text-slate-500 mb-1">Factura a Crédito</p>
-                <p className="text-xs text-slate-400">Esta factura quedará marcada como "Borrador". Los abonos se registrarán después de haberla aprobado.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50">
+                <SelectField
+                  label="Frecuencia de Pago"
+                  name="frecuenciaPago"
+                  value={formData.frecuenciaPago || ''}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange({ target: { name: 'frecuenciaPago', value: Number(e.target.value) || null } } as any)}
+                  options={parametrosFacturacion.frecuenciasPago}
+                  displayExpr={(item) => item.nombre}
+                  required
+                  error={errors.frecuenciaPago}
+                />
+                <InputField
+                  label="Número de Cuotas"
+                  name="numeroCuotas"
+                  type="number"
+                  min={1}
+                  max={120}
+                  value={formData.numeroCuotas || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange({ target: { name: 'numeroCuotas', value: Number(e.target.value) || null } } as any)}
+                  required
+                  error={errors.numeroCuotas}
+                />
+                <div className="col-span-1 md:col-span-2 text-center mt-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                  <p className="text-xs text-amber-600 font-medium">Esta factura quedará en estado "Pendiente". Los abonos se registrarán según las cuotas acordadas.</p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {formData.pagos?.map((pago: ReciboCajaCreate, index: number) => (
                   <div key={index} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
-                    {index > 0 && (
-                        <button
-                        onClick={() => removePago(index)}
-                        className="absolute -top-3 -right-3 p-2 bg-red-100 text-red-600 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all hidden group-hover:block"
-                        title="Eliminar fila"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <SelectorCuentaPuc
+                      <SelectField
                         label="Medio de Pago"
-                        codigoRaiz="11"
-                        value={pago.medioPagoCodigo}
-                        onChange={(val) => {
+                        name={`pago_${index}_medioPagoId`}
+                        value={pago.medioPagoId || ''}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                           const newPagos = [...formData.pagos!];
-                          newPagos[index].medioPagoCodigo = val || "";
+                          newPagos[index].medioPagoId = Number(e.target.value) || 0;
                           handlePagosChange(newPagos);
                         }}
+                        options={parametrosFacturacion.mediosPago}
+                        displayExpr={(item) => item.nombre}
+                        required
                         error={errors[`pago_${index}_medioPago`]}
                       />
 
@@ -453,7 +460,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                           newPagos[index].monto = Number(e.target.value);
                           handlePagosChange(newPagos);
                         }}
-disabled={condicionPago === 'CONTADO' && index === 0}
+                        disabled
                         required
                         icon={DollarSign}
                         error={errors[`pago_${index}_monto`]}
@@ -481,21 +488,13 @@ disabled={condicionPago === 'CONTADO' && index === 0}
                           newPagos[index].fechaRecibo = e.target.value;
                           handlePagosChange(newPagos);
                         }}
-                        disabled={condicionPago === 'CONTADO' && index === 0}
+                        disabled
                         required
                         error={errors[`pago_${index}_fechaRecibo`]}
                       />
                     </div>
                   </div>
                 ))}
-                
-                {condicionPago === 'PARCIAL' && (
-                  <div className="flex justify-end mt-4">
-                    <Button onClick={addPago} icon={Plus} variant="outline" className="text-xs py-2 px-4 rounded-xl">
-                      Agregar otro medio de pago
-                    </Button>
-                  </div>
-                )}
               </div>
             )}
           </section>

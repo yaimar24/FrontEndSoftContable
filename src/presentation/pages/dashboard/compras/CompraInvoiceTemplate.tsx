@@ -101,7 +101,7 @@ export const CompraInvoiceTemplate: React.FC<CompraInvoiceTemplateProps> = ({ fa
             </div>
             <div>
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Medio de Pago</p>
-              <p className="text-xs font-bold text-slate-800">{factura.medioPagoNombre || factura.medioPagoCodigo || "N/A"}</p>
+              <p className="text-xs font-bold text-slate-800">{factura.medioPagoNombre || String(factura.medioPagoId) || "N/A"}</p>
             </div>
           </div>
         </div>

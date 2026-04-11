@@ -4,10 +4,10 @@
   | 'Enviada'
   | 'Pagada'
   | 'Anulada'
-  | 'PendienteConAbono';
+  | 'Pendiente';
 
 export interface ReciboCajaCreate {
-  medioPagoCodigo: string;
+  medioPagoId: number;
   monto: number;
   fechaRecibo: string;
   referencia?: string;
@@ -20,7 +20,7 @@ export interface ReciboCajaRead {
   facturaVentaId: number;
   facturaVentaNumero: string;
   terceroNombre: string;
-  medioPagoCodigo: string;
+  medioPagoId: number;
   medioPagoNombre: string;
   monto: number;
   esAbono: boolean;
@@ -47,8 +47,12 @@ export interface FacturaVentaCreateDTO {
   clienteId: string;
   vendedorId?: string;
   fechaElaboracion: string;
+  esCredito: boolean;
+  frecuenciaPago?: number | null;
+  numeroCuotas?: number | null;
+  medioPagoId?: number | null;
   detalles: FacturaDetalleCreateDTO[];
-  pagos?: ReciboCajaCreate[];
+  pagos?: ReciboCajaCreate[] | null;
   colegioId?: string;
   usuarioId?: string;
 }
@@ -70,6 +74,45 @@ export interface FacturaDetalleReadDTO {
   valorTotal: number;
 }
 
+export const ESTADO_CUOTA = {
+  Pendiente: 0,
+  Parcial: 1,
+  Pagada: 2,
+  Vencida: 3,
+  Anulada: 4,
+} as const;
+
+export const ESTADO_CUOTA_BADGE: Record<number, { label: string; color: string }> = {
+  0: { label: 'Pendiente', color: 'gray' },
+  1: { label: 'Parcial',   color: 'orange' },
+  2: { label: 'Pagada',    color: 'green' },
+  3: { label: 'Vencida',   color: 'red' },
+  4: { label: 'Anulada',   color: 'darkred' },
+};
+
+export interface PagoCuotaRead {
+  reciboCajaId: number;
+  reciboNumero: string;
+  montoAplicado: number;
+  fechaAplicacion: string;
+}
+
+export interface CuotaCreditoRead {
+  id: number;
+  numeroCuota: number;
+  valorOriginal: number;
+  valorPagado: number;
+  saldo: number;
+  valorMora: number;
+  fechaVencimiento: string;
+  estadoId: number;          // 0=Pendiente, 1=Parcial, 2=Pagada, 3=Vencida, 4=Anulada
+  estadoNombre: string;
+  estaVencida: boolean;
+  diasVencida: number;       // 0 si no vencida, N días si vencida
+  fechaPago: string | null;  // fecha en que se completó el pago
+  pagos: PagoCuotaRead[];    // historial de pagos aplicados a esta cuota
+}
+
 export interface FacturaVentaReadDTO {
   id: number;
   tipoFacturaNombre: string;
@@ -85,6 +128,11 @@ export interface FacturaVentaReadDTO {
   fechaElaboracion: string;
   estadoId: number;
   estadoNombre: string;
+  esCredito: boolean;
+  frecuenciaPagoNombre: string | null;
+  numeroCuotas: number | null;
+  medioPagoId: number | null;
+  medioPagoNombre: string | null;
   totalBruto: number;
   descuentoTotal: number;
   subtotal: number;
@@ -96,4 +144,10 @@ export interface FacturaVentaReadDTO {
   saldo: number;
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
+  
+  cuotas?: CuotaCreditoRead[] | null;
+  cuotasPendientes?: number | null;
+  cuotasVencidas?: number | null;
+  proximaCuotaValor?: number | null;
+  proximaCuotaVencimiento?: string | null;
 }

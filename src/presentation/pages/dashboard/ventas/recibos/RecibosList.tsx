@@ -65,7 +65,7 @@ export const RecibosList = () => {
     {
       header: "Medio de Pago",
       render: (v: ReciboCajaRead) => (
-        <span className="font-bold text-[10px] text-slate-600 uppercase">{v.medioPagoCodigo} - {v.medioPagoNombre}</span>
+        <span className="font-bold text-[10px] text-slate-600 uppercase">{v.medioPagoId} - {v.medioPagoNombre}</span>
       )
     },
     {

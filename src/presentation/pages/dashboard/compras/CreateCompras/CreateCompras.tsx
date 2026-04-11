@@ -28,6 +28,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
     setProveedorId,
     handleDetallesChange,
     handleConfirmSave,
+    parametrosFacturacion,
   } = useComprasForm(initialCompraId);
 
   const addDetalle = () => {
@@ -59,7 +60,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
     if (!formData.proveedorId) newErrors.proveedorId = "El proveedor es requerido";
-    if (!formData.medioPagoCodigo) newErrors.medioPagoCodigo = "Medio de pago es requerido";
+    if (!formData.esCredito && !formData.medioPagoId) newErrors.medioPagoId = "Medio de pago es requerido";
     if (!formData.fechaElaboracion) newErrors.fechaElaboracion = "La fecha es requerida";
     
     formData.detalles.forEach((doc: any, index: number) => {
@@ -191,13 +192,15 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 error={errors.fechaElaboracion}
               />
 
-              <SelectorCuentaPuc
+              <SelectField
                 label="Medio de Pago"
-                codigoRaiz="11"
-                value={formData.medioPagoCodigo || null}
-                onChange={(val) => handleChange({ target: { name: 'medioPagoCodigo', value: val } } as any)}
+                name="medioPagoId"
+                value={formData.medioPagoId || ''}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange({ target: { name: 'medioPagoId', value: Number(e.target.value) || null } } as any)}
+                options={parametrosFacturacion.mediosPago}
+                displayExpr={(item) => item.nombre}
                 required
-                error={errors.medioPagoCodigo}
+                error={errors.medioPagoId}
               />
             </div>
           </section>

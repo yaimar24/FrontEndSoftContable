@@ -179,7 +179,7 @@ const ComprasViewerPage: React.FC = () => {
             </div>
             <div>
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Medio de Pago</p>
-               <p className="text-sm font-bold text-slate-700 text-indigo-600">{compra.medioPagoCodigo} - {compra.medioPagoNombre || 'N/A'}</p>
+               <p className="text-sm font-bold text-slate-700 text-indigo-600">{compra.medioPagoId} - {compra.medioPagoNombre || 'N/A'}</p>
             </div>
          </div>
 

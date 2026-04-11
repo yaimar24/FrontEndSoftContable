@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { DollarSign, Calendar, Target, AlignLeft } from 'lucide-react';
 import Modal from '../../../../components/organisms/Modal';
 import InputField from '../../../../components/atoms/InputField';
-import { SelectorCuentaPuc } from '../../../../components/organisms/SelectorCuentaPuc';
+import SelectField from '../../../../components/atoms/SelectField';
 import Button from '../../../../components/atoms/Button';
 import { registrarPago } from '../../../../../data/services/venta/ventaService';
+import { getParametrosFacturacion } from '../../../../../data/services/colegio/parametrosService';
 import type { FacturaVentaReadDTO } from '../../../../../domain/models/Venta';
 import StatusModal from '../../../../components/organisms/StatusModal';
 
@@ -24,6 +25,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
+  const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
+
+  useEffect(() => {
+    getParametrosFacturacion().then(res => {
+      if (res.success && res.data) {
+        setMediosPago(res.data.mediosPago);
+      }
+    });
+  }, []);
+
+  const valorCuota = factura.esCredito && factura.numeroCuotas ? Math.ceil(factura.totalNeto / factura.numeroCuotas) : 0;
+  const cuotaSugerida = Math.min(valorCuota, factura.saldo);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +59,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     try {
       setLoading(true);
       const res = await registrarPago(factura.id, {
-        medioPagoCodigo: selectedMedio,
+        medioPagoId: Number(selectedMedio),
         monto: Number(monto),
         fechaRecibo,
         referencia,
@@ -81,23 +94,44 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="Registrar Pago" subtitle={`Factura #${factura.numero}`}>
-        <form onSubmit={handleSubmit} className="space-y-4 min-w-[500px]">
-            <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex flex-col gap-1 text-center">
+        <form onSubmit={handleSubmit} className="space-y-4 min-w-[500px] pb-2">
+            <div className="bg-blue-50/50 p-4 mx-6 mt-4 rounded-2xl border border-blue-100 flex flex-col gap-1 text-center">
                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Saldo Pendiente</p>
-               <p className="text-3xl font-black text-blue-600">${factura.saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 })}</p>
+               <p className="text-3xl font-black text-blue-600">${Math.round(factura.saldo).toLocaleString('es-CO')}</p>
             </div>
 
-            <div className="space-y-4">
-               <SelectorCuentaPuc
+            {factura.esCredito && cuotaSugerida > 0 && cuotaSugerida < factura.saldo && (
+               <div className="flex gap-2 px-6 justify-center">
+                 <button
+                   type="button"
+                   onClick={() => setMonto(factura.saldo.toString())}
+                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === factura.saldo ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                 >
+                   Pagar Total (${Math.round(factura.saldo).toLocaleString('es-CO')})
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => setMonto(cuotaSugerida.toString())}
+                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === cuotaSugerida ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                 >
+                   Pagar 1 Cuota (${Math.round(cuotaSugerida).toLocaleString('es-CO')})
+                 </button>
+               </div>
+            )}
+
+            <div className="space-y-4 px-6">
+               <SelectField
                  label="Medio de Pago"
-                 codigoRaiz="11"
+                 name="medioPagoId"
                  value={selectedMedio}
-                 onChange={(val) => setSelectedMedio(val || '')}
+                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedMedio(e.target.value)}
+                 options={mediosPago}
+                 displayExpr={(item) => item.nombre}
                  required
                />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 px-6">
                 <InputField
                     label="Monto a Pagar"
                     name="monto"
@@ -118,7 +152,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 />
             </div>
             
-            <div className="flex gap-4">
+            <div className="flex gap-4 px-6 mb-4">
                 <InputField
                     label="Referencia / Nro"
                     name="referencia"
@@ -137,7 +171,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 />
             </div>
 
-            <div className="flex gap-4 pt-4 border-t border-slate-100">
+            <div className="flex gap-4 pt-4 px-6 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl py-4">
                 <Button type="button" variant="outline" fullWidth onClick={onClose} disabled={loading}>
                     Cancelar
                 </Button>

@@ -98,7 +98,7 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaC
   const entityTelefono = isCompra ? (factura as FacturaCompraReadDTO).proveedorTelefono : (factura as FacturaVentaReadDTO).clienteTelefono;
   const entityDireccion = isCompra ? (factura as FacturaCompraReadDTO).proveedorDireccion : (factura as FacturaVentaReadDTO).clienteDireccion;
   const numColor = isCompra ? [79, 70, 229] : [37, 99, 235]; // indigo for COMPRA, blue for VENTA
-  const medioPagoStr = isCompra ? ((factura as FacturaCompraReadDTO).medioPagoNombre || (factura as FacturaCompraReadDTO).medioPagoCodigo || "N/A") : "N/A";
+  const medioPagoStr = isCompra ? ((factura as FacturaCompraReadDTO).medioPagoNombre || String((factura as FacturaCompraReadDTO).medioPagoId) || "N/A") : "N/A";
 
   // Header Title
   doc.setTextColor(30, 58, 138); // blue-900
