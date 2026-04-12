@@ -1,0 +1,174 @@
+import React, { useState } from 'react';
+import { ESTADO_CUOTA_BADGE } from '../../../domain/models/Venta';
+import type { CuotaCreditoRead, PagoCuotaRead } from '../../../domain/models/Venta';
+import { ChevronDown, ChevronUp, CalendarClock, AlertCircle, CheckCircle2 } from 'lucide-react';
+
+interface PlanCuotasSectionProps {
+  cuotas: CuotaCreditoRead[];
+  cuotasPendientes: number | null;
+  cuotasVencidas: number | null;
+  proximaCuotaValor: number | null;
+  proximaCuotaVencimiento: string | null;
+}
+
+export const PlanCuotasSection: React.FC<PlanCuotasSectionProps> = ({
+  cuotas,
+  cuotasPendientes,
+  cuotasVencidas,
+  proximaCuotaValor,
+  proximaCuotaVencimiento
+}) => {
+  const [expandedCuotaId, setExpandedCuotaId] = useState<number | null>(null);
+
+  const formatCurrency = (val: number) =>
+    new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(val);
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return '-';
+    return new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(dateStr));
+  };
+
+  const getColorClasses = (colorName: string) => {
+    switch(colorName) {
+      case 'gray': return 'bg-slate-100 text-slate-600 border border-slate-200';
+      case 'orange': return 'bg-amber-100 text-amber-700 border border-amber-200';
+      case 'green': return 'bg-emerald-100 text-emerald-700 border border-emerald-200';
+      case 'red': return 'bg-rose-100 text-rose-700 border border-rose-200';
+      case 'darkred': return 'bg-red-200 text-red-800 border border-red-300';
+      default: return 'bg-slate-100 text-slate-600';
+    }
+  };
+
+  const totalOriginal = cuotas.reduce((acc, c) => acc + c.valorOriginal, 0);
+  const totalPagado = cuotas.reduce((acc, c) => acc + c.valorPagado, 0);
+  const totalSaldo = cuotas.reduce((acc, c) => acc + c.saldo, 0);
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+      <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+           <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+              <CalendarClock size={18} className="text-blue-500" />
+              Plan de Cuotas
+           </h3>
+           <div className="flex items-center gap-3 text-xs font-bold font-mono">
+              <span className="bg-slate-200/50 text-slate-600 px-3 py-1 rounded-lg">
+                Pendientes: {cuotasPendientes ?? 0}
+              </span>
+              {(cuotasVencidas ?? 0) > 0 && (
+                <span className="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-lg flex items-center gap-2">
+                   <AlertCircle size={14} /> Vencidas: {cuotasVencidas}
+                </span>
+              )}
+           </div>
+        </div>
+        
+        {(proximaCuotaValor !== null && proximaCuotaVencimiento) && (proximaCuotaValor > 0) && (
+          <div className="mt-3 text-sm font-medium text-slate-600 flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-orange-400"></span>
+             Próxima cuota: <span className="font-bold text-slate-800">{formatCurrency(proximaCuotaValor)}</span> — vence el <span className="font-bold text-slate-800">{formatDate(proximaCuotaVencimiento)}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-slate-50/50 text-slate-500 text-[10px] uppercase tracking-wider font-black">
+            <tr>
+              <th className="px-6 py-3 w-16 text-center">#</th>
+              <th className="px-6 py-3">Valor</th>
+              <th className="px-6 py-3">Pagado</th>
+              <th className="px-6 py-3">Saldo</th>
+              <th className="px-6 py-3">Vencimiento</th>
+              <th className="px-6 py-3">Estado</th>
+              <th className="px-6 py-3 w-16"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-sm">
+            {cuotas.map((cuota) => {
+              const badge = ESTADO_CUOTA_BADGE[cuota.estadoId] || ESTADO_CUOTA_BADGE[0];
+              const isExpanded = expandedCuotaId === cuota.id;
+              const hasPagos = cuota.pagos && cuota.pagos.length > 0;
+
+              return (
+                <React.Fragment key={cuota.id}>
+                  <tr 
+                    className={`hover:bg-slate-50 transition-colors cursor-pointer ${isExpanded ? 'bg-slate-50' : ''}`}
+                    onClick={() => hasPagos && setExpandedCuotaId(isExpanded ? null : cuota.id)}
+                  >
+                    <td className="px-6 py-4 text-center font-bold text-slate-500">
+                       {cuota.numeroCuota}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-slate-700 whitespace-nowrap">
+                      {formatCurrency(cuota.valorOriginal)}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-emerald-600 whitespace-nowrap">
+                      {formatCurrency(cuota.valorPagado)}
+                    </td>
+                    <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
+                      {formatCurrency(cuota.saldo)}
+                    </td>
+                    <td className="px-6 py-4 text-slate-600">
+                      {formatDate(cuota.fechaVencimiento)}
+                    </td>
+                    <td className="px-6 py-4">
+                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${getColorClasses(badge.color)}`}>
+                         {cuota.estaVencida ? `Vencida (${cuota.diasVencida}d)` : badge.label}
+                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                       {hasPagos ? (
+                         <button className="text-slate-400 hover:text-blue-500 transition-colors p-1 rounded-md hover:bg-blue-50">
+                           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                         </button>
+                       ) : (
+                         <div className="w-6 h-6"></div>
+                       )}
+                    </td>
+                  </tr>
+                  
+                  {isExpanded && hasPagos && (
+                    <tr className="bg-slate-50/80 border-b border-slate-100">
+                      <td colSpan={7} className="px-6 py-4">
+                        <div className="pl-12 border-l-2 border-blue-200 ml-6 py-2">
+                           <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-3">Historial de pagos en cuota {cuota.numeroCuota}</p>
+                           <div className="space-y-2">
+                             {cuota.pagos.map((pago: PagoCuotaRead, idx: number) => (
+                               <div key={idx} className="flex justify-between items-center text-sm">
+                                  <div className="flex items-center gap-3">
+                                     <CheckCircle2 size={14} className="text-emerald-500" />
+                                     <span className="font-bold text-blue-600">{pago.reciboNumero}</span>
+                                     <span className="text-slate-500 font-medium text-xs">• {formatDate(pago.fechaAplicacion)}</span>
+                                  </div>
+                                  <span className="font-black text-emerald-600">+{formatCurrency(pago.montoAplicado)}</span>
+                               </div>
+                             ))}
+                           </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+          <tfoot className="bg-slate-50 border-t-2 border-slate-200">
+             <tr>
+               <td className="px-6 py-3 font-black text-slate-500 text-center uppercase tracking-widest text-[10px]">Totales</td>
+               <td className="px-6 py-3 font-black text-slate-800 text-left uppercase text-sm">
+                 {formatCurrency(totalOriginal)}
+               </td>
+               <td className="px-6 py-3 font-black text-emerald-600 text-left uppercase text-sm bg-emerald-50/10">
+                 {formatCurrency(totalPagado)}
+               </td>
+               <td className="px-6 py-3 font-black text-rose-600 text-left uppercase text-sm bg-rose-50/10">
+                 {formatCurrency(totalSaldo)}
+               </td>
+               <td colSpan={3} className="px-6 py-3"></td>
+             </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+};

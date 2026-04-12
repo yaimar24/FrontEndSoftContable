@@ -1,0 +1,136 @@
+import React, { useState, useEffect } from 'react';
+import { Users, Save, ArrowLeft, UserCircle, MapPin, Building2, Mail, Phone } from 'lucide-react';
+import { useAuth } from '../../../../../application/hooks/useAuth';
+import Button from '../../../../components/atoms/Button';
+import StatusModal from '../../../../components/organisms/StatusModal';
+import InputField from '../../../../components/atoms/InputField';
+import SelectField from '../../../../components/atoms/SelectField';
+import { useTercerosForm } from '../../../../../application/hooks/useTercerosForm';
+import { SeccionIdentificacion } from './sections/SeccionIdentificacion';
+import { SeccionFiscal } from './sections/SeccionFiscal';
+
+interface Props {
+  initialData?: any;
+  onBack: () => void;
+}
+
+const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
+  const { token } = useAuth();
+  const isEditing = !!initialData;
+  const {
+    formData, parametros, errors,
+    showConfirm, resultModal, setShowConfirm, setResultModal,
+    handleChange, handleCheckboxChange, handleCategoriaChange, handleSaveClick, handleConfirmSave
+  } = useTercerosForm(token, initialData);
+
+  const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
+
+  useEffect(() => {
+    if (formData.departamentoId) {
+      setSelectedDepartamentoId(String(formData.departamentoId));
+    }
+  }, [formData.departamentoId]);
+
+  const municipiosFiltrados = (parametros?.municipios || []).filter(
+    (m: any) => m.departamentoId === Number(selectedDepartamentoId)
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-4 pb-20 px-4 animate-in fade-in duration-500">
+
+      <StatusModal 
+        show={showConfirm} type="confirm" onConfirm={handleConfirmSave} 
+        onClose={() => setShowConfirm(false)} 
+        message={isEditing ? "¿Actualizar este tercero?" : "¿Vincular este tercero?"} 
+      />
+      
+      <StatusModal 
+        show={resultModal.show} success={resultModal.success} message={resultModal.message} 
+        onClose={() => { setResultModal(m => ({ ...m, show: false })); if(resultModal.success) onBack(); }} 
+      />
+
+      <div className="tuto-terceros-sticky-header flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">
+        <div className="flex items-center gap-4">
+          <button onClick={onBack} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors">
+            <ArrowLeft size={20} className="text-slate-500" />
+          </button>
+          <h1 className="text-lg font-black text-slate-800 uppercase flex items-center gap-2 tracking-tight">
+            <Users size={22} className="text-blue-600" /> 
+            {isEditing ? 'Editar Tercero' : 'Nuevo Tercero'}
+          </h1>
+        </div>
+        <Button onClick={handleSaveClick} icon={Save}>
+          {isEditing ? 'Actualizar' : 'Guardar'}
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="tuto-terceros-identificacion">
+          <SeccionIdentificacion formData={formData} parametros={parametros} errors={errors} onChange={handleChange} />
+        </div>
+        <div className="lg:col-span-2 space-y-5">
+          <section className="tuto-terceros-info bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex flex-col gap-1 pb-3 mb-4 border-b border-slate-50">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-xs uppercase tracking-widest">
+                <UserCircle size={16} className="text-blue-500"/> Información General
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {formData.tipoPersonaId === 1 ? (
+                <>
+                  <InputField label="Nombres" name="nombres" value={formData.nombres || ""} onChange={handleChange} error={errors.nombres} icon={UserCircle} required />
+                  <InputField label="Apellidos" name="apellidos" value={formData.apellidos || ""} onChange={handleChange} error={errors.apellidos} icon={UserCircle} required />
+                </>
+              ) : (
+                <div className="col-span-2">
+                  <InputField label="Nombre Comercial" name="nombreComercial" value={formData.nombreComercial || ""} onChange={handleChange} error={errors.nombreComercial} icon={Building2} required />
+                </div>
+              )}
+              <InputField label="Email Principal" name="email" value={formData.email || ""} onChange={handleChange} error={errors.email} icon={Mail} />
+              <InputField label="Teléfono" name="telefono" value={formData.telefono || ""} onChange={handleChange} error={errors.telefono} icon={Phone} />
+            </div>
+          </section>
+
+          <section className="tuto-terceros-ubicacion bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex flex-col gap-1 pb-3 mb-4 border-b border-slate-50">
+              <h3 className="font-black text-slate-700 flex items-center gap-2 text-xs uppercase tracking-widest">
+                <MapPin size={16} className="text-blue-500"/> Ubicación
+              </h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <SelectField 
+                label="Departamento" 
+                name="departamentoId" 
+                value={selectedDepartamentoId} 
+                onChange={(e: any) => {
+                  setSelectedDepartamentoId(e.target.value);
+                  handleChange({ target: { name: "municipioId", value: "" } } as any);
+                }} 
+                options={parametros?.departamentos || []} 
+                displayExpr={(d: any) => d.nombre} 
+              />
+              <SelectField 
+                label="Municipio" 
+                name="municipioId" 
+                value={formData.municipioId ?? ""} 
+                onChange={handleChange} 
+                error={errors.municipioId} 
+                options={municipiosFiltrados} 
+                displayExpr={(c: any) => c.nombre} 
+                disabled={!selectedDepartamentoId}
+              />
+              <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={handleChange} error={errors.direccion} icon={MapPin} />
+            </div>
+          </section>
+        </div>
+        <div className="tuto-terceros-fiscal lg:col-span-3">
+          <SeccionFiscal formData={formData} parametros={parametros} errors={errors} onChange={handleChange} onCheckboxChange={handleCheckboxChange} onCategoriaChange={handleCategoriaChange} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TercerosCreatePage;

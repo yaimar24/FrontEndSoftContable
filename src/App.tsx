@@ -1,7 +1,7 @@
-import AppRoutes from "./routes/Routes";
-import { AuthProvider } from "./context/AuthContext";
-import { LoadingProvider } from "./context/LoadingContext";
-import { TutorialProvider } from "./context/TutorialContext";
+import AppRoutes from "@/presentation/routes/Routes";
+import { AuthProvider } from "@/application/context/AuthContext";
+import { LoadingProvider } from "@/application/context/LoadingContext";
+import { TutorialProvider } from "@/application/context/TutorialContext";
 
 const App = () => (
   <LoadingProvider>
