@@ -22,6 +22,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   const [fechaRecibo, setFechaPago] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
   const [observacion, setObservacion] = useState('');
+  const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
   
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
       setReferencia('');
       setObservacion('');
       setSelectedMedio('');
+      // Generar una nueva key cada vez que se abre el modal para un nuevo pago
+      setPaymentKey(crypto.randomUUID());
     }
   }, [isOpen, factura]);
 
@@ -64,7 +67,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
         fechaRecibo,
         referencia,
         observacion
-      });
+      }, paymentKey);
       if (res.success && res.data) {
         const remaining = factura.saldo - numMonto;
         setStatus({ 

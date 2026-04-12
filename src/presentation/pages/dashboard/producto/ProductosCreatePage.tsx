@@ -181,7 +181,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
           <section className="tuto-producto-cuentas bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mt-6">
             <h3 className="font-black text-slate-700 mb-6 flex items-center gap-2 text-sm uppercase tracking-widest">
-              <BookMarked size={18} className="text-amber-500" /> Cuentas Contables (PUC)
+              <BookMarked size={18} className="text-amber-500" /> Cuentas Contables (PUC) <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold ml-2">OPCIONAL</span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <SelectorCuentaPuc
@@ -190,7 +190,6 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaIngresoCodigo || null}
                 displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
-                required
                 error={errors.cuentaIngresoCodigo}
               />
               <SelectorCuentaPuc
@@ -199,7 +198,6 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaCostoCodigo || null}
                 displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
-                required
                 error={errors.cuentaCostoCodigo}
               />
               <SelectorCuentaPuc
@@ -208,7 +206,6 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 value={formData.cuentaInventarioCodigo || null}
                 displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
                 onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
-                required
                 error={errors.cuentaInventarioCodigo}
               />
             </div>

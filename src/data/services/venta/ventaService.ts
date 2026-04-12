@@ -7,9 +7,16 @@ export const getMediosPago = async (): Promise<ApiResponse<PucNodo[]>> => {
   return await apiClient("/api/puc/medios-pago?codigoRaiz=11");
 };
 
-export const registrarPago = async (id: number, pago: ReciboCajaCreate): Promise<ApiResponse<ReciboCajaRead>> => {
+export const registrarPago = async (
+  id: number, 
+  pago: ReciboCajaCreate,
+  idempotencyKey: string
+): Promise<ApiResponse<ReciboCajaRead>> => {
   return await apiClient(`/api/recibocaja/${id}`, {
     method: "POST",
+    headers: {
+      "Idempotency-Key": idempotencyKey
+    },
     body: JSON.stringify(pago),
   });
 };
