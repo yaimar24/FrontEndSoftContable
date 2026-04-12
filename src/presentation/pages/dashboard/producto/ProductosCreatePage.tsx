@@ -45,9 +45,9 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
       newErrors.valor = "Requerido";
     }
-    if (!formData.cuentaIngresoCodigo) newErrors.cuentaIngresoCodigo = "Requerido";
-    if (!formData.cuentaCostoCodigo) newErrors.cuentaCostoCodigo = "Requerido";
-    if (!formData.cuentaInventarioCodigo) newErrors.cuentaInventarioCodigo = "Requerido";
+    // if (!formData.cuentaIngresoCodigo) newErrors.cuentaIngresoCodigo = "Requerido";
+    // if (!formData.cuentaCostoCodigo) newErrors.cuentaCostoCodigo = "Requerido";
+    // if (!formData.cuentaInventarioCodigo) newErrors.cuentaInventarioCodigo = "Requerido";
     if (!formData.impuestoCargoId) newErrors.impuestoCargoId = "Requerido";
     if (!formData.unidadMedidaDianId) newErrors.unidadMedidaDianId = "Requerido";
 
