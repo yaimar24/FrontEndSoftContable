@@ -1,6 +1,6 @@
 import { apiClient } from "../../api/apiClient";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
-import type { FacturaCompraCreateDTO, FacturaCompraUpdateDTO, FacturaCompraReadDTO } from "../../../domain/models/FacturaCompra";
+import type { FacturaCompraCreateDTO, FacturaCompraReadDTO } from "../../../domain/models/FacturaCompra";
 
 export const getCompraById = async (id: number): Promise<ApiResponse<FacturaCompraReadDTO>> => {
   return await apiClient(`/api/FacturaCompra/${id}`);

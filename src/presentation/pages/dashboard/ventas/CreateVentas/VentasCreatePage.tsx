@@ -180,7 +180,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <InputField
                 label="Número de Venta"
                 name="numero"
-                value={formData.numero || "Pendiente"}
+                value={(formData as any).numero || "Pendiente"}
                 onChange={() => {}}
                 icon={Hash}
                 placeholder="-- Generado Automáticamente --"

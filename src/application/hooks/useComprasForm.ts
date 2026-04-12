@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO } from "../../domain/models/FacturaCompra";
-import { createCompra, getCompraById, updateFacturaCompra } from "../../data/services/compra/compraService";
+import { createCompra, getCompraById } from "../../data/services/compra/compraService";
 
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
 import type { ParametrosFacturacionDTO } from "../../data/services/colegio/parametrosService";

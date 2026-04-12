@@ -22,9 +22,11 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);
-  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });
+  const [idempotencyKey, setIdempotencyKey] = useState("");
+  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });     
 
   useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
     getParametrosFacturacion().then(res => {
       if (res.success && res.data) {
         setParametrosFacturacion(res.data);

@@ -29,16 +29,24 @@ export const getVentasByColegio = async (): Promise<ApiResponse<FacturaVentaRead
   return await apiClient("/api/FacturaVenta");
 };
 
-export const createVenta = async (venta: FacturaVentaCreateDTO): Promise<ApiResponse<FacturaVentaReadDTO>> => {
+export const createVenta = async (venta: FacturaVentaCreateDTO, idempotencyKey?: string): Promise<ApiResponse<FacturaVentaReadDTO>> => {
+  const headers: Record<string, string> = {};
+  if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+  
   return await apiClient("/api/FacturaVenta", {
     method: "POST",
+    headers: Object.keys(headers).length > 0 ? headers : undefined,
     body: JSON.stringify(venta),
   });
 };
 
-export const updateVenta = async (id: number, venta: FacturaVentaCreateDTO): Promise<ApiResponse<FacturaVentaReadDTO>> => {
+export const updateVenta = async (id: number, venta: FacturaVentaCreateDTO, idempotencyKey?: string): Promise<ApiResponse<FacturaVentaReadDTO>> => {
+  const headers: Record<string, string> = {};
+  if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+
   return await apiClient(`/api/FacturaVenta/${id}`, {
     method: "PUT",
+    headers: Object.keys(headers).length > 0 ? headers : undefined,
     body: JSON.stringify(venta),
   });
 };

@@ -157,7 +157,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
               <InputField
                 label="Número de Compra"
                 name="numero"
-                value={formData.numero || "Pendiente"}
+                value={(formData as any).numero || "Pendiente"}
                 onChange={() => {}}
                 icon={Hash}
                 placeholder="-- Generado Automáticamente --"
