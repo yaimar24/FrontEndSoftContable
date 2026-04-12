@@ -43,9 +43,6 @@ export const updateVenta = async (id: number, venta: FacturaVentaCreateDTO): Pro
   });
 };
 
-export const getProximoNumeroFactura = async (tipoFacturaId: number): Promise<ApiResponse<string>> => {
-  return await apiClient(`/api/FacturaVenta/proximo-numero?tipoFacturaId=${tipoFacturaId}`);
-};
 
 export const getRecibosCaja = async (): Promise<ApiResponse<ReciboCajaRead[]>> => {
   return await apiClient("/api/recibocaja");

@@ -20,7 +20,7 @@ interface Props {
 const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const isEditing = !!initialData;
   const { token } = useAuth();  const nombreColegio = getNombreColegioFromToken(token) || "Colegio (Automático)";  const {
-    formData,    numeroDisplay,    showConfirm,
+    formData,    showConfirm,
     resultModal,
     parametrosFacturacion,
     setShowConfirm,
@@ -180,7 +180,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <InputField
                 label="Número de Venta"
                 name="numero"
-                value={numeroDisplay || "Pendiente"}
+                value={formData.numero || "Pendiente"}
                 onChange={() => {}}
                 icon={Hash}
                 placeholder="-- Generado Automáticamente --"

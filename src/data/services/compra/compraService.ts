@@ -17,16 +17,6 @@ export const createCompra = async (compra: FacturaCompraCreateDTO): Promise<ApiR
   });
 };
 
-export const getProximoNumeroFacturaCompra = async (tipoFacturaId: number): Promise<ApiResponse<string>> => {
-  return await apiClient(`/api/FacturaCompra/proximo-numero?tipoFacturaId=${tipoFacturaId}`);
-};
-
-export const updateFacturaCompra = async (id: number, compra: FacturaCompraUpdateDTO): Promise<ApiResponse<FacturaCompraReadDTO>> => {
-  return await apiClient(`/api/FacturaCompra/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(compra),
-  });
-};
 
 export const registrarFacturaCompra = async (id: number): Promise<ApiResponse<void>> => {
   return await apiClient(`/api/FacturaCompra/${id}/registrar`, {
