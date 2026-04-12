@@ -55,15 +55,20 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     try {
       let response;
       if (initialData?.id) {
-        response = await updateVenta(initialData.id, formData);
+        response = await updateVenta(initialData.id, formData, idempotencyKey);
       } else {
-        response = await createVenta(formData);
+        response = await createVenta(formData, idempotencyKey);
       }
+      
       setResultModal({
         show: true,
         success: response.success,
         message: response.success ? "Venta guardada exitosamente" : response.message || "Error al guardar la venta",
       });
+      
+      if (response.success) {
+        setIdempotencyKey(crypto.randomUUID());
+      }
     } catch (error) {
       setResultModal({
         show: true,
