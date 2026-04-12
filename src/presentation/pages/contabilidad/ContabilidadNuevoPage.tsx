@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/organisms/PageHeader';
 import { SelectorCuentaPuc } from '../../components/organisms/SelectorCuentaPuc';
 import { AsyncSearchField } from '../../components/organisms/AsyncSearchField';
+import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoContableCreate } from '../../../domain/models/Contabilidad';
 
@@ -13,7 +14,17 @@ export const ContabilidadNuevoPage = () => {
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
   const [descripcion, setDescripcion] = useState('');
   
-  const [movimientos, setMovimientos] = useState<MovimientoContableCreate[]>([]);
+  const [modalConfig, setModalConfig] = useState({
+    show: false,
+    type: 'success' as 'success' | 'error' | 'confirm',
+    message: '',
+    onConfirm: undefined as (() => void) | undefined
+  });
+
+  const [movimientos, setMovimientos] = useState<MovimientoContableCreate[]>([
+    { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' },
+    { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' }
+  ]);
 
   const addLine = () => {
     setMovimientos([...movimientos, { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' }]);
@@ -51,39 +62,44 @@ export const ContabilidadNuevoPage = () => {
   
 
   
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!fecha) {
-      alert("Por favor seleccione una fecha.");
-      return;
-    }
-    if (!descripcion.trim()) {
-      alert("Por favor agregue una descripci�n.");
+      setModalConfig({ show: true, type: 'error', message: 'Por favor seleccione una fecha.', onConfirm: undefined });
       return;
     }
     if (validMovimientos.length < 2) {
-      alert("Debe agregar y completar al menos 2 l�neas de movimiento (busque y seleccione la cuenta).");
+      setModalConfig({ show: true, type: 'error', message: 'Debe agregar y completar al menos 2 líneas de movimiento (busque y seleccione la cuenta).', onConfirm: undefined });
       return;
     }
     if (!isCuadrado) {
-      alert("Los totales de D�bito y Cr�dito no cuadran o son cero.");
+      setModalConfig({ show: true, type: 'error', message: 'Los totales de Débito y Crédito no cuadran o son cero.', onConfirm: undefined });
       return;
     }
 
-
-    try {
-      await createAjusteManual({
-        fecha,
-        descripcion,
-        movimientos: validMovimientos.map(m => ({
-          ...m,
-          debito: Number(m.debito),
-          credito: Number(m.credito)
-        }))
-      });
-      navigate('/dashboard/asientos-contables');
-    } catch (err) {
-      console.error(err);
-    }
+    setModalConfig({
+      show: true,
+      type: 'confirm',
+      message: '¿Está seguro de guardar este comprobante?',
+      onConfirm: async () => {
+        setModalConfig(prev => ({ ...prev, show: false }));
+        try {
+          await createAjusteManual({
+            fecha,
+            descripcion: descripcion.trim() || undefined,
+            movimientos: validMovimientos.map(m => ({ ...m, debito: Number(m.debito), credito: Number(m.credito) }))
+          });
+          
+          setModalConfig({
+            show: true,
+            type: 'success',
+            message: 'Comprobante guardado exitosamente.',
+            onConfirm: undefined
+          });
+        } catch (err) {
+          setModalConfig({ show: true, type: 'error', message: 'Ocurrió un error al guardar el asiento. Intente de nuevo.', onConfirm: undefined });
+        }
+      }
+    });
   };
 
   return (
@@ -232,6 +248,18 @@ export const ContabilidadNuevoPage = () => {
         </div>
 
       </div>
+      <StatusModal
+        show={modalConfig.show}
+        type={modalConfig.type}
+        message={modalConfig.message}
+        onClose={() => {
+            setModalConfig(prev => ({ ...prev, show: false }));
+            if (modalConfig.type === 'success') {
+              navigate('/dashboard/asientos-contables');
+            }
+        }}
+        onConfirm={modalConfig.type === 'confirm' ? modalConfig.onConfirm : undefined}
+      />
     </div>
   );
 };
