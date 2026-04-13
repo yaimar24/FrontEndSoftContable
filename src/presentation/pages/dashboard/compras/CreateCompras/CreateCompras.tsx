@@ -19,7 +19,6 @@ interface Props {
 const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
   const {
     formData,
-    numeroDisplay,
     showConfirm,
     resultModal,
     setShowConfirm,
@@ -158,7 +157,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
               <InputField
                 label="Número de Compra"
                 name="numero"
-                value={numeroDisplay || 'Pendiente'}
+                value={(formData as any).numero || "Pendiente"}
                 onChange={() => {}}
                 icon={Hash}
                 placeholder="-- Generado Automáticamente --"

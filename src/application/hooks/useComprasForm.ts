@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO } from "../../domain/models/FacturaCompra";
-import { createCompra, getProximoNumeroFacturaCompra, getCompraById, updateFacturaCompra } from "../../data/services/compra/compraService";
+import { createCompra, getCompraById } from "../../data/services/compra/compraService";
 
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
 import type { ParametrosFacturacionDTO } from "../../data/services/colegio/parametrosService";
@@ -28,10 +28,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     frecuenciaPagoId: null,
     numeroCuotas: null,
     detalles: initialData?.detalles || [],
-  });
-
-  const [numeroDisplay, setNumeroDisplay] = useState<string>(initialData?.numero || "");
-  const [showConfirm, setShowConfirm] = useState(false);
+  });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);
 
@@ -40,17 +37,6 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
       loadCompra(initialCompraId);
     }
   }, [initialCompraId]);
-
-  useEffect(() => {
-    if (!initialCompraId && formData.tipoFacturaId && !initialData?.id) {
-      getProximoNumeroFacturaCompra(formData.tipoFacturaId).then(res => {
-        if (res.success && res.data) {
-          setNumeroDisplay(res.data);
-        }
-      });
-    }
-  }, [initialCompraId, formData.tipoFacturaId, initialData?.id]);
-
   const loadCompra = async (id: number) => {
     setLoading(true);
     try {
@@ -81,9 +67,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
             retencionNombre: det.retencionNombre || undefined,
             tarifaRetencion: det.tarifaRetencion,
           })) || []
-        });
-        setNumeroDisplay(d.numero || "");
-      }
+        });      }
     } catch {
       // Handle error if needed
     } finally {
@@ -135,7 +119,6 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
 
   return {
     formData,
-    numeroDisplay,
     loading,
     showConfirm,
     resultModal,

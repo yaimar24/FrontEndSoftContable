@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PageHeader from '../../components/organisms/PageHeader';
 import { SelectorCuentaPuc } from '../../components/organisms/SelectorCuentaPuc';
+import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 
 export const ContabilidadConfiguracionPage = () => {
@@ -15,7 +16,12 @@ export const ContabilidadConfiguracionPage = () => {
   });
 
   const [saving, setSaving] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
+  const [modalConfig, setModalConfig] = useState({
+    show: false,
+    type: 'success' as 'success' | 'error' | 'confirm',
+    message: '',
+    onConfirm: undefined as (() => void) | undefined
+  });
 
   useEffect(() => {
     fetchConfiguracion();
@@ -39,17 +45,34 @@ export const ContabilidadConfiguracionPage = () => {
   };
 
   const handleSave = async () => {
-    setSaving(true);
-    setSuccessMsg('');
-    try {
-      await updateConfiguracion(form);
-      setSuccessMsg('Configuración guardada exitosamente.');
-      setTimeout(() => setSuccessMsg(''), 3000);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
+    setModalConfig({
+      show: true,
+      type: 'confirm',
+      message: '¿Está seguro de aplicar estos cambios al mapeo contable?',
+      onConfirm: async () => {
+        setModalConfig(prev => ({ ...prev, show: false }));
+        setSaving(true);
+        try {
+          await updateConfiguracion(form);
+          setModalConfig({
+            show: true,
+            type: 'success',
+            message: 'Configuración guardada exitosamente.',
+            onConfirm: undefined
+          });
+        } catch (err) {
+          console.error(err);
+          setModalConfig({
+            show: true,
+            type: 'error',
+            message: 'Hubo un error al guardar la configuración.',
+            onConfirm: undefined
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+    });
   };
 
   if (loading && !configuracion) return <div className="p-8 text-center">Cargando configuración...</div>;
@@ -61,11 +84,6 @@ export const ContabilidadConfiguracionPage = () => {
         subtitle="Mapeo de cuentas PUC automáticas para los procesos del sistema"
       />
 
-      {successMsg && (
-        <div className="bg-emerald-50 text-emerald-800 border-2 border-emerald-100 p-4 rounded-2xl font-bold flex items-center gap-3">
-          <span>✅</span> {successMsg}
-        </div>
-      )}
 
       <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -128,6 +146,13 @@ export const ContabilidadConfiguracionPage = () => {
           </button>
         </div>
       </div>
+      <StatusModal
+        show={modalConfig.show}
+        type={modalConfig.type}
+        message={modalConfig.message}
+        onClose={() => setModalConfig(prev => ({ ...prev, show: false }))}
+        onConfirm={modalConfig.type === 'confirm' ? modalConfig.onConfirm : undefined}
+      />
     </div>
   );
 };

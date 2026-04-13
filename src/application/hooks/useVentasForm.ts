@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FacturaVentaCreateDTO, FacturaDetalleCreateDTO } from "../../domain/models/Venta";
-import { createVenta, updateVenta, getProximoNumeroFactura } from "../../data/services/venta/ventaService";
+import { createVenta, updateVenta } from "../../data/services/venta/ventaService";
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
 import { getColegioIdFromToken } from "../../utils/jwt";
 
@@ -19,29 +19,19 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     medioPagoId: initialData?.medioPagoId || null,
     detalles: initialData?.detalles || [],
     pagos: initialData?.pagos || [],
-  });
-
-  const [numeroDisplay, setNumeroDisplay] = useState<string>(initialData?.numero || "");
-  const [showConfirm, setShowConfirm] = useState(false);
+  });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);
-  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });
+  const [idempotencyKey, setIdempotencyKey] = useState("");
+  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });     
 
   useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
     getParametrosFacturacion().then(res => {
       if (res.success && res.data) {
         setParametrosFacturacion(res.data);
       }
-    });
-
-    if (formData.tipoFacturaId && !initialData?.id) {
-      getProximoNumeroFactura(formData.tipoFacturaId).then(res => {
-        if (res.success && res.data) {
-          setNumeroDisplay(res.data);
-        }
-      });
-    }
-  }, [formData.tipoFacturaId, initialData?.id]);
+    });  }, [formData.tipoFacturaId, initialData?.id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -65,15 +55,20 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     try {
       let response;
       if (initialData?.id) {
-        response = await updateVenta(initialData.id, formData);
+        response = await updateVenta(initialData.id, formData, idempotencyKey);
       } else {
-        response = await createVenta(formData);
+        response = await createVenta(formData, idempotencyKey);
       }
+      
       setResultModal({
         show: true,
         success: response.success,
         message: response.success ? "Venta guardada exitosamente" : response.message || "Error al guardar la venta",
       });
+      
+      if (response.success) {
+        setIdempotencyKey(crypto.randomUUID());
+      }
     } catch (error) {
       setResultModal({
         show: true,
@@ -87,7 +82,6 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
 
   return {
     formData,
-    numeroDisplay,
     loading,
     showConfirm,
     resultModal,

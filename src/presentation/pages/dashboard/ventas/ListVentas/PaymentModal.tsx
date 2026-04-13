@@ -24,6 +24,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   const [observacion, setObservacion] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
   
+  const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
   const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
@@ -41,7 +42,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
 
   useEffect(() => {
     if (isOpen) {
-      setMonto(factura.saldo.toString());
+      const initialMonto = factura.esCredito && cuotaSugerida > 0 ? cuotaSugerida.toString() : factura.saldo.toString();
+      setMonto(initialMonto);
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
       setObservacion('');
@@ -51,13 +53,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     }
   }, [isOpen, factura]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const numMonto = parseFloat(monto);
     if (!selectedMedio) return setStatus({ show: true, type: 'error', message: 'Debe seleccionar un medio de pago' });
     if (numMonto <= 0 || numMonto > factura.saldo) {
       return setStatus({ show: true, type: 'error', message: `El monto excede el saldo pendiente ($${factura.saldo.toLocaleString('es-CO')})` });
     }
+    
+    setShowConfirm(true);
+  };
+
+  const executePayment = async () => {
+    setShowConfirm(false);
+    const numMonto = parseFloat(monto);
 
     try {
       setLoading(true);
@@ -70,17 +79,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
       }, paymentKey);
       if (res.success && res.data) {
         const remaining = factura.saldo - numMonto;
-        setStatus({ 
-            show: true, 
-            type: 'success', 
-            message: res.data.esAbono 
-              ? `Abono registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}` 
-              : 'Pago total registrado. Factura pagada.' 
+        setStatus({
+            show: true,
+            type: 'success',
+            message: res.data.esAbono
+              ? `Pago registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}`
+              : 'Pago total registrado. Factura pagada.'
         });
-        onSuccess();
+        onClose(); // Ocultar el formulario
+        onSuccess(); // Actualizar la vista (factura) en background
         setTimeout(() => {
             setStatus({ show: false, type: 'success', message: '' });
-            onClose();
         }, 2500);
       } else {
         setStatus({ show: true, type: 'error', message: res.message });
@@ -92,7 +101,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     }
   };
 
-  if (!isOpen && !status.show) return null;
+  if (!isOpen && !status.show && !showConfirm) return null;
 
   return (
     <>
@@ -107,15 +116,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                <div className="flex gap-2 px-6 justify-center">
                  <button
                    type="button"
-                   onClick={() => setMonto(factura.saldo.toString())}
-                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === factura.saldo ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
-                 >
-                   Pagar Total (${Math.round(factura.saldo).toLocaleString('es-CO')})
-                 </button>
-                 <button
-                   type="button"
                    onClick={() => setMonto(cuotaSugerida.toString())}
-                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === cuotaSugerida ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === cuotaSugerida ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}        
                  >
                    Pagar 1 Cuota (${Math.round(cuotaSugerida).toLocaleString('es-CO')})
                  </button>
@@ -184,6 +186,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
             </div>
         </form>
       </Modal>
+
+      <StatusModal
+         show={showConfirm}
+         type="confirm"
+         message={`¿Estás seguro de registrar un pago por $${parseFloat(monto || '0').toLocaleString('es-CO')}?`}
+         onClose={() => setShowConfirm(false)}
+         onConfirm={executePayment}
+         confirmText="Sí, registrar"
+         cancelText="Cancelar"
+      />
 
       <StatusModal
          show={status.show}

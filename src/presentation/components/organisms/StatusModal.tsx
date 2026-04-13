@@ -10,7 +10,8 @@ interface StatusModalProps {
   onClose: () => void;
   onConfirm?: () => void; 
   confirmText?: string;   
-  cancelText?: string;    
+  cancelText?: string;
+  loading?: boolean;    
 }
 
 const StatusModal: React.FC<StatusModalProps> = ({
@@ -21,7 +22,8 @@ const StatusModal: React.FC<StatusModalProps> = ({
   onClose,
   onConfirm,
   confirmText = "Confirmar",
-  cancelText = "Cancelar"
+  cancelText = "Cancelar",
+  loading = false
 }) => {
   const [isAnimate, setIsAnimate] = useState(false);
 
