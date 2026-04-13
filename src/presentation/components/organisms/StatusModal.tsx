@@ -116,6 +116,7 @@ const StatusModal: React.FC<StatusModalProps> = ({
             variant={theme.btnVariant}
             onClick={onConfirm || onClose}
             fullWidth
+            isLoading={loading}
             className="py-5 rounded-[2rem] shadow-xl shadow-blue-100"
           >
             {onConfirm ? confirmText : "Entendido"}
