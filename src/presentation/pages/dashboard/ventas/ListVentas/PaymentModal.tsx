@@ -41,7 +41,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
 
   useEffect(() => {
     if (isOpen) {
-      setMonto(factura.saldo.toString());
+      const initialMonto = factura.esCredito && cuotaSugerida > 0 ? cuotaSugerida.toString() : factura.saldo.toString();
+      setMonto(initialMonto);
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
       setObservacion('');
@@ -70,17 +71,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
       }, paymentKey);
       if (res.success && res.data) {
         const remaining = factura.saldo - numMonto;
-        setStatus({ 
-            show: true, 
-            type: 'success', 
-            message: res.data.esAbono 
-              ? `Abono registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}` 
-              : 'Pago total registrado. Factura pagada.' 
+        setStatus({
+            show: true,
+            type: 'success',
+            message: res.data.esAbono
+              ? `Abono registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}`
+              : 'Pago total registrado. Factura pagada.'
         });
-        onSuccess();
+        onClose(); // Ocultar el formulario
+        onSuccess(); // Actualizar la vista (factura) en background
         setTimeout(() => {
             setStatus({ show: false, type: 'success', message: '' });
-            onClose();
         }, 2500);
       } else {
         setStatus({ show: true, type: 'error', message: res.message });
@@ -107,15 +108,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                <div className="flex gap-2 px-6 justify-center">
                  <button
                    type="button"
-                   onClick={() => setMonto(factura.saldo.toString())}
-                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === factura.saldo ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
-                 >
-                   Pagar Total (${Math.round(factura.saldo).toLocaleString('es-CO')})
-                 </button>
-                 <button
-                   type="button"
                    onClick={() => setMonto(cuotaSugerida.toString())}
-                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === cuotaSugerida ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                   className={`text-xs px-3 py-1.5 rounded-full border transition-all ${Number(monto) === cuotaSugerida ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}        
                  >
                    Pagar 1 Cuota (${Math.round(cuotaSugerida).toLocaleString('es-CO')})
                  </button>

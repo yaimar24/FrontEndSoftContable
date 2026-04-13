@@ -310,14 +310,12 @@ const VentasViewerPage: React.FC = () => {
          </div>
       </div>
 
-      {isPaymentModalOpen && (
-          <PaymentModal
-             isOpen={isPaymentModalOpen}
-             onClose={() => setIsPaymentModalOpen(false)}
-             factura={factura}
-             onSuccess={fetchFactura}
-          />
-      )}
+      <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          factura={factura}
+          onSuccess={fetchFactura}
+      />
 
       {/* Hidden Printable Template */}
       <div className="hidden print:block">
