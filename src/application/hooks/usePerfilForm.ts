@@ -62,14 +62,19 @@ export const usePerfilForm = (token: string | null) => {
     setIsSaving(true);
     try {
       const result = await updateColegio(colegioId, formData);
-      if (result.success && result.data) {
-        setFormData(result.data); // Update local form with correct path
-        localStorage.setItem('perfilInstitucional', JSON.stringify(result.data));
+      if (result.success) {
+        // Recargar los datos actualizados desde el servidor
+        const [colegioResponse] = await Promise.all([getColegioById()]);
+        
+        if (colegioResponse.success && colegioResponse.data) {
+            setFormData(colegioResponse.data);
+            localStorage.setItem('perfilInstitucional', JSON.stringify(colegioResponse.data));
 
-        if (result.data.logoPath) {
-          const logo = result.data.logoPath;
-          localStorage.setItem('logoUrl', logo);
-          window.dispatchEvent(new CustomEvent('logoUpdate', { detail: logo }));
+            if (colegioResponse.data.logoPath) {
+              const logo = colegioResponse.data.logoPath;
+              localStorage.setItem('logoUrl', logo);
+              window.dispatchEvent(new CustomEvent('logoUpdate', { detail: logo }));
+            }
         }
       }
 
