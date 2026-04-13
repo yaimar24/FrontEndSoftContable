@@ -24,6 +24,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   const [observacion, setObservacion] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
   
+  const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
   const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
@@ -52,13 +53,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     }
   }, [isOpen, factura]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const numMonto = parseFloat(monto);
     if (!selectedMedio) return setStatus({ show: true, type: 'error', message: 'Debe seleccionar un medio de pago' });
     if (numMonto <= 0 || numMonto > factura.saldo) {
       return setStatus({ show: true, type: 'error', message: `El monto excede el saldo pendiente ($${factura.saldo.toLocaleString('es-CO')})` });
     }
+    
+    setShowConfirm(true);
+  };
+
+  const executePayment = async () => {
+    setShowConfirm(false);
+    const numMonto = parseFloat(monto);
 
     try {
       setLoading(true);
@@ -75,7 +83,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
             show: true,
             type: 'success',
             message: res.data.esAbono
-              ? `Abono registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}`
+              ? `Pago registrado. Saldo pendiente: $${remaining.toLocaleString('es-CO', {minimumFractionDigits: 2})}`
               : 'Pago total registrado. Factura pagada.'
         });
         onClose(); // Ocultar el formulario
@@ -93,7 +101,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     }
   };
 
-  if (!isOpen && !status.show) return null;
+  if (!isOpen && !status.show && !showConfirm) return null;
 
   return (
     <>
@@ -178,6 +186,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
             </div>
         </form>
       </Modal>
+
+      <StatusModal
+         show={showConfirm}
+         type="confirm"
+         message={`¿Estás seguro de registrar un pago por $${parseFloat(monto || '0').toLocaleString('es-CO')}?`}
+         onClose={() => setShowConfirm(false)}
+         onConfirm={executePayment}
+         confirmText="Sí, registrar"
+         cancelText="Cancelar"
+      />
 
       <StatusModal
          show={status.show}

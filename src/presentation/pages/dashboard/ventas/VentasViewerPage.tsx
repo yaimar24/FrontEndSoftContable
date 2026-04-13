@@ -18,16 +18,16 @@ const VentasViewerPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   
-  const fetchFactura = async () => {
+  const fetchFactura = async (background = false) => {
     if (!id) return;
     try {
-      setLoading(true);
+      if (!background) setLoading(true);
       const res = await getVentaById(Number(id));
       if (res.success && res.data) {
         setFactura(res.data);
       }
     } finally {
-      setLoading(false);
+      if (!background) setLoading(false);
     }
   };
 
@@ -314,7 +314,7 @@ const VentasViewerPage: React.FC = () => {
           isOpen={isPaymentModalOpen}
           onClose={() => setIsPaymentModalOpen(false)}
           factura={factura}
-          onSuccess={fetchFactura}
+          onSuccess={() => fetchFactura(true)}
       />
 
       {/* Hidden Printable Template */}
