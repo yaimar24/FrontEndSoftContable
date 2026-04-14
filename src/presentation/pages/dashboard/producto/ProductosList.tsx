@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Edit3, Tag, Box } from "lucide-react";
 import { ExportButtons } from "../../../components/molecules/ExportButtons";
 import SearchBar from "../../../components/molecules/SearchBar";
@@ -13,10 +14,24 @@ import {
 interface Props {
   data: ProductoReadDTO[];
   onEdit: (p: ProductoReadDTO) => void;
+  isServer?: boolean;
+  paginationProps?: any;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
 }
 
-const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
-  const { searchTerm, setSearchTerm, filteredData } = useFilter(data || [], {
+const ProductosList: React.FC<Props> = ({  data = [], onEdit , isServer, paginationProps, searchTerm: externalSearchTerm, onSearchChange }) => {
+  const [localData, setLocalData] = useState<ProductoReadDTO[]>(Array.isArray(data) ? data : []);
+
+  useEffect(() => {
+    if (data && (data as any).items) {
+      setLocalData((data as any).items);
+    } else if (Array.isArray(data)) {
+      setLocalData(data);
+    }
+  }, [data]);
+
+  const { searchTerm: internalSearchTerm, setSearchTerm: internalSetSearchTerm, filteredData } = useFilter(localData || [], {
     searchFields: ["nombre", "sku"],
     customFilters: {
       categoria: (item, value) => {
@@ -25,6 +40,9 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
       },
     },
   });
+  
+  const searchTerm = isServer ? (externalSearchTerm ?? internalSearchTerm) : internalSearchTerm;
+  const setSearchTerm = isServer ? (onSearchChange ?? internalSetSearchTerm) : internalSetSearchTerm;
 
   // --- CONFIGURACIÓN DE EXPORTACIÓN (Igual que en Terceros) ---
   const exportConfig: ExportConfig<ProductoReadDTO> = {
@@ -105,7 +123,11 @@ const ProductosList: React.FC<Props> = ({ data = [], onEdit }) => {
       </div>
 
       <div className="tuto-productos-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
-        <Table columns={columns} data={filteredData} />
+        <Table columns={columns} 
+          data={filteredData}
+          isServer={isServer}
+          serverPagination={paginationProps}
+       />
       </div>
     </div>
   );

@@ -32,6 +32,9 @@ const ComprasPage: React.FC = () => {
   const initialId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
 
   const [view, setView] = useState<'lista' | 'formulario'>(initialView);
+  const [comprasInfo, setComprasInfo] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [compras, setCompras] = useState<FacturaCompraReadDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(initialView === 'lista');
   const [error, setError] = useState<string | null>(null);
@@ -96,14 +99,15 @@ const ComprasPage: React.FC = () => {
       ]);
       setLoading(false);
     }
-  }, [view, setSteps]);
+  }, [view, setSteps, page, pageSize, searchTerm]);
 
   const fetchCompras = async () => {
     try {
       setLoading(true);
-      const res = await getComprasByColegio();
+      const res = await getComprasByColegio(page, pageSize, searchTerm);
       if (res.success && res.data) {
-        setCompras(res.data);
+        setComprasInfo(res.data);
+        setCompras((res.data as any).items || []);
       } else {
         setError(res.message || 'Error al obtener compras');
       }
@@ -285,7 +289,16 @@ const ComprasPage: React.FC = () => {
             </div>
 
             <div className="tuto-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
-              <Table columns={columns} data={filteredData} />
+              <Table 
+                columns={columns} 
+                data={filteredData} 
+                isServer={!!comprasInfo}
+                serverPagination={comprasInfo ? {
+                  ...comprasInfo,
+                  onPageChange: setPage,
+                  onPageSizeChange: (s: number) => { setPageSize(s); setPage(1); }
+                } : undefined}
+              />
             </div>
           </>
         ) : (

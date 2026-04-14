@@ -14,6 +14,10 @@ import { useTutorial } from "../../../../application/context/TutorialContext";
 const VentasPage = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<'lista' | 'formulario'>('lista');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [ventasInfo, setVentasInfo] = useState<any>(null);
   const [ventas, setVentas] = useState<FacturaVentaReadDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvoice, setSelectedInvoice] = useState<FacturaVentaReadDTO | null>(null);
@@ -22,12 +26,15 @@ const VentasPage = () => {
   const fetchVentas = async () => {
     try {
       setLoading(true);
-      const response = await getVentasByColegio();
-      if (response.success && response.data) setVentas(response.data);        
+      const response = await getVentasByColegio(page, pageSize, searchTerm);
+      if (response.success && response.data) {
+        setVentasInfo(response.data);
+        setVentas((response.data as any).items || []);
+      }
     } finally { setLoading(false); }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (view === 'lista') {
       fetchVentas();
       setSteps([
@@ -78,7 +85,7 @@ const VentasPage = () => {
         }
       ]);
     }
-  }, [view, setSteps]);
+  }, [view, page, pageSize, searchTerm]);
 
   const handleBackToList = () => {
     setView('lista');
@@ -116,7 +123,19 @@ const VentasPage = () => {
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700"> 
         {view === 'lista' ? (
-          <VentasList data={ventas} onPreview={(v) => setSelectedInvoice(v)} onDetails={(id) => navigate(`/dashboard/ventas/${id}`)} />
+          <VentasList
+            data={ventas}
+            isServer={!!ventasInfo}
+            paginationProps={ventasInfo ? {
+              ...ventasInfo,
+              onPageChange: setPage,
+              onPageSizeChange: (s: number) => { setPageSize(s); setPage(1); }
+            } : undefined}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm} 
+            onPreview={(v) => setSelectedInvoice(v)} 
+            onDetails={(id) => navigate(`/dashboard/ventas/${id}`)} 
+          />
         ) : (
           <VentasCreatePage onBack={handleBackToList} />
         )}

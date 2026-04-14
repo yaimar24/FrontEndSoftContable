@@ -25,8 +25,13 @@ export const getVentaById = async (id: number): Promise<ApiResponse<FacturaVenta
   return await apiClient(`/api/FacturaVenta/${id}`);
 };
 
-export const getVentasByColegio = async (): Promise<ApiResponse<FacturaVentaReadDTO[]>> => {
-  return await apiClient("/api/FacturaVenta");
+export const getVentasByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+    ...(searchTerm && { searchTerm }),
+  });
+  return await apiClient(`/api/FacturaVenta?${queryParams}`);
 };
 
 export const createVenta = async (venta: FacturaVentaCreateDTO, idempotencyKey?: string): Promise<ApiResponse<FacturaVentaReadDTO>> => {

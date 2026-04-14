@@ -10,6 +10,10 @@ import { useTutorial } from "../../../../application/context/TutorialContext";
 
 const TercerosPage = () => {
   const [view, setView] = useState<'lista' | 'formulario'>('lista');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [tercerosInfo, setTercerosInfo] = useState<any>(null);
   const [terceros, setTerceros] = useState<TerceroupdateDTO[]>([]);
   const [selectedTercero, setSelectedTercero] = useState<TerceroCreateDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,8 +22,11 @@ const TercerosPage = () => {
   const fetchTerceros = async () => {
     try {
       setLoading(true);
-      const response = await getTercerosByColegio();
-      if (response.success && response.data) setTerceros(response.data);
+      const response = await getTercerosByColegio(page, pageSize, searchTerm);
+      if (response.success && response.data) {
+        setTercerosInfo(response.data);
+        setTerceros((response.data as any).items || []);
+      }
     } finally { setLoading(false); }
   };
 
@@ -80,7 +87,7 @@ const TercerosPage = () => {
         }
       ]);
     }
-  }, [view, setSteps]);
+  }, [view, setSteps, page, pageSize, searchTerm]);
 
   const handleEdit = (tercero: TerceroCreateDTO) => {
     setSelectedTercero(tercero);
@@ -124,7 +131,18 @@ const TercerosPage = () => {
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700">
         {view === 'lista' ? (
-          <TercerosList data={terceros} onEdit={handleEdit} />
+          <TercerosList 
+            data={terceros} 
+            onEdit={handleEdit}
+            isServer={!!tercerosInfo}
+            paginationProps={tercerosInfo ? {
+              ...tercerosInfo,
+              onPageChange: setPage,
+              onPageSizeChange: (s: number) => { setPageSize(s); setPage(1); }
+            } : undefined}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
         ) : (
           <TercerosCreatePage initialData={selectedTercero} onBack={handleBackToList} />
         )}

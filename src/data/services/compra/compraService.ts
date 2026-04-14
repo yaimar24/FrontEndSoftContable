@@ -6,8 +6,13 @@ export const getCompraById = async (id: number): Promise<ApiResponse<FacturaComp
   return await apiClient(`/api/FacturaCompra/${id}`);
 };
 
-export const getComprasByColegio = async (): Promise<ApiResponse<FacturaCompraReadDTO[]>> => {
-  return await apiClient("/api/FacturaCompra");
+export const getComprasByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+    ...(searchTerm && { searchTerm }),
+  });
+  return await apiClient(`/api/FacturaCompra?${queryParams}`);
 };
 
 export const createCompra = async (compra: FacturaCompraCreateDTO): Promise<ApiResponse<FacturaCompraReadDTO>> => {

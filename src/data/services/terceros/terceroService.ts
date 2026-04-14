@@ -9,8 +9,13 @@ export const vincularTercero = async (data: TerceroCreateDTO): Promise<ApiRespon
   });
 };
 
-export const getTercerosByColegio = async (): Promise<ApiResponse<TerceroupdateDTO[]>> => {
-  return await apiClient("/api/Tercero");
+export const getTercerosByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+    ...(searchTerm && { searchTerm }),
+  });
+  return await apiClient(`/api/Tercero?${queryParams}`);
 };
 
 export const updateTercero = async (id: string | number, data: TerceroupdateDTO): Promise<ApiResponse<string>> => {
