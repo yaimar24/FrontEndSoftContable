@@ -36,5 +36,5 @@ export const toggleProductoStatus = async (id: string): Promise<ApiResponse<stri
 };
 
 export const searchProductos = async (termino: string, skipGlobalLoader: boolean = false): Promise<ApiResponse<ProductoReadDTO[]>> => {
-  return await apiClient(`/api/Producto/search?termino=${encodeURIComponent(termino)}`, { skipGlobalLoader });
+  return await apiClient(`/api/Producto/buscar?termino=${encodeURIComponent(termino)}`, { skipGlobalLoader });
 };
