@@ -12,26 +12,29 @@ import LoadingOverlay from '../../components/shared/LoadingOverlay';
 
 export const ContabilidadPage = () => {
   const navigate = useNavigate();
-  const { comprobantes, fetchComprobantes, anular, loading } = useContabilidad();
-  
+  const { comprobantes, fetchComprobantes, pagination, anular, loading } = useContabilidad();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
   
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const [showAnularModal, setShowAnularModal] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [comprobanteToAnular, setComprobanteToAnular] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchComprobantes();
-  }, [fetchComprobantes]);
+    fetchComprobantes(page, pageSize, searchTerm);
+  }, [fetchComprobantes, page, pageSize, searchTerm]);
 
   const handleAnular = async () => {
     if (comprobanteToAnular) {
       await anular(comprobanteToAnular);
       setResultModal({ show: true, success: true, message: "Asiento anulado correctamente." });
       setComprobanteToAnular(null);
-      fetchComprobantes();
+      fetchComprobantes(page, pageSize, searchTerm);
     }
   };
 
@@ -181,13 +184,19 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
         {loading ? (
           <div className="text-center py-4">Cargando...</div>
         ) : (
-          <Table data={filteredData} columns={columns} />
-        )}
-      </div>
+            <Table 
+              data={filteredData} 
+              columns={columns}               isServer={!!pagination}
+              itemsPerPage={pageSize}              serverPagination={pagination ? {
+                ...pagination,
+                onPageChange: setPage,
+                onPageSizeChange: (s) => { setPageSize(s); setPage(1); }
+              } : undefined}
+            />          )}
+        </div>
 
       <StatusModal
-        show={showAnularModal}
-        type="confirm"
+        show={showAnularModal}        type="confirm"
         message="¿Estás seguro que deseas anular este asiento? Esta acción es irreversible."
         onConfirm={handleAnular}
         onClose={() => setShowAnularModal(false)}

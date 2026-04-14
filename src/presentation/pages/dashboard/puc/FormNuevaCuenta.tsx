@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Hash, BookOpen, Activity } from 'lucide-react';
+import { Save, Hash, BookOpen } from 'lucide-react';
 import { createCuentaContable } from '../../../../data/services/puc/pucService';
 import InputField from '../../../components/atoms/InputField';
 import Button from '../../../components/atoms/Button';
@@ -16,7 +16,6 @@ interface Props {
 
 const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState('');
-  const [naturaleza, setNaturaleza] = useState('D');
   const [esDetalle, setEsDetalle] = useState(false);
 
   // Lógica de sugerencia de código (igual a la anterior)
@@ -44,8 +43,6 @@ const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onCl
       const res = await createCuentaContable({
         codigo,
         nombre: nombre.toUpperCase(),
-        codigoPadre: padre?.codigo,
-        naturaleza,
         esDetalle
       });
       if (res.success) { onSuccess(); onClose(); }
@@ -82,24 +79,7 @@ const FormNuevaCuenta: React.FC<Props> = ({ padre, hijosExistentes, isOpen, onCl
             required
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="flex flex-col space-y-1">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                Naturaleza
-              </label>
-              <div className="relative">
-                <Activity className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
-                <select 
-                  value={naturaleza} 
-                  onChange={e => setNaturaleza(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 pl-12 text-sm font-bold outline-none focus:border-blue-500 appearance-none text-slate-700"
-                >
-                  <option value="D">DÉBITO</option>
-                  <option value="C">CRÉDITO</option>
-                </select>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 gap-5">
             <div className="flex flex-col space-y-1">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                 ¿Es Cuenta Auxiliar?

@@ -17,15 +17,26 @@ import {
 interface TercerosListProps {
   data: TerceroupdateDTO[];
   onEdit: (tercero: TerceroupdateDTO) => void;
+  isServer?: boolean;
+  paginationProps?: any;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
 }
 
-const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
-  const [localData, setLocalData] = useState(data);
-  useEffect(() => setLocalData(data), [data]);
+const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, paginationProps, searchTerm: externalSearchTerm, onSearchChange }) => {
+  const [localData, setLocalData] = useState<TerceroupdateDTO[]>(Array.isArray(data) ? data : []);
+
+  useEffect(() => {
+    if (data && (data as any).items) {
+      setLocalData((data as any).items);
+    } else if (Array.isArray(data)) {
+      setLocalData(data);
+    }
+  }, [data]);
 
   const {
-    searchTerm,
-    setSearchTerm,
+    searchTerm: internalSearchTerm,
+    setSearchTerm: internalSetSearchTerm,
     activeFilters,
     updateFilter,
     filteredData,
@@ -38,6 +49,9 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
       },
     },
   });
+
+  const searchTerm = isServer ? (externalSearchTerm ?? internalSearchTerm) : internalSearchTerm;
+  const setSearchTerm = isServer ? (onSearchChange ?? internalSetSearchTerm) : internalSetSearchTerm;
 
   const [confirmModal, setConfirmModal] = useState<{
     show: boolean;
@@ -199,7 +213,12 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit }) => {
 
       {/* Tabla con Estilo Blanco y Sombra */}
       <div className="tuto-terceros-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
-        <Table columns={columns} data={filteredData} />
+        <Table 
+          columns={columns} 
+          data={filteredData}
+          isServer={isServer}
+          serverPagination={paginationProps} 
+        />
       </div>
 
       {/* Modales de Estado */}

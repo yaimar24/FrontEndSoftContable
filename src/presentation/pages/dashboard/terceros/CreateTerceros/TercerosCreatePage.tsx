@@ -26,10 +26,13 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
   const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
 
   useEffect(() => {
-    if (formData.departamentoId) {
-      setSelectedDepartamentoId(String(formData.departamentoId));
+    if (formData.municipioId && parametros?.municipios) {
+      const municipio = parametros.municipios.find((m: any) => m.id === Number(formData.municipioId));
+      if (municipio) {
+        setSelectedDepartamentoId(String(municipio.departamentoId));
+      }
     }
-  }, [formData.departamentoId]);
+  }, [formData.municipioId, parametros?.municipios]);
 
   const municipiosFiltrados = (parametros?.municipios || []).filter(
     (m: any) => m.departamentoId === Number(selectedDepartamentoId)

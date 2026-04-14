@@ -8,8 +8,13 @@ import type {
 } from "../../../domain/models/Contabilidad";
 
 // Listar comprobantes
-export const getComprobantes = async (): Promise<ApiResponse<ComprobanteContableRead[]>> => {
-  return await apiClient("/api/AsientoContable");
+export const getComprobantes = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+    ...(searchTerm && { searchTerm }),
+  });
+  return await apiClient(`/api/AsientoContable?${queryParams}`);
 };
 
 // Detalle con movimientos

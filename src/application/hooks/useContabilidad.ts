@@ -8,6 +8,8 @@ import type {
   MovimientoLibroAuxiliar
 } from "../../domain/models/Contabilidad";
 
+import type { PaginatedResponse } from "../../domain/models/types/ApiResponse";
+
 export const useContabilidad = () => {
   const [comprobantes, setComprobantes] = useState<ComprobanteContableRead[]>([]);
   const [comprobanteDetail, setComprobanteDetail] = useState<ComprobanteContableRead | null>(null);
@@ -15,19 +17,29 @@ export const useContabilidad = () => {
   const [libroAuxiliar, setLibroAuxiliar] = useState<MovimientoLibroAuxiliar[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<Omit<PaginatedResponse<any>, 'items'> | null>(null);
 
-  const fetchComprobantes = useCallback(async () => {
+  const fetchComprobantes = useCallback(async (page: number = 1, pageSize: number = 10, searchTerm: string = "") => {
     setLoading(true);
     setError(null);
     try {
-      const resp = await contabilidadService.getComprobantes();
+      const resp = await contabilidadService.getComprobantes(page, pageSize, searchTerm);
       if (resp.success && resp.data) {
-        setComprobantes(resp.data);
+        if (resp.data.items) {
+          setComprobantes(resp.data.items);
+          const { items, ...rest } = resp.data;
+          setPagination(rest);
+        } else {
+          setComprobantes(Array.isArray(resp.data) ? resp.data : []);
+          setPagination(null);
+        }
       } else {
         setError(resp.message);
+        setComprobantes([]);
       }
     } catch (err: any) {
       setError(err.message || "Error al cargar comprobantes");
+      setComprobantes([]);
     } finally {
       setLoading(false);
     }
@@ -143,6 +155,7 @@ export const useContabilidad = () => {
     libroAuxiliar,
     loading,
     error,
+    pagination,
     fetchComprobantes,
     fetchComprobanteById,
     anular,

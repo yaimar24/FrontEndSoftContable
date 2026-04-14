@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Eye, FileText, ArrowRight } from "lucide-react";
 import { ExportButtons } from "../../../../components/molecules/ExportButtons";
 import SearchBar from "../../../../components/molecules/SearchBar";
@@ -10,6 +11,10 @@ interface Props {
   data: FacturaVentaReadDTO[];
   onPreview?: (v: FacturaVentaReadDTO) => void;
   onDetails?: (id: number) => void;
+  isServer?: boolean;
+  paginationProps?: any;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
 }
 
 const getEstadoInfo = (estado: string | number) => {
@@ -31,10 +36,23 @@ const getEstadoInfo = (estado: string | number) => {
   return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
 };
 
-const VentasList: React.FC<Props> = ({ data = [], onPreview, onDetails }) => {
-  const { searchTerm, setSearchTerm, filteredData } = useFilter(data || [], {   
+const VentasList: React.FC<Props> = ({  data = [], onPreview, onDetails , isServer, paginationProps, searchTerm: externalSearchTerm, onSearchChange }) => {
+const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(data) ? data : []);
+
+  useEffect(() => {
+    if (data && (data as any).items) {
+      setLocalData((data as any).items);
+    } else if (Array.isArray(data)) {
+      setLocalData(data);
+    }
+  }, [data]);
+
+  const { searchTerm: internalSearchTerm, setSearchTerm: internalSetSearchTerm, filteredData } = useFilter(localData || [], {
     searchFields: ["numero", "clienteNombre", "tipoFacturaNombre"],
   });
+  
+  const searchTerm = isServer ? (externalSearchTerm ?? internalSearchTerm) : internalSearchTerm;
+  const setSearchTerm = isServer ? (onSearchChange ?? internalSetSearchTerm) : internalSetSearchTerm;
 
   const exportConfig: ExportConfig<FacturaVentaReadDTO> = {
     filename: `Reporte_Ventas`,
@@ -149,7 +167,11 @@ const VentasList: React.FC<Props> = ({ data = [], onPreview, onDetails }) => {
       </div>
 
       <div className="tuto-ventas-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
-        <Table columns={columns} data={filteredData} />
+        <Table columns={columns} 
+          data={filteredData}
+          isServer={isServer}
+          serverPagination={paginationProps}
+        />
       </div>
     </div>
   );

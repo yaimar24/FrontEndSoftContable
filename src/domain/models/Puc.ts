@@ -25,8 +25,6 @@ export interface CuentaPuc {
 export interface PucCreateDTO {
   codigo: string;
   nombre: string;
-  codigoPadre?: string;
-  naturaleza: string;
   esDetalle: boolean;
 }
 
