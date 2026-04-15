@@ -7,7 +7,7 @@ import { FilterGroup } from '../../components/molecules/FilterGroup';
 import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { ComprobanteContableRead } from '../../../domain/models/Contabilidad';
-import { Eye, XCircle, FileText, PlusCircle } from 'lucide-react';
+import { Eye, FileText, PlusCircle } from 'lucide-react';
 import LoadingOverlay from '../../components/shared/LoadingOverlay';
 
 export const ContabilidadPage = () => {
