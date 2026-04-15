@@ -6,14 +6,21 @@ import Modal from './Modal';
 interface AsientosContablesSectionProps {
   tipoDocumento: 'FacturaVenta' | 'FacturaCompra' | 'ReciboCaja';
   documentoId: number;
+  initialComprobantes?: any[];
 }
 
-export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> = ({ tipoDocumento, documentoId }) => {
-  const [comprobantes, setComprobantes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> = ({ tipoDocumento, documentoId, initialComprobantes }) => {
+  const [comprobantes, setComprobantes] = useState<any[]>(initialComprobantes || []);
+  const [loading, setLoading] = useState(!initialComprobantes);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   useEffect(() => {
+    if (initialComprobantes && initialComprobantes.length > 0) {
+      setComprobantes(initialComprobantes);
+      setLoading(false);
+      return;
+    }
+  
     const cargar = async () => {
       setLoading(true);
       try {
@@ -28,10 +35,10 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
         setLoading(false);
       }
     };
-    if (documentoId) {
+    if (documentoId && (!initialComprobantes || initialComprobantes.length === 0)) {
       cargar();
     }
-  }, [tipoDocumento, documentoId]);
+  }, [tipoDocumento, documentoId, initialComprobantes]);
 
   if (loading) return <div className="text-gray-500 text-sm">Cargando asientos...</div>;
 
@@ -51,7 +58,12 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
         onClick={() => setIsModalOpen(true)}
         className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-white border-2 border-slate-100 hover:border-blue-200 hover:bg-blue-50 text-slate-800 hover:text-blue-700 rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-sm group"
       >
-        <Eye size={16} className="text-slate-400 group-hover:text-blue-500" />
+        <span className="relative flex items-center justify-center">
+          <Eye size={16} className="text-slate-400 group-hover:text-blue-500" />
+          {comprobantes.some(c => c.tipoComprobanteId === 7) && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-pulse shadow-sm shadow-amber-500/50"></span>
+          )}
+        </span>
         Ver todos los asientos contables ({comprobantes.length})
       </button>
 
@@ -65,9 +77,14 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
           {comprobantes.map(comp => (
             <div key={comp.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-50 border-b border-slate-200 gap-2">
-                <span className="font-black text-sm text-[#1e3a8a] flex items-center gap-2">
+                <span className="font-black text-sm text-[#1e3a8a] flex flex-wrap items-center gap-2">
                   <span className="text-xl">📄</span> 
-                  {comp.numero} — {comp.tipoComprobante} ({comp.estado})
+                  <span>{comp.numero} — {comp.tipoComprobante} ({comp.estado})</span>
+                  {comp.tipoComprobanteId === 7 && comp.estado === 'Aprobado' && (
+                    <span className="bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md text-[10px] uppercase font-black tracking-widest ml-2">
+                      REVERSO / ANULACIÓN
+                    </span>
+                  )}
                 </span>
                 <Link to={`/dashboard/asientos-contables/${comp.id}`} className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-1">
                   Ver asiento <span className="text-[10px]">→</span>
@@ -87,7 +104,14 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
                     {comp.movimientos?.map((m: any) => (
                       <tr key={m.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-6 py-3 font-bold text-slate-600">{m.cuentaCodigo}</td>
-                        <td className="px-6 py-3 font-medium text-slate-700">{m.cuentaNombre}</td>
+                        <td className="px-6 py-3 font-medium text-slate-700">
+                          {m.cuentaNombre}
+                          {m.descripcion && (
+                            <div className="text-[10px] text-slate-400 mt-0.5 max-w-[200px] truncate" title={m.descripcion}>
+                              {m.descripcion}
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-3 text-right font-black text-emerald-600 bg-emerald-50/10">
                           {m.debito > 0 ? `$${m.debito.toLocaleString()}` : ''}
                         </td>

@@ -52,7 +52,7 @@ const ComprasPage: React.FC = () => {
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
   const { searchTerm, setSearchTerm, filteredData } = useFilter(compras, {
-    searchFields: ["numero", "proveedorNombre"],
+    searchFields: ["numero", "numeroReferencia", "proveedorNombre"],
   });
   
   const { setSteps } = useTutorial();
@@ -159,6 +159,12 @@ const ComprasPage: React.FC = () => {
             <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Fecha: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
           </div>
         </div>
+      )
+    },
+    {
+      header: "Referencia",
+      render: (v: FacturaCompraReadDTO) => (
+        <span className="font-bold text-[10px] text-slate-700 uppercase">{v.numeroReferencia || 'N/A'}</span>
       )
     },
     {

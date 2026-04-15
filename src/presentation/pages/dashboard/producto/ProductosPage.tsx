@@ -110,7 +110,7 @@ const ProductosPage = () => {
     <div className="tuto-form-producto min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto">
       <div className="tuto-header">
         <PageHeader
-          title="GestiA3n de Productos"
+          title="Gestion de Productos"
           subtitle={`${productos.length} A-tems en el catA�logo`}
           icon={Package}
           switcher={

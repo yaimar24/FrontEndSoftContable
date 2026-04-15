@@ -35,6 +35,10 @@ export const toggleProductoStatus = async (id: string): Promise<ApiResponse<stri
   });
 };
 
-export const searchProductos = async (termino: string, skipGlobalLoader: boolean = false): Promise<ApiResponse<ProductoReadDTO[]>> => {
-  return await apiClient(`/api/Producto/buscar?termino=${encodeURIComponent(termino)}`, { skipGlobalLoader });
+export const searchProductos = async (termino: string, tipoUso?: number, skipGlobalLoader: boolean = false): Promise<ApiResponse<ProductoReadDTO[]>> => {
+  let url = `/api/Producto/buscar?termino=${encodeURIComponent(termino)}`;
+  if (tipoUso !== undefined) {
+    url += `&tipoUso=${tipoUso}`;
+  }
+  return await apiClient(url, { skipGlobalLoader });
 };

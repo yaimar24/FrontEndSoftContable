@@ -27,6 +27,7 @@ export interface FacturaCompraDetalleCreateDTO {
 }
 
 export interface FacturaCompraCreateDTO {
+  numeroReferencia?: string;
   tipoFacturaId: number;
   proveedorId: string;
   fechaElaboracion: string;
@@ -38,6 +39,7 @@ export interface FacturaCompraCreateDTO {
 }
 
 export interface FacturaCompraUpdateDTO {
+  numeroReferencia?: string;
   tipoFacturaId: number;
   proveedorId: string;
   fechaElaboracion: string;
@@ -76,6 +78,7 @@ export interface FacturaCompraReadDTO {
   id: number;
   tipoFacturaNombre: string;
   numero: string;
+  numeroReferencia: string;
   proveedorId: string;
   proveedorNombre: string;
   proveedorTelefono?: string;
@@ -100,4 +103,5 @@ export interface FacturaCompraReadDTO {
   totalImpuestos: number;
   totalNeto: number;
   detalles: FacturaCompraDetalleReadDTO[];
+  comprobantes?: any[];
 }

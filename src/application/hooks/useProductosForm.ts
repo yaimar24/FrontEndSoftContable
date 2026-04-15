@@ -5,7 +5,7 @@ export const useProductosForm = (initialData?: any) => {
   const [formData, setFormData] = useState(initialData || {
     nombre: "", sku: "", codigoBarras: "", esServicio: true,
     esInventariable: false, visibleEnFacturas: true, categoriaProductoId: 1,
-    unidadMedidaDianId: 1, impuestoCargoId: 1, precios: [{ nombreLista: "General", valor: 0, incluyeIva: false }]
+    unidadMedidaDianId: 1, impuestoCargoId: 1, tipoUso: 1, precios: [{ nombreLista: "General", valor: 0, incluyeIva: false }]
   });
 
   const [parametros, setParametros] = useState<any>(null);
@@ -21,7 +21,13 @@ export const useProductosForm = (initialData?: any) => {
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev: any) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    
+    let parsedValue = value;
+    if (name === 'tipoUso' || name === 'categoriaId' || name === 'unidadMedidaDianId' || name === 'impuestoCargoId' || name === 'retencionId' || name === 'categoriaProductoId') {
+       parsedValue = value ? Number(value) : value;
+    }
+    
+    setFormData((prev: any) => ({ ...prev, [name]: type === 'checkbox' ? checked : parsedValue }));
   };
 
   const handleConfirmSave = async () => {

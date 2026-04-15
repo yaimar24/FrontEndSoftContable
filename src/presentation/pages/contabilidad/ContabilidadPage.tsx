@@ -129,6 +129,7 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
           >
             <Eye size={15} strokeWidth={2.5} />
           </button>
+          {/* Ocultamos anular de momento
           {item.estado?.toLowerCase() !== 'anulado' && (
             <button
               onClick={() => { setComprobanteToAnular(item.id); setShowAnularModal(true); }}
@@ -137,7 +138,8 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
             >
               <XCircle size={15} strokeWidth={2.5} />
             </button>
-          )}
+          )} 
+          */}
         </div>
       )
     }
