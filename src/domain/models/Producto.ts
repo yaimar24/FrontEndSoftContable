@@ -12,12 +12,13 @@ export interface ProductoReadDTO {
   nombre: string;
   sku: string | null;
   esServicio: boolean;
-  // Añadimos este para que el filtro lo encuentre:
+  esInventariable: boolean;
   categoriaProductoId: number; 
   categoriaNombre: string;
   unidadMedidaNombre: string;
   impuestoCargoNombre: string;
   tarifaIva: number;
+  tipoUso: number; // 1 = Venta, 2 = Compra
   cuentaIngresoCodigo?: string | null;
   cuentaIngresoNombre?: string | null;
   cuentaCostoCodigo?: string | null;
@@ -43,6 +44,7 @@ export interface ProductoCreateDTO {
   unidadMedidaDianId: number;
   impuestoCargoId: number;
   retencionId?: number | null;
+  tipoUso: number; // 1 = Venta, 2 = Compra
   
   cuentaIngresoCodigo?: string | null;
   cuentaCostoCodigo?: string | null;

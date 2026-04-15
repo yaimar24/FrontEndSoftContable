@@ -264,7 +264,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                           displayValue={detalle.descripcion || ""}
                           placeholder="Buscar nombre o referencia"
                           fetcher={async (q) => {
-                            const res = await searchProductos(q, true);
+                            const res = await searchProductos(q, 1, true); // tipoUso 1 = Venta
                             return res.success && res.data ? res.data : [];
                           }}
                           getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}

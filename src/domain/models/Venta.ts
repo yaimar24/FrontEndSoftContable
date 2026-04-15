@@ -144,6 +144,7 @@ export interface FacturaVentaReadDTO {
   saldo: number;
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
+  comprobantes?: any[];
   
   cuotas?: CuotaCreditoRead[] | null;
   cuotasPendientes?: number | null;

@@ -160,6 +160,19 @@ const ComprasViewerPage: React.FC = () => {
       {/* Main Content Area (Printable Dashboard View) */}
       <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-4">
          
+         {/* Alerta de Anulación / Reverso */}
+         {compra.estadoId === 2 && compra.comprobantes?.some(c => c.tipoComprobanteId === 7 && c.estado === 'Aprobado') && (
+           <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm flex items-start gap-4">
+             <span className="text-amber-500 text-2xl">⚠️</span>
+             <div>
+               <h3 className="text-amber-800 font-black text-sm uppercase tracking-widest">Factura de Compra Anulada</h3>
+               <p className="text-amber-700 text-xs font-medium mt-1">
+                 Esta factura ha sido anulada. Se ha generado un registro de <b>ajuste o reverso automático</b> en la contabilidad para neutralizar los valores previamente asentados. Revisa la sección de asientos contables para ver los detalles del reverso.
+               </p>
+             </div>
+           </div>
+         )}
+         
          {/* Encabezado */}
          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -271,7 +284,11 @@ const ComprasViewerPage: React.FC = () => {
                      </h3>
                   </div>
                   <div className="p-4">
-                     <AsientosContablesSection tipoDocumento="FacturaCompra" documentoId={compra.id} />
+                     <AsientosContablesSection 
+                        tipoDocumento="FacturaCompra" 
+                        documentoId={compra.id} 
+                        initialComprobantes={compra.comprobantes || []} 
+                     />
                   </div>
                </div>
             </div>

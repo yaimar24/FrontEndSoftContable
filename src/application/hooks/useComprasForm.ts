@@ -21,6 +21,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
 
   const [formData, setFormData] = useState<FacturaCompraCreateDTO>({
     tipoFacturaId: initialData?.tipoFacturaId || 1, // o el id que corresponda a "FACTURA DE COMPRA"
+    numeroReferencia: initialData?.numeroReferencia || "",
     proveedorId: initialData?.proveedorId || "",
     fechaElaboracion: initialData?.fechaElaboracion ? new Date(initialData.fechaElaboracion).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     esCredito: false,

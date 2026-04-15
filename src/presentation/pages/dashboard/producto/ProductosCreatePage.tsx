@@ -42,6 +42,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     if (!formData.nombre?.trim()) newErrors.nombre = "Requerido";
     if (!formData.sku?.trim()) newErrors.sku = "Requerido";
     if (!formData.categoriaId) newErrors.categoriaId = "Requerido";
+    if (!formData.tipoUso) newErrors.tipoUso = "Requerido";
     if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
       newErrors.valor = "Requerido";
     }
@@ -145,6 +146,19 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 displayExpr={(c) => c.nombre}
                 required
                 error={errors.categoriaId}
+              />
+              <SelectField
+                label="Tipo de Uso"
+                name="tipoUso"
+                value={formData.tipoUso}
+                onChange={handleChange}
+                options={[
+                  { id: 1, nombre: 'Venta' },
+                  { id: 2, nombre: 'Compra' }
+                ]}
+                displayExpr={(t) => t.nombre}
+                required
+                error={errors.tipoUso}
               />
 
               

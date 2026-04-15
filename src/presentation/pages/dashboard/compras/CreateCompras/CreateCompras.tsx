@@ -58,6 +58,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
+    if (!formData.numeroReferencia) newErrors.numeroReferencia = "El número de referencia es requerido";
     if (!formData.proveedorId) newErrors.proveedorId = "El proveedor es requerido";
     if (!formData.esCredito && !formData.medioPagoId) newErrors.medioPagoId = "Medio de pago es requerido";
     if (!formData.fechaElaboracion) newErrors.fechaElaboracion = "La fecha es requerida";
@@ -155,13 +156,14 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
             </h3>
             <div className="space-y-4">
               <InputField
-                label="Número de Compra"
-                name="numero"
-                value={(formData as any).numero || "Pendiente"}
-                onChange={() => {}}
+                label="Número de Referencia"
+                name="numeroReferencia"
+                value={formData.numeroReferencia || ""}
+                onChange={(e) => handleChange({ target: { name: 'numeroReferencia', value: e.target.value } } as any)}
                 icon={Hash}
-                placeholder="-- Generado Automáticamente --"
-                disabled
+                placeholder="Factura del Proveedor"
+                required
+                error={errors.numeroReferencia}
               />
 
               <AsyncSearchField
@@ -259,7 +261,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                             displayValue={detalle.descripcion || ''}
                             placeholder="Buscar nombre o referencia"
                             fetcher={async (q) => {
-                              const res = await searchProductos(q, true);
+                              const res = await searchProductos(q, 2, true); // tipoUso 2 = Compra
                               return res.success && res.data ? res.data : [];
                             }}
                             getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0})`}
