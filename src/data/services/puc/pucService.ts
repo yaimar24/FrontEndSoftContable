@@ -39,15 +39,15 @@ export const restoreCuentaContable = async (codigo: string): Promise<ApiResponse
 export const getCuentasPuc = async (
   codigoRaiz: string = '',
   soloDetalle: boolean = true,
-  busqueda?: string,
+  buscar?: string,
   skipGlobalLoader: boolean = false
 ): Promise<ApiResponse<CuentaPuc[]>> => {
   const params: string[] = [`soloDetalle=${soloDetalle}`];
   if (codigoRaiz) {
     params.push(`codigoRaiz=${codigoRaiz}`);
   }
-  if (busqueda) {
-    params.push(`busqueda=${encodeURIComponent(busqueda)}`);
+  if (buscar) {
+    params.push(`buscar=${encodeURIComponent(buscar)}`);
   }
   return await apiClient(`/api/Puc/cuentas?${params.join("&")}`, { skipGlobalLoader });
 };
