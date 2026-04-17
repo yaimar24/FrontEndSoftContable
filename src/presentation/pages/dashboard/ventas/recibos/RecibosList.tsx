@@ -23,7 +23,8 @@ export const RecibosList = () => {
       show();
       const res = await getRecibosCaja();
       if (res.success && res.data) {
-        setData(res.data);
+        // En endpoints con paginación, los items vienen en res.data.items
+        setData((res.data as any).items || res.data);
       }
     } catch (e) {
       console.error(e);
@@ -51,7 +52,7 @@ export const RecibosList = () => {
     {
       header: "Factura",
       render: (v: ReciboCajaRead) => (
-        <button onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/ventas/facturas/${v.facturaVentaId}`); }} className="font-bold text-[10px] text-blue-600 uppercase hover:underline">
+        <button onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/ventas/${v.facturaVentaId}`); }} className="font-bold text-[10px] text-blue-600 uppercase hover:underline">
           {v.facturaVentaNumero}
         </button>
       )
@@ -60,12 +61,6 @@ export const RecibosList = () => {
       header: "Cliente",
       render: (v: ReciboCajaRead) => (
         <span className="font-bold text-[10px] text-slate-700 uppercase">{v.terceroNombre}</span>
-      )
-    },
-    {
-      header: "Medio de Pago",
-      render: (v: ReciboCajaRead) => (
-        <span className="font-bold text-[10px] text-slate-600 uppercase">{v.medioPagoId} - {v.medioPagoNombre}</span>
       )
     },
     {
@@ -91,17 +86,12 @@ export const RecibosList = () => {
       )
     },
     {
-      header: "Referencia",
-      render: (v: ReciboCajaRead) => (
-        <span className="text-[10px] text-slate-500">{v.referencia || "�"}</span>
-      )
-    },
-    {
+
       header: "Acciones",
       className: "text-right",
       render: (v: ReciboCajaRead) => (
         <div className="flex justify-end gap-2">
-          <button onClick={() => navigate(`/dashboard/ventas/recibos/${v.id}`)} className="p-2 bg-slate-50 text-slate-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ver Detalles">
+          <button onClick={() => navigate(`/dashboard/ventas/recibos/ver/${v.id}`)} className="p-2 bg-slate-50 text-slate-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ver Detalles">
             <Eye size={15} strokeWidth={2.5} />
           </button>
         </div>

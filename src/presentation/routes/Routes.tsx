@@ -14,6 +14,8 @@ import ReciboCajaViewer from "@/presentation/pages/dashboard/ventas/recibos/Reci
 import ProductosPage from "@/presentation/pages/dashboard/producto/ProductosPage";
 import DashboardHome from "@/presentation/pages/dashboard/DashboardHome";
 import ComprasPage from "@/presentation/pages/dashboard/compras/ComprasPage";
+import EgresosList from "@/presentation/pages/dashboard/compras/egresos/EgresosList";
+import EgresoViewer from "@/presentation/pages/dashboard/compras/egresos/EgresoViewer";
 import ComprasViewerPage from "@/presentation/pages/dashboard/compras/ComprasViewerPage";
 import CompraPrintPage from "@/presentation/pages/dashboard/compras/CompraPrintPage";
 import { ContabilidadPage } from "@/presentation/pages/contabilidad/ContabilidadPage";
@@ -38,9 +40,12 @@ const AppRoutes = () => (
           <Route path="terceros" element={<TercerosPage />} />
           <Route path="ventas" element={<VentasPage />} />
           <Route path="ventas/recibos" element={<RecibosList />} />
-          <Route path="ventas/recibos/:id" element={<ReciboCajaViewer />} />
-          <Route path="ventas/:id" element={<VentasViewerPage />} />          <Route path="factura-compra" element={<ComprasPage />} />
+          <Route path="ventas/recibos/ver/:id" element={<ReciboCajaViewer />} />
+          <Route path="ventas/:id" element={<VentasViewerPage />} />
+          <Route path="factura-compra" element={<ComprasPage />} />
+          <Route path="factura-compra/egresos" element={<EgresosList />} />
           <Route path="factura-compra/:id" element={<ComprasViewerPage />} />          <Route path="productos" element={<ProductosPage />} />
+          <Route path="factura-compra/egresos/:id" element={<EgresoViewer />} />
           <Route path="asientos-contables" element={<ContabilidadPage />} />
           <Route path="asientos-contables/nuevo" element={<ContabilidadNuevoPage />} />
           <Route path="asientos-contables/configuracion" element={<ContabilidadConfiguracionPage />} />
@@ -57,3 +62,4 @@ const AppRoutes = () => (
 );
 
 export default AppRoutes;
+

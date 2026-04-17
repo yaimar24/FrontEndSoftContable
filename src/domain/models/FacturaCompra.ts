@@ -26,6 +26,14 @@ export interface FacturaCompraDetalleCreateDTO {
   tarifaRetencion?: number;
 }
 
+export interface PagoEgresoCreate {
+  medioPagoId: number;
+  monto: number;
+  fechaEgreso: string;
+  referencia?: string;
+  observacion?: string;
+}
+
 export interface FacturaCompraCreateDTO {
   numeroReferencia?: string;
   tipoFacturaId: number;
@@ -35,6 +43,7 @@ export interface FacturaCompraCreateDTO {
   frecuenciaPagoId?: number | null;
   numeroCuotas?: number | null;
   medioPagoId?: number | null;
+  pagos?: PagoEgresoCreate[];
   detalles: FacturaCompraDetalleCreateDTO[];
 }
 
@@ -101,7 +110,7 @@ export interface FacturaCompraReadDTO {
   totalImpuestoCargo: number;
   totalRetencion: number;
   totalImpuestos: number;
-  totalNeto: number;
-  detalles: FacturaCompraDetalleReadDTO[];
-  comprobantes?: any[];
+  totalNeto: number;    totalPagado?: number;
+    saldo?: number;  detalles: FacturaCompraDetalleReadDTO[];
+    egresos?: any[]; comprobantes?: any[];
 }

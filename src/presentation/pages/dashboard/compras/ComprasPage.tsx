@@ -20,8 +20,17 @@ const getEstadoInfo = (estado: string | number) => {
     '0': { label: 'Borrador', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     '1': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
     '2': { label: 'Anulada', color: 'bg-red-50 text-red-600 border-red-100' },
+    '3': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+    '4': { label: 'Parcial', color: 'bg-blue-50 text-blue-600 border-blue-100' },
+    '5': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    
+    'Borrador': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    'Registrada': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
+    'Pendiente': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+    'Pagado': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
   };
-  return map[estado.toString()] || { label: 'Desconocido', color: 'bg-slate-100 text-slate-500' };
+  return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
 };
 
 const ComprasPage: React.FC = () => {
