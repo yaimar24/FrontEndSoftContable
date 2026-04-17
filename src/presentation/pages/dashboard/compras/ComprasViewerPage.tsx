@@ -8,7 +8,9 @@ import StatusModal from '../../../components/organisms/StatusModal';
 import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import { exportInvoiceToPDF } from '../../../../utils/exportInvoicePDF';
 import { AsientosContablesSection } from '../../../components/organisms/AsientosContablesSection';
+import { PaymentEgresoModal } from './pagos/PaymentEgresoModal';
 import { FileText, Banknote, ShoppingCart, CheckCircle, XCircle, Edit2, Download, ArrowLeft, Printer } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ComprasViewerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +20,7 @@ const ComprasViewerPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState<{show: boolean, action: 'registrar' | 'anular' | null}>({show: false, action: null});
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -94,11 +97,15 @@ const ComprasViewerPage: React.FC = () => {
   if (compra.estadoId === 0) badgeColor = "bg-blue-100 text-blue-600"; // Borrador
   if (compra.estadoId === 1) badgeColor = "bg-emerald-100 text-emerald-600"; // Registrada
   if (compra.estadoId === 2) badgeColor = "bg-red-100 text-red-600"; // Anulada
+  if (compra.estadoId === 5 || compra.estadoNombre === 'Pagada') badgeColor = "bg-teal-100 text-teal-600"; // Pagada
 
-  const formatCurrency = (val: number) => val.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+  const formatCurrency = (value: number | undefined | null) => {
+    if (value === undefined || value === null) return '$ 0';
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 print:bg-white print:p-0 print:m-0">
+    <div className="bg-slate-50 min-h-screen pb-12">
       <StatusModal
         show={confirmModal.show}
         onClose={() => setConfirmModal({ show: false, action: null })}
@@ -116,6 +123,16 @@ const ComprasViewerPage: React.FC = () => {
         onClose={() => setResultModal({ ...resultModal, show: false })}
       />
 
+      <PaymentEgresoModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        factura={compra}
+        onSuccess={() => {
+          setIsPaymentModalOpen(false);
+          if (id) fetchCompra(Number(id));
+        }}
+      />
+
       {/* Header bar (no printable) */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-40 print:hidden">
         <div className="flex items-center gap-4">
@@ -130,6 +147,16 @@ const ComprasViewerPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {[1, 3, 4].includes(compra.estadoId) && (compra.saldo ?? compra.totalNeto) > 0 && (
+            <Button
+              variant="secondary"
+              icon={Banknote}
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 border-emerald-100 shadow-none"
+            >
+              Registrar Pago
+            </Button>
+          )}
           {compra.estadoId === 0 && (
             <>
               <Button variant="outline" onClick={() => navigate(`/dashboard/factura-compra?view=formulario&id=${compra.id}`)} icon={Edit2}>
@@ -161,7 +188,7 @@ const ComprasViewerPage: React.FC = () => {
       <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-4">
          
          {/* Alerta de Anulación / Reverso */}
-         {compra.estadoId === 2 && compra.comprobantes?.some(c => c.tipoComprobanteId === 7 && c.estado === 'Aprobado') && (
+         {compra.estadoId === 2 && compra.egresos?.some((e: any) => e.estado === 'Aprobado' || e.estadoNombre === 'Aprobado') && (
            <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm flex items-start gap-4">
              <span className="text-amber-500 text-2xl">⚠️</span>
              <div>
@@ -236,6 +263,93 @@ const ComprasViewerPage: React.FC = () => {
                            ))}
                            {(!compra.detalles || compra.detalles.length === 0) && (
                               <tr><td colSpan={5} className="px-6 py-8 text-center text-slate-400">No hay detalles.</td></tr>
+                           )}
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+
+               {/* Tabla de Egresos Vinculados */}
+               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                  <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
+                     <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                        <Banknote size={18} className="text-emerald-500" />
+                        Comprobantes de Egreso Vinculados
+                     </h3>
+                  </div>
+                  
+                  {/* Progress Bar Pagos */}
+                  {(() => {
+                     const totalNeto = compra.totalNeto;
+                     const totalPagado = totalNeto - (compra.saldo ?? totalNeto);
+                     const porcentaje = totalNeto > 0 ? ((totalPagado / totalNeto) * 100).toFixed(1) : "0.0";
+                     return (
+                        <div className="px-6 py-4 bg-white border-b border-slate-100">
+                           <div className="flex justify-between text-xs font-bold text-slate-600 mb-2">
+                              <span>Progreso de Pagos</span>
+                              <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                 Total Pagado: {formatCurrency(totalPagado)} / {formatCurrency(totalNeto)} ({porcentaje}%)
+                              </span>
+                           </div>
+                           <div className="w-full bg-slate-100 rounded-full h-2.5">
+                              <div 
+                                 className="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" 
+                                 style={{ width: `${Math.min(Number(porcentaje), 100)}%` }}
+                              ></div>
+                           </div>
+                        </div>
+                     );
+                  })()}
+
+                  <div className="overflow-x-auto">
+                     <table className="w-full text-left border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                           <tr>
+                              <th className="px-6 py-3">Egreso</th>
+                              <th className="px-6 py-3">Fecha</th>
+                              <th className="px-6 py-3">Medio</th>
+                              <th className="px-6 py-3">Estado</th>
+                              <th className="px-6 py-3 text-right">Monto</th>
+                              <th className="px-6 py-3 text-center">Acciones</th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-sm font-medium">
+                           {compra.egresos?.map((egreso: any) => (
+                              <tr key={egreso.id} className="hover:bg-slate-50">
+                                 <td className="px-6 py-4">
+                                    <Link to={`/dashboard/factura-compra/egresos/${egreso.id}`} className="text-blue-600 font-bold hover:underline">
+                                       {egreso.numero}
+                                    </Link>
+                                 </td>
+                                 <td className="px-6 py-4 text-slate-600">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(egreso.fechaEgreso || egreso.fechaComprobante))}</td>
+                                 <td className="px-6 py-4 text-slate-600">{egreso.medioPagoNombre || '-'}</td>
+                                 <td className="px-6 py-4 text-slate-600">{egreso.estado || egreso.estadoNombre || 'Aplicado'}</td>
+                                 <td className="px-6 py-4 text-right text-slate-800 font-bold">{formatCurrency(egreso.monto)}</td>
+                                 <td className="px-6 py-4 text-center">
+                                   {(egreso.estadoId === 1 || egreso.estadoNombre === 'Aplicado' || egreso.estado === 'Aplicado' || (!egreso.estado && !egreso.estadoNombre)) && (
+                                     <button 
+                                       onClick={() => {
+                                         import('../../../../data/services/comprobanteEgreso/comprobanteEgresoService')
+                                           .then(m => m.anularComprobanteEgreso(egreso.id))
+                                           .then(res => {
+                                             if(res.success) {
+                                               setResultModal({ show: true, success: true, message: 'Egreso anulado.' });
+                                               fetchCompra(Number(id));
+                                             } else {
+                                               setResultModal({ show: true, success: false, message: res.message || 'Error al anular.' });
+                                             }
+                                           })
+                                       }}
+                                       className="text-xs text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+                                     >
+                                       Anular
+                                     </button>
+                                   )}
+                                 </td>
+                              </tr>
+                           ))}
+                           {(!compra.egresos || compra.egresos.length === 0) && (
+                              <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-400">No hay comprobantes de egreso vinculados.</td></tr>
                            )}
                         </tbody>
                      </table>

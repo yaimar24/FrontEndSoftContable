@@ -4,7 +4,7 @@ import { Eye } from 'lucide-react';
 import Modal from './Modal';
 
 interface AsientosContablesSectionProps {
-  tipoDocumento: 'FacturaVenta' | 'FacturaCompra' | 'ReciboCaja';
+  tipoDocumento: 'FacturaVenta' | 'FacturaCompra' | 'ReciboCaja' | 'ComprobanteEgreso';
   documentoId: number;
   initialComprobantes?: any[];
 }

@@ -101,7 +101,7 @@ export interface FacturaCompraReadDTO {
   totalImpuestoCargo: number;
   totalRetencion: number;
   totalImpuestos: number;
-  totalNeto: number;
-  detalles: FacturaCompraDetalleReadDTO[];
-  comprobantes?: any[];
+  totalNeto: number;    totalPagado?: number;
+    saldo?: number;  detalles: FacturaCompraDetalleReadDTO[];
+    egresos?: any[]; comprobantes?: any[];
 }
