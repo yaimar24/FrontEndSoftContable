@@ -102,24 +102,17 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
       )
     },
     {
-      header: "Cuotas",
+      header: "Vencimiento",
       render: (v: FacturaVentaReadDTO) => {
-        if (!v.esCredito || !v.cuotas) return <span className="text-[10px] text-slate-400 font-bold px-2 py-0.5 bg-slate-50 rounded-md border border-slate-100 uppercase tracking-wider">Contado</span>;
+        if (!v.esCredito || !v.fechaVencimiento) return <span className="text-[10px] text-slate-400 font-bold px-2 py-0.5 bg-slate-50 rounded-md border border-slate-100 uppercase tracking-wider">Contado</span>;
         
-        const totalCuotas = v.cuotas.length;
-        const cuotasPagadas = v.cuotas.filter(c => c.estadoId === 2).length;
-        const vencidas = v.cuotasVencidas || 0;
+        const isOverdue = new Date(v.fechaVencimiento) < new Date() && v.estadoId !== 2; // Assuming 2 is fully paid / Pagada based on earlier checks
         
         return (
           <div className="flex flex-col gap-1 items-start">
-             <span className="text-[10px] font-black text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
-               {cuotasPagadas}/{totalCuotas} Pagadas
+             <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${isOverdue ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-slate-600 bg-slate-100 border-slate-200'}`}>
+               {isOverdue && '⚠️ '}{new Date(v.fechaVencimiento).toLocaleDateString()}
              </span>
-             {vencidas > 0 && (
-               <span className="text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
-                 ⚠️ {vencidas} Vencid.
-               </span>
-             )}
           </div>
         );
       }
