@@ -238,7 +238,7 @@ const VentasViewerPage: React.FC = () => {
                            {factura.recibos?.map((recibo: ReciboCajaRead) => (
                               <tr key={recibo.id} className="hover:bg-slate-50">
                                  <td className="px-6 py-4">
-                                    <Link to={`/dashboard/ventas/recibos/${recibo.id}`} className="text-blue-600 font-bold hover:underline">
+                                    <Link to={`/dashboard/ventas/recibos/ver/${recibo.id}`} className="text-blue-600 font-bold hover:underline">
                                        {recibo.numero}
                                     </Link>
                                  </td>

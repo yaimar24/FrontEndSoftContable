@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO } from "../../domain/models/FacturaCompra";
+import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO, PagoEgresoCreate } from "../../domain/models/FacturaCompra";
 import { createCompra, getCompraById, updateFacturaCompra } from "../../data/services/compra/compraService";
 
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
@@ -28,6 +28,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     medioPagoId: null,
     frecuenciaPagoId: null,
     numeroCuotas: null,
+    pagos: [],
     detalles: initialData?.detalles || [],
   });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
@@ -92,15 +93,26 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     setFormData((prev: FacturaCompraCreateDTO) => ({ ...prev, detalles }));      
   };
 
+  const handlePagosChange = (pagos: PagoEgresoCreate[]) => {       
+    setFormData((prev: FacturaCompraCreateDTO) => ({ ...prev, pagos }));      
+  };
+
   const handleConfirmSave = async () => {
     setShowConfirm(false);
     setLoading(true);
     try {
+      const dataToSubmit = { ...formData };
+      
+      // Auto-asignar el medio de pago al nivel raíz si no está asignado o es contado
+      if (!dataToSubmit.esCredito && dataToSubmit.pagos && dataToSubmit.pagos.length > 0) {
+        dataToSubmit.medioPagoId = dataToSubmit.pagos[0].medioPagoId;
+      }
+      
       let response;
       if (initialCompraId) {
-        response = await updateFacturaCompra(initialCompraId, formData);
+        response = await updateFacturaCompra(initialCompraId, dataToSubmit);
       } else {
-        response = await createCompra(formData);
+        response = await createCompra(dataToSubmit);
       }
       setResultModal({
         show: true,
@@ -129,6 +141,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     handleChange,
     setProveedorId,
     handleDetallesChange,
+    handlePagosChange,
     handleConfirmSave,
   };
 };

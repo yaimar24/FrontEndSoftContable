@@ -40,7 +40,7 @@ const AppRoutes = () => (
           <Route path="terceros" element={<TercerosPage />} />
           <Route path="ventas" element={<VentasPage />} />
           <Route path="ventas/recibos" element={<RecibosList />} />
-          <Route path="ventas/recibos/:id" element={<ReciboCajaViewer />} />
+          <Route path="ventas/recibos/ver/:id" element={<ReciboCajaViewer />} />
           <Route path="ventas/:id" element={<VentasViewerPage />} />
           <Route path="factura-compra" element={<ComprasPage />} />
           <Route path="factura-compra/egresos" element={<EgresosList />} />

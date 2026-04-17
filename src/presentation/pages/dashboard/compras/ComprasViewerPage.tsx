@@ -310,7 +310,6 @@ const ComprasViewerPage: React.FC = () => {
                               <th className="px-6 py-3">Medio</th>
                               <th className="px-6 py-3">Estado</th>
                               <th className="px-6 py-3 text-right">Monto</th>
-                              <th className="px-6 py-3 text-center">Acciones</th>
                            </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm font-medium">
@@ -325,31 +324,10 @@ const ComprasViewerPage: React.FC = () => {
                                  <td className="px-6 py-4 text-slate-600">{egreso.medioPagoNombre || '-'}</td>
                                  <td className="px-6 py-4 text-slate-600">{egreso.estado || egreso.estadoNombre || 'Aplicado'}</td>
                                  <td className="px-6 py-4 text-right text-slate-800 font-bold">{formatCurrency(egreso.monto)}</td>
-                                 <td className="px-6 py-4 text-center">
-                                   {(egreso.estadoId === 1 || egreso.estadoNombre === 'Aplicado' || egreso.estado === 'Aplicado' || (!egreso.estado && !egreso.estadoNombre)) && (
-                                     <button 
-                                       onClick={() => {
-                                         import('../../../../data/services/comprobanteEgreso/comprobanteEgresoService')
-                                           .then(m => m.anularComprobanteEgreso(egreso.id))
-                                           .then(res => {
-                                             if(res.success) {
-                                               setResultModal({ show: true, success: true, message: 'Egreso anulado.' });
-                                               fetchCompra(Number(id));
-                                             } else {
-                                               setResultModal({ show: true, success: false, message: res.message || 'Error al anular.' });
-                                             }
-                                           })
-                                       }}
-                                       className="text-xs text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
-                                     >
-                                       Anular
-                                     </button>
-                                   )}
-                                 </td>
                               </tr>
                            ))}
                            {(!compra.egresos || compra.egresos.length === 0) && (
-                              <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-400">No hay comprobantes de egreso vinculados.</td></tr>
+                              <tr><td colSpan={5} className="px-6 py-8 text-center text-slate-400">No hay comprobantes de egreso vinculados.</td></tr>
                            )}
                         </tbody>
                      </table>

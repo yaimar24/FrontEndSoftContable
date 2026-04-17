@@ -84,7 +84,7 @@ export const ReciboCajaViewer = () => {
               <div>
                 <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Factura Vinculada</p>
                 <button 
-                  onClick={() => navigate(`/dashboard/ventas/facturas/${recibo.facturaVentaId}`)} 
+                  onClick={() => navigate(`/dashboard/ventas/${recibo.facturaVentaId}`)} 
                   className="text-lg font-black text-blue-600 hover:underline tracking-tight"
                 >
                   {recibo.facturaVentaNumero}

@@ -24,7 +24,7 @@ export const ContabilidadDetailPage = () => {
     
     if (documentoOrigenTipo === 'FacturaVenta') navigate(`/dashboard/ventas/${documentoOrigenId}`);
     if (documentoOrigenTipo === 'FacturaCompra') navigate(`/dashboard/factura-compra/${documentoOrigenId}`);
-    if (documentoOrigenTipo === 'ReciboCaja') navigate(`/dashboard/ventas/recibos/${documentoOrigenId}`);
+    if (documentoOrigenTipo === 'ReciboCaja') navigate(`/dashboard/ventas/recibos/ver/${documentoOrigenId}`);
     // Adjust routes based on your app's actual paths 
   };
 
