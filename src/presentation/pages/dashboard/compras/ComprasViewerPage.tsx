@@ -217,10 +217,20 @@ const ComprasViewerPage: React.FC = () => {
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha Elaboración</p>
                <p className="text-sm font-bold text-slate-700">{new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(compra.fechaElaboracion))}</p>
             </div>
-            <div>
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Medio de Pago</p>
-               <p className="text-sm font-bold text-slate-700 text-indigo-600">{compra.medioPagoId} - {compra.medioPagoNombre || 'N/A'}</p>
-            </div>
+            {compra.esCredito ? (
+              <div>
+                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Condición de Pago</p>
+                 <p className="text-sm font-bold text-indigo-600">A Crédito ({compra.diasCredito} días)</p>
+                 {compra.fechaVencimiento && (
+                   <p className="text-sm text-slate-500 font-medium mt-1">Vence: {new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(compra.fechaVencimiento))}</p>
+                 )}
+              </div>
+            ) : (
+              <div>
+                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Medio de Pago</p>
+                 <p className="text-sm font-bold text-indigo-600">{compra.medioPagoId ? `${compra.medioPagoId} - ` : ''}{compra.medioPagoNombre || 'N/A'}</p>
+              </div>
+            )}
          </div>
 
          {/* Grid de Tablas: Productos */}
@@ -364,6 +374,18 @@ const ComprasViewerPage: React.FC = () => {
                         <span className="font-black text-slate-800 uppercase tracking-wider text-xs">Total Neto</span>
                         <span className="text-2xl font-black text-indigo-600">{formatCurrency(compra.totalNeto)}</span>
                      </div>
+                     {compra.esCredito && (
+                        <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
+                           <div className="flex justify-between items-center text-slate-600">
+                              <span className="font-bold text-xs uppercase tracking-wider">Total Pagado</span>
+                              <span className="font-bold">{formatCurrency(compra.totalPagado)}</span>
+                           </div>
+                           <div className="flex justify-between items-center text-rose-600">
+                              <span className="font-black uppercase tracking-wider text-xs">Saldo Pendiente</span>
+                              <span className="text-lg font-black">{formatCurrency(compra.saldo)}</span>
+                           </div>
+                        </div>
+                     )}
                   </div>
                </div>
 

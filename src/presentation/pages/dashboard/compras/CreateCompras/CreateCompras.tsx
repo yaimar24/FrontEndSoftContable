@@ -74,6 +74,9 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
     });
 
     if (formData.esCredito) {
+      if (!formData.diasCredito || formData.diasCredito < 1 || formData.diasCredito > 365) {
+        newErrors.diasCredito = "1-365 días";
+      }
     } else {
       if (condicionPago === 'CONTADO') {
         (formData.pagos || []).forEach((pago: any, index: number) => {
@@ -482,7 +485,23 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
 
             {condicionPago === 'CREDITO' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50">
+                <InputField
+                  label="Días de Crédito"
+                  name="diasCredito"
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={formData.diasCredito || ''}
+                  onChange={(e: any) => handleChange({ target: { name: 'diasCredito', value: Number(e.target.value) || null } } as any)}
+                  required
+                  error={errors.diasCredito}
+                />
                 
+                <div className="flex flex-col justify-center">
+                  <p className="text-sm font-medium p-2 mt-[26px] bg-white rounded-lg border border-emerald-200 text-center text-slate-600">
+                    Vencimiento: {formData.diasCredito ? new Date(new Date(formData.fechaElaboracion + 'T12:00:00').getTime() + (formData.diasCredito * 24 * 60 * 60 * 1000)).toLocaleDateString() : 'Ingresa días'}
+                  </p>
+                </div>
                 
                 <div className="col-span-1 md:col-span-2 text-center mt-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
                   <p className="text-xs text-amber-600 font-medium">Esta compra quedará en estado "Pendiente". Los abonos se registrarán según las cuotas acordadas.</p>
