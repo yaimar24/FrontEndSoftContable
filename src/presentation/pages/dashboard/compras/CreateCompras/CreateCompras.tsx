@@ -474,7 +474,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 }}
                 options={[
                   { id: 'CONTADO', nombre: 'De Contado (Pago Total)' },
-                  { id: 'CREDITO', nombre: 'A Crédito (Pago a plazos)' }
+                  { id: 'CREDITO', nombre: 'A Crédito ' }
                 ]}
                 displayExpr={(item) => item.nombre}
               />
