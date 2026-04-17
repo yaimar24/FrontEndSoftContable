@@ -40,8 +40,7 @@ export interface FacturaCompraCreateDTO {
   proveedorId: string;
   fechaElaboracion: string;
   esCredito: boolean;
-  frecuenciaPagoId?: number | null;
-  numeroCuotas?: number | null;
+  diasCredito?: number | null;
   medioPagoId?: number | null;
   pagos?: PagoEgresoCreate[];
   detalles: FacturaCompraDetalleCreateDTO[];
@@ -53,8 +52,7 @@ export interface FacturaCompraUpdateDTO {
   proveedorId: string;
   fechaElaboracion: string;
   esCredito?: boolean;
-  frecuenciaPagoId?: number | null;
-  numeroCuotas?: number | null;
+  diasCredito?: number | null;
   medioPagoId?: number | null;
   detalles: FacturaCompraDetalleCreateDTO[];
 }
@@ -101,9 +99,8 @@ export interface FacturaCompraReadDTO {
   esCredito: boolean;
   medioPagoId?: number | null;
   medioPagoNombre?: string | null;
-  frecuenciaPagoId?: number | null;
-  frecuenciaPagoNombre?: string | null;
-  numeroCuotas?: number | null;
+  diasCredito?: number | null;
+  fechaVencimiento: string | null;
   totalBruto: number;
   descuentoTotal: number;
   subtotal: number;

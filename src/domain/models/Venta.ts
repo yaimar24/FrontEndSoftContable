@@ -48,8 +48,7 @@ export interface FacturaVentaCreateDTO {
   vendedorId?: string;
   fechaElaboracion: string;
   esCredito: boolean;
-  frecuenciaPago?: number | null;
-  numeroCuotas?: number | null;
+  diasCredito?: number | null;
   medioPagoId?: number | null;
   detalles: FacturaDetalleCreateDTO[];
   pagos?: ReciboCajaCreate[] | null;
@@ -74,44 +73,13 @@ export interface FacturaDetalleReadDTO {
   valorTotal: number;
 }
 
-export const ESTADO_CUOTA = {
-  Pendiente: 0,
-  Parcial: 1,
-  Pagada: 2,
-  Vencida: 3,
-  Anulada: 4,
-} as const;
 
-export const ESTADO_CUOTA_BADGE: Record<number, { label: string; color: string }> = {
-  0: { label: 'Pendiente', color: 'gray' },
-  1: { label: 'Parcial',   color: 'orange' },
-  2: { label: 'Pagada',    color: 'green' },
-  3: { label: 'Vencida',   color: 'red' },
-  4: { label: 'Anulada',   color: 'darkred' },
-};
 
-export interface PagoCuotaRead {
-  reciboCajaId: number;
-  reciboNumero: string;
-  montoAplicado: number;
-  fechaAplicacion: string;
-}
 
-export interface CuotaCreditoRead {
-  id: number;
-  numeroCuota: number;
-  valorOriginal: number;
-  valorPagado: number;
-  saldo: number;
-  valorMora: number;
-  fechaVencimiento: string;
-  estadoId: number;          // 0=Pendiente, 1=Parcial, 2=Pagada, 3=Vencida, 4=Anulada
-  estadoNombre: string;
-  estaVencida: boolean;
-  diasVencida: number;       // 0 si no vencida, N días si vencida
-  fechaPago: string | null;  // fecha en que se completó el pago
-  pagos: PagoCuotaRead[];    // historial de pagos aplicados a esta cuota
-}
+
+
+
+
 
 export interface FacturaVentaReadDTO {
   id: number;
@@ -129,8 +97,8 @@ export interface FacturaVentaReadDTO {
   estadoId: number;
   estadoNombre: string;
   esCredito: boolean;
-  frecuenciaPagoNombre: string | null;
-  numeroCuotas: number | null;
+  diasCredito?: number | null;
+  fechaVencimiento: string | null;
   medioPagoId: number | null;
   medioPagoNombre: string | null;
   totalBruto: number;
@@ -145,10 +113,4 @@ export interface FacturaVentaReadDTO {
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
   comprobantes?: any[];
-  
-  cuotas?: CuotaCreditoRead[] | null;
-  cuotasPendientes?: number | null;
-  cuotasVencidas?: number | null;
-  proximaCuotaValor?: number | null;
-  proximaCuotaVencimiento?: string | null;
 }

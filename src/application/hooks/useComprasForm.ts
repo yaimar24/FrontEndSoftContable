@@ -26,8 +26,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     fechaElaboracion: initialData?.fechaElaboracion ? new Date(initialData.fechaElaboracion).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     esCredito: false,
     medioPagoId: null,
-    frecuenciaPagoId: null,
-    numeroCuotas: null,
+    diasCredito: null,
     pagos: [],
     detalles: initialData?.detalles || [],
   });  const [showConfirm, setShowConfirm] = useState(false);
@@ -51,8 +50,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
           fechaElaboracion: new Date(d.fechaElaboracion).toISOString().split('T')[0],
           esCredito: d.esCredito,
           medioPagoId: d.medioPagoId || null,
-          frecuenciaPagoId: d.frecuenciaPagoId || null,
-          numeroCuotas: d.numeroCuotas || null,
+          diasCredito: d.diasCredito || null,
           detalles: d.detalles?.map(det => ({
             tipoItem: det.tipoItem,
             productoId: det.productoId,

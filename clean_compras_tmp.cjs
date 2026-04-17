@@ -74,6 +74,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
     });
 
     if (formData.esCredito) {
+      if (!formData.frecuenciaPagoId) newErrors.frecuenciaPagoId = "Requerido";
+      if (!formData.numeroCuotas || formData.numeroCuotas < 1) newErrors.numeroCuotas = "Mín. 1";
     } else {
       if (condicionPago === 'CONTADO') {
         (formData.pagos || []).forEach((pago: any, index: number) => {
@@ -446,7 +448,6 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                   </div>
                 ))}
               </div>
-            )}
           </section>
 
           {/* Sección de Condición y Medios de Pago */}
@@ -470,6 +471,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                     handleChange({ target: { name: 'medioPagoId', value: null } } as any);
                     handlePagosChange([]);
                   } else {
+                    handleChange({ target: { name: 'frecuenciaPagoId', value: null } } as any);
+                    handleChange({ target: { name: 'numeroCuotas', value: null } } as any);
                   }
                 }}
                 options={[
@@ -480,15 +483,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
               />
             </div>
 
-            {condicionPago === 'CREDITO' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50">
-                
-                
-                <div className="col-span-1 md:col-span-2 text-center mt-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-                  <p className="text-xs text-amber-600 font-medium">Esta compra quedará en estado "Pendiente". Los abonos se registrarán según las cuotas acordadas.</p>
-                </div>
-              </div>
-            ) : (
+            (
               <div className="space-y-4">
                 {formData.pagos?.map((pago: PagoEgresoCreate, index: number) => (
                   <div key={index} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">

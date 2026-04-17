@@ -37,12 +37,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
     });
   }, []);
 
-  const valorCuota = factura.esCredito && factura.numeroCuotas ? Math.ceil(factura.totalNeto / factura.numeroCuotas) : 0;
-  const cuotaSugerida = Math.min(valorCuota, factura.saldo);
+  const cuotaSugerida = factura.saldo;
 
   useEffect(() => {
     if (isOpen) {
-      const initialMonto = factura.esCredito && cuotaSugerida > 0 ? cuotaSugerida.toString() : factura.saldo.toString();
+      const initialMonto = factura.saldo.toString();
       setMonto(initialMonto);
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
