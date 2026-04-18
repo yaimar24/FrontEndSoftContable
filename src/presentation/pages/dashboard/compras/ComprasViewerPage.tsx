@@ -291,19 +291,27 @@ const ComprasViewerPage: React.FC = () => {
                   {/* Progress Bar Pagos */}
                   {(() => {
                      const totalNeto = compra.totalNeto;
-                     const totalPagado = totalNeto - (compra.saldo ?? totalNeto);
+                     const esPagadoContado = !compra.esCredito;
+                     const totalPagado = esPagadoContado ? totalNeto : totalNeto - (compra.saldo ?? totalNeto);
                      const porcentaje = totalNeto > 0 ? ((totalPagado / totalNeto) * 100).toFixed(1) : "0.0";
+                     const estaPagado = Number(porcentaje) >= 100;
                      return (
                         <div className="px-6 py-4 bg-white border-b border-slate-100">
                            <div className="flex justify-between text-xs font-bold text-slate-600 mb-2">
                               <span>Progreso de Pagos</span>
-                              <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                 Total Pagado: {formatCurrency(totalPagado)} / {formatCurrency(totalNeto)} ({porcentaje}%)
-                              </span>
+                              {estaPagado ? (
+                                 <span className="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-black">
+                                    ✓ Pagado {esPagadoContado ? '(De Contado)' : ''}
+                                 </span>
+                              ) : (
+                                 <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                    Total Pagado: {formatCurrency(totalPagado)} / {formatCurrency(totalNeto)} ({porcentaje}%)
+                                 </span>
+                              )}
                            </div>
                            <div className="w-full bg-slate-100 rounded-full h-2.5">
                               <div 
-                                 className="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" 
+                                 className={`h-2.5 rounded-full transition-all duration-500 ${estaPagado ? 'bg-emerald-600' : 'bg-emerald-500'}`}
                                  style={{ width: `${Math.min(Number(porcentaje), 100)}%` }}
                               ></div>
                            </div>
