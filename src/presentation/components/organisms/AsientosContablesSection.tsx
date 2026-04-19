@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import Modal from './Modal';
+import { useModuleAccess } from '../../../application/hooks/useModuleAccess';
 
 interface AsientosContablesSectionProps {
   tipoDocumento: 'FacturaVenta' | 'FacturaCompra' | 'ReciboCaja' | 'ComprobanteEgreso';
@@ -13,6 +14,8 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
   const [comprobantes, setComprobantes] = useState<any[]>(initialComprobantes || []);
   const [loading, setLoading] = useState(!initialComprobantes);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { canNavigateTo } = useModuleAccess();
+  const canViewAsientos = canNavigateTo("/dashboard/asientos-contables");
   
   useEffect(() => {
     if (initialComprobantes && initialComprobantes.length > 0) {
@@ -86,9 +89,11 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
                     </span>
                   )}
                 </span>
-                <Link to={`/dashboard/asientos-contables/${comp.id}`} className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-1">
-                  Ver asiento <span className="text-[10px]">→</span>
-                </Link>
+                {canViewAsientos && (
+                  <Link to={`/dashboard/asientos-contables/${comp.id}`} className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-1">
+                    Ver asiento <span className="text-[10px]">→</span>
+                  </Link>
+                )}
               </div>
               <div className="p-0 overflow-x-auto">
                 <table className="w-full text-left text-sm">

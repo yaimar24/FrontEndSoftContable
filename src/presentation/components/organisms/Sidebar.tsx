@@ -14,12 +14,14 @@ import {
   Receipt,
   Package,
   BookOpen,
-  HelpCircle
+  HelpCircle,
+  Shield
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthContext from "../../../application/context/AuthContext";
 import StatusModal from "../organisms/StatusModal";
 import { useTutorial } from "../../../application/context/TutorialContext";
+import { usePerfil } from "../../../application/context/PerfilContext";
 
 interface SidebarProps {
   nombreColegio: string | null;
@@ -107,20 +109,29 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
   };
 
   const menuItems = [
-    { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard },
-    { path: "/dashboard/perfil", name: "Perfil", icon: User },
-    { path: "/dashboard/terceros", name: "Terceros", icon:  Users},
-    { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree },
-    { path: "/dashboard/productos", name: "Productos", icon:  Package  },   
-    { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag, hasSubItems: true },
-    { path: "/dashboard/ventas/recibos", name: "Recibos", icon: ShoppingBag, isSubItem: true, parent: "/dashboard/ventas" },
-    { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt, hasSubItems: true  },
-    { path: "/dashboard/factura-compra/egresos", name: "Egresos", icon: Receipt, isSubItem: true, parent: "/dashboard/factura-compra" },
-    { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true },
-    { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
-    { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
-    { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables" },
+    { path: "/dashboard", name: "Dashboard", icon: LayoutDashboard, moduloId: 1 },
+    { path: "/dashboard/perfil", name: "Perfil", icon: User, moduloId: 8 },
+    { path: "/dashboard/terceros", name: "Terceros", icon:  Users, moduloId: 5 },
+    { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree, moduloId: 7 },
+    { path: "/dashboard/productos", name: "Productos", icon:  Package, moduloId: 6  },   
+    { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag, hasSubItems: true, moduloId: 2 },
+    { path: "/dashboard/ventas/recibos", name: "Recibos", icon: ShoppingBag, isSubItem: true, parent: "/dashboard/ventas", moduloId: 2 },
+    { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt, hasSubItems: true, moduloId: 3  },
+    { path: "/dashboard/factura-compra/egresos", name: "Egresos", icon: Receipt, isSubItem: true, parent: "/dashboard/factura-compra", moduloId: 3 },
+    { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true, moduloId: 4 },
+    { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
+    { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
+    { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
+    { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 10 },
   ];
+
+  // Filtrar items por permisos del usuario (frescos desde /mi-perfil)
+  const { modulos: userModulos, isAdmin } = usePerfil();
+
+  const visibleMenuItems = menuItems.filter((item) => {
+    if (isAdmin) return true;
+    return userModulos.includes(item.moduloId);
+  });
 
   return (
     <>
@@ -188,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
 
         {/* NAVEGACIÓN */}
         <nav className="tuto-menu flex-1 px-4 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
-          {menuItems.map((item) => {
+          {visibleMenuItems.map((item) => {
             if (item.isSubItem && item.parent && !openSubMenus[item.parent]) return null;
             return (
             <NavLink
