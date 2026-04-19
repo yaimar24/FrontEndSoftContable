@@ -1,308 +1,183 @@
 # Frontend Soft Contable
 
-Sistema frontend para gestión contable integrado diseñado con React, TypeScript y Vite. Proporciona una interfaz moderna y eficiente para gestionar perfiles, productos, terceros, facturación y operaciones contables.
+Sistema frontend de gestión contable integral construido con React, TypeScript y Vite. Permite gestionar facturación de compras y ventas, contabilidad (asientos contables, libro auxiliar, PUC), productos, terceros, comprobantes de egreso, recibos de caja y más.
 
-## 📋 Tabla de Contenidos
+## Tecnologías
 
-- [Descripción del Proyecto](#descripción-del-proyecto)
-- [Tecnologías](#tecnologías)
-- [Instalación](#instalación)
-- [Scripts Disponibles](#scripts-disponibles)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Componentes Principales](#componentes-principales)
-- [Servicios](#servicios)
-- [Contextos](#contextos)
-- [Hooks Personalizados](#hooks-personalizados)
-- [Modelos de Datos](#modelos-de-datos)
-- [Rutas](#rutas)
-- [Dependencias Principales](#dependencias-principales)
+| Categoría | Tecnología | Versión |
+|-----------|-----------|---------|
+| UI | React | 19.2.0 |
+| Lenguaje | TypeScript | ~5.9.3 |
+| Build | Vite | 7.2.4 |
+| Estilos | Tailwind CSS (Vite plugin) | 4.1.18 |
+| Routing | React Router | 7.11.0 |
+| Animaciones | Framer Motion | 12.25.0 |
+| Gráficas | Recharts | 3.8.1 |
+| Iconos | Lucide React | 0.562.0 |
+| PDF | jsPDF + jspdf-autotable | 4.0.0 / 5.0.7 |
+| Excel | xlsx | 0.18.5 |
+| Auth | jwt-decode | 4.0.0 |
+| Tutoriales | react-joyride | 3.0.2 |
 
-## 🎯 Descripción del Proyecto
+## Instalación
 
-Frontend Soft Contable es una aplicación web completa para la gestión integral de procesos contables y administrativos. Incluye funciones para:
+```bash
+npm install
+npm run dev
+```
 
-- **Autenticación y Autorización**: Sistema de login y registro con JWT
-- **Gestión de Perfiles**: Administración de datos básicos, información fiscal y representantes
-- **Catálogo de Productos**: Crear, editar y listar productos con categorización
-- **Plan de Cuentas (PUC)**: Gestión de estructura contable
-- **Gestión de Terceros**: Registro y administración de clientes/proveedores
-- **Control de Ventas**: Registro y seguimiento de operaciones comerciales
-- **Generación de Reportes**: Exportación a formatos PDF y Excel
+## Scripts
 
-## 🛠️ Tecnologías
+| Script | Descripción |
+|--------|-------------|
+| `npm run dev` | Servidor de desarrollo con HMR |
+| `npm run build` | Compilación TypeScript + build de producción |
+| `npm run lint` | Análisis de código con ESLint |
+| `npm run preview` | Preview del build de producción |
 
-- **React 19.2.0** - Biblioteca UI moderna con características avanzadas
-- **TypeScript 5.9.3** - Tipado estático para mayor seguridad
-- **Vite 7.2.4** - Build tool ultrarrápido con HMR
-- **Tailwind CSS 4.1.18** - Framework CSS utilitario
-- **React Router 7.11.0** - Enrutamiento declarativo
-- **Framer Motion 12.25.0** - Animaciones fluidas
-- **jsPDF & jsPDF-autotable 4.0.0** - Generación de documentos PDF
-- **XLSX 0.18.5** - Exportación de datos a Excel
-- **Lucide React 0.562.0** - Librería de iconos
-- **JWT-decode 4.0.0** - Decodificación de tokens JWT
+## Arquitectura
 
-
-
-## 📁 Estructura del Proyecto
+El proyecto sigue una arquitectura por capas (Clean Architecture):
 
 ```
 src/
-├── api/
-│   └── apiClient.ts           # Cliente HTTP configurado para llamadas API
-├── assets/                    # Recursos estáticos (imágenes, videos, etc)
-├── components/
-│   ├── common/                # Componentes reutilizables globales
-│   │   ├── Button.tsx
-│   │   ├── ExportButtons.tsx
-│   │   ├── FilterGroup.tsx
-│   │   ├── InputField.tsx
-│   │   ├── Modal.tsx
-│   │   ├── SearchBar.tsx
-│   │   ├── SelectField.tsx
-│   │   ├── StatusModal.tsx
-│   │   └── Table.tsx
-│   ├── Layout/                # Componentes de estructura
-│   │   ├── PageHeader.tsx
-│   │   └── Sidebar.tsx
-│   └── pages/                 # Componentes de páginas
-│       ├── dashboard/         # Dashboard principal
-│       │   ├── Dashboard.tsx
-│       │   ├── perfil/        # Gestión de perfil
-│       │   │   ├── PerfilPage.tsx
-│       │   │   └── section/
-│       │   │       ├── SeccionDatosBasicos.tsx
-│       │   │       ├── SeccionFiscal.tsx
-│       │   │       └── SeccionRepresentante.tsx
-│       │   ├── producto/      # Gestión de productos
-│       │   │   ├── ProductosPage.tsx
-│       │   │   ├── ProductosList.tsx
-│       │   │   └── ProductosCreatePage.tsx
-│       │   ├── puc/           # Plan de cuentas
-│       │   │   ├── PucPage.tsx
-│       │   │   ├── PucItem.tsx
-│       │   │   └── FormNuevaCuenta.tsx
-│       │   ├── terceros/      # Gestión de terceros
-│       │   │   ├── TercerosPage.tsx
-│       │   │   ├── CreateTerceros/
-│       │   │   │   ├── TercerosCreatePage.tsx
-│       │   │   │   └── sections/
-│       │   │   │       ├── SeccionFiscal.tsx
-│       │   │   │       └── SeccionIdentificacion.tsx
-│       │   │   └── ListTerceros/
-│       │   │       └── TercerosList.tsx
-│       │   └── ventas/        # Gestión de ventas
-│       │       └── Ventas.tsx
-│       ├── login/             # Autenticación
-│       │   └── LoginForm.tsx
-│       └── register/          # Registro de usuarios
-│           ├── RegisterForm.tsx
-│           └── Step/
-│               ├── Step1BasicInfo.tsx
-│               ├── Step2Legal.tsx
-│               └── Step3Account.tsx
-├── context/                   # Context API para estado global
-│   ├── AuthContext.tsx
-│   └── LoadingContext.tsx
-├── hooks/                     # Hooks personalizados
-│   ├── useAuth.ts
-│   ├── useGenericFilter.ts
-│   ├── usePerfilForm.ts
-│   ├── useProductosForm.ts
-│   ├── useRegisterForm.ts
-│   ├── useTercerosForm.ts
-│   └── useTipoFactura.ts
-├── models/                    # Modelos y tipos
-│   ├── Auth.ts
-│   ├── Categoria.ts
-│   ├── Colegio.ts
-│   ├── Parametros.ts
-│   ├── Producto.ts
-│   ├── Puc.ts
-│   ├── Tercero.ts
-│   ├── TipoFactura.ts
-│   ├── TipoPersona.ts
-│   ├── User.ts
-│   └── types/
-│       ├── ApiResponse.ts
-│       └── Validation.ts
-├── routes/                    # Configuración de rutas
-│   ├── ProtectedRoute.tsx
-│   └── Routes.tsx
-├── services/                  # Servicios de API
-│   ├── auth/
-│   │   └── authService.ts
-│   ├── colegio/
-│   │   ├── colegioService.ts
-│   │   └── parametrosService.ts
-│   ├── loading/
-│   │   └── loadingController.ts
-│   ├── planes/
-│   │   └── planService.ts
-│   ├── producto/
-│   │   └── productoService.ts
-│   ├── puc/
-│   │   └── pucService.ts
-│   ├── terceros/
-│   │   └── terceroService.ts
-│   └── TipoFacturas/
-│       └── tipoFacturas.ts
-├── shared/                    # Componentes compartidos
-│   └── LoadingOverlay.tsx
-├── utils/                     # Funciones de utilidad
-│   ├── calcularDV.ts         # Cálculo de dígito verificador
-│   ├── exportUtils.ts        # Utilidades de exportación
-│   ├── jwt.ts                # Manejo de JWT
-│   ├── toFormData.ts         # Conversión a FormData
-│   ├── validateForm.ts       # Validación de formularios
-│   └── validators.ts         # Validadores específicos
-├── App.tsx                    # Componente raíz
-├── App.css                    # Estilos globales
-├── main.tsx                   # Punto de entrada
-└── index.css                  # Estilos CSS base
-
-public/                        # Assets estáticos no procesados
-
-# Archivos de configuración
-├── index.html                 # HTML principal
-├── vite.config.ts            # Configuración de Vite
-├── tsconfig.json             # Configuración de TypeScript base
-├── tsconfig.app.json         # Configuración de TypeScript para app
-├── tsconfig.node.json        # Configuración de TypeScript para Node
-├── eslint.config.js          # Configuración de ESLint
-└── package.json              # Dependencias y scripts
+├── application/           # Lógica de aplicación
+│   ├── context/           # Contextos globales (Auth, Loading, Tutorial)
+│   └── hooks/             # Hooks personalizados
+├── data/                  # Capa de datos
+│   ├── api/               # Cliente HTTP (apiClient)
+│   └── services/          # Servicios por dominio
+├── domain/                # Capa de dominio
+│   └── models/            # Modelos e interfaces TypeScript
+├── presentation/          # Capa de presentación
+│   ├── components/        # Componentes UI (Atomic Design)
+│   │   ├── atoms/         # Button, InputField, SelectField, CheckboxCard
+│   │   ├── molecules/     # ExportButtons, FilterGroup, Pagination, SearchBar
+│   │   ├── organisms/     # Table, Modal, Sidebar, PageHeader, etc.
+│   │   ├── shared/        # Componentes compartidos
+│   │   └── templates/     # Plantillas de layout
+│   ├── pages/             # Páginas de la aplicación
+│   └── routes/            # Configuración de rutas
+└── utils/                 # Utilidades (JWT, validaciones, exportación, etc.)
 ```
 
-## 🧩 Componentes Principales
+## Módulos
 
-### Componentes Comunes (`src/components/common/`)
-- **Button**: Botón personalizable con variantes
-- **InputField**: Campo de entrada con validación
-- **SelectField**: Selector desplegable
-- **SearchBar**: Barra de búsqueda
-- **Modal**: Modal reutilizable
-- **Table**: Tabla de datos con paginación
-- **ExportButtons**: Botones para exportar (PDF/Excel)
-- **FilterGroup**: Grupo de filtros
-- **StatusModal**: Modal para cambios de estado
+### Dashboard
+Página principal con métricas y resumen del negocio.
 
-### Componentes de Layout
-- **Sidebar**: Navegación lateral
-- **PageHeader**: Encabezado de páginas
+### Ventas
+- Listado, creación y detalle de facturas de venta
+- Recibos de caja vinculados
+- Impresión de facturas
 
-### Páginas Principales
-- **Dashboard**: Página principal del sistema
-- **Perfil**: Gestión de información de la empresa
-- **Productos**: Catálogo de productos
-- **PUC**: Plan de cuentas contable
-- **Terceros**: Gestión de clientes/proveedores
-- **Ventas**: Registro de operaciones
-- **Autenticación**: Login y Registro
+### Compras
+- Listado, creación y detalle de facturas de compra
+- Comprobantes de egreso vinculados
+- Registro de pagos a proveedores
+- Impresión de facturas de compra
 
-## 🔧 Servicios
+### Contabilidad
+- Asientos contables (listado, creación, detalle)
+- Libro auxiliar
+- Configuración contable
 
-Los servicios están organizados por dominio y manejan toda la comunicación con el backend:
+### Plan de Cuentas (PUC)
+Gestión jerárquica del plan único de cuentas.
 
-- **authService**: Autenticación y autorización
-- **productoService**: CRUD de productos
-- **pucService**: Gestión del plan de cuentas
-- **terceroService**: Gestión de terceros
-- **colegioService**: Información de colegios
-- **parametrosService**: Parámetros del sistema
-- **planService**: Información de planes
-- **tipoFacturas**: Tipos de facturación
-- **loadingController**: Control de estado de carga global
+### Productos
+Catálogo con creación y listado de productos.
 
-## 🌐 Contextos
+### Terceros
+Registro y administración de clientes y proveedores.
 
-- **AuthContext**: Gestiona estado de autenticación y usuario actual
-- **LoadingContext**: Controla el estado de carga global de la aplicación
+### Perfil
+Datos básicos, información fiscal y representante legal de la institución.
 
-## 🎣 Hooks Personalizados
+## Servicios (API)
 
-- **useAuth**: Acceso a autenticación desde cualquier componente
-- **usePerfilForm**: Lógica de formulario de perfil
-- **useProductosForm**: Lógica de formulario de productos
-- **useTercerosForm**: Lógica de formulario de terceros
-- **useRegisterForm**: Lógica de registro en pasos
-- **useGenericFilter**: Filtrado genérico de datos
-- **useTipoFactura**: Gestión de tipos de factura
+| Servicio | Dominio |
+|----------|---------|
+| `authService` | Autenticación y registro |
+| `compraService` | Facturas de compra |
+| `ventaService` | Facturas de venta |
+| `comprobanteEgresoService` | Comprobantes de egreso |
+| `contabilidadService` | Asientos contables |
+| `dashboardService` | Métricas del dashboard |
+| `productoService` | Productos |
+| `pucService` | Plan de cuentas |
+| `terceroService` | Terceros |
+| `colegioService` / `parametrosService` | Institución y parámetros |
+| `planService` | Planes de suscripción |
+| `tipoFacturas` | Tipos de factura |
 
-## 📊 Modelos de Datos
+## Contextos
 
-Se definen en `src/models/`:
-- **Auth**: Información de autenticación
-- **User**: Datos del usuario
-- **Producto**: Información de productos
-- **Tercero**: Datos de terceros
-- **Puc**: Cuentas contables
-- **Categoria**: Categorías de productos
-- **TipoFactura**: Tipos de documento
-- **TipoPersona**: Tipología de personas
-- **Parametros**: Configuraciones del sistema
+| Contexto | Función |
+|----------|---------|
+| `AuthContext` | Estado de autenticación y usuario actual |
+| `LoadingContext` | Estado de carga global |
+| `TutorialContext` | Onboarding con Joyride |
 
-## 🛣️ Rutas
+## Hooks
 
-El sistema utiliza React Router con rutas protegidas:
-- `/login` - Formulario de login
-- `/register` - Registro de nuevo usuario
-- `/dashboard` - Panel principal (protegido)
-- `/dashboard/perfil` - Gestión de perfil
-- `/dashboard/productos` - Catálogo de productos
-- `/dashboard/puc` - Plan de cuentas
-- `/dashboard/terceros` - Gestión de terceros
-- `/dashboard/ventas` - Operaciones de venta
+| Hook | Función |
+|------|---------|
+| `useAuth` | Acceso a autenticación |
+| `useComprasForm` | Formulario de compras |
+| `useVentasForm` | Formulario de ventas |
+| `useContabilidad` | Gestión contable |
+| `useProductosForm` | Formulario de productos |
+| `useTercerosForm` | Formulario de terceros |
+| `usePerfilForm` | Formulario de perfil |
+| `useRegisterForm` | Registro multi-paso |
+| `useGenericFilter` | Filtrado genérico |
+| `usePagination` | Paginación |
+| `useTipoFactura` | Tipos de factura |
 
-## 📚 Dependencias Principales
+## Modelos
 
-### Producción
-```json
-{
-  "react": "^19.2.0",
-  "react-dom": "^19.2.0",
-  "react-router-dom": "^7.11.0",
-  "typescript": "~5.9.3",
-  "@tailwindcss/vite": "^4.1.18",
-  "framer-motion": "^12.25.0",
-  "jspdf": "^4.0.0",
-  "jspdf-autotable": "^5.0.7",
-  "xlsx": "^0.18.5",
-  "lucide-react": "^0.562.0",
-  "jwt-decode": "^4.0.0"
-}
-```
+Definidos en `src/domain/models/`:
 
-### Desarrollo
-```json
-{
-  "vite": "^7.2.4",
-  "eslint": "^9.39.1",
-  "@vitejs/plugin-react": "^5.1.2",
-  "@vitejs/plugin-react-swc": "^4.2.2",
-  "typescript-eslint": "^8.46.4"
-}
-```
+`Auth` · `User` · `Colegio` · `Producto` · `Categoria` · `Tercero` · `TipoPersona` · `Puc` · `FacturaCompra` · `Venta` · `Contabilidad` · `ComprobanteEgreso` · `Parametros` · `TipoFactura` · `ApiResponse` · `Validation`
 
-## 🔐 Seguridad
+## Rutas
 
-- **JWT Tokens**: Utiliza autenticación basada en JWT
-- **Protected Routes**: Las rutas están protegidas mediante `ProtectedRoute`
-- **Token Validation**: Validación de tokens en servicios
-- **CORS**: Configuración CORS en cliente API
+### Públicas
+- `/login` — Inicio de sesión
+- `/register` — Registro de usuario
 
-## 💾 Almacenamiento
+### Protegidas (Dashboard)
+| Ruta | Página |
+|------|--------|
+| `/dashboard` | Inicio |
+| `/dashboard/perfil` | Perfil de la institución |
+| `/dashboard/puc` | Plan de cuentas |
+| `/dashboard/productos` | Catálogo de productos |
+| `/dashboard/terceros` | Terceros |
+| `/dashboard/ventas` | Facturas de venta |
+| `/dashboard/ventas/:id` | Detalle de venta |
+| `/dashboard/ventas/recibos` | Recibos de caja |
+| `/dashboard/ventas/recibos/ver/:id` | Detalle de recibo |
+| `/dashboard/factura-compra` | Facturas de compra |
+| `/dashboard/factura-compra/:id` | Detalle de compra |
+| `/dashboard/factura-compra/egresos` | Comprobantes de egreso |
+| `/dashboard/factura-compra/egresos/:id` | Detalle de egreso |
+| `/dashboard/asientos-contables` | Asientos contables |
+| `/dashboard/asientos-contables/nuevo` | Nuevo asiento |
+| `/dashboard/asientos-contables/configuracion` | Configuración contable |
+| `/dashboard/asientos-contables/libro-auxiliar` | Libro auxiliar |
+| `/dashboard/asientos-contables/:id` | Detalle de asiento |
 
-- **LocalStorage**: Almacenamiento de tokens JWT
-- **Context API**: Estado global de autenticación y carga
+### Impresión (sin sidebar)
+- `/invoice/:id` — Impresión factura de venta
+- `/purchase-invoice/:id` — Impresión factura de compra
 
-## 📝 Estándares de Código
+## Configuración
 
-- **TypeScript**: Tipado fuerte en todo el proyecto
-- **ESLint**: Linting mediante eslint.config.js
-- **Naming**: Componentes con PascalCase, archivos con notación kebab-case
-- **Folder Structure**: Organización por dominios y características
+- **Path alias:** `@` → `./src`
+- **Proxy:** `/uploads` → `https://localhost:7260` (backend .NET)
+- **Auth:** JWT almacenado en LocalStorage
+- **Rutas protegidas:** Componente `ProtectedRoute`
 
-
-
-
-**Estado del Proyecto**: En desarrollo activo ✨
+**Estado del proyecto:** En desarrollo activo
