@@ -14,7 +14,7 @@ const ProductosPage = () => {
   const [view, setView] = useState<"lista" | "formulario">("lista");
   const { setSteps } = useTutorial();
 
-  // Estado para los datos del catA�logo
+  // Estado para los datos del catálogo
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +23,7 @@ const ProductosPage = () => {
   // Estado para el producto que se va a editar
   const [selectedProducto, setSelectedProducto] = useState<ProductoReadDTO | null>(null);
 
-  // FunciA3n de carga de datos
+  // Función de carga de datos
   const fetchProductos = async () => {
     try {
       const response = await getProductosByColegio(page, pageSize, searchTerm); 
@@ -45,7 +45,7 @@ const ProductosPage = () => {
       setSteps([
         {
           target: '.tuto-header',
-          content: 'Este es el mA3dulo de Productos. Administra tu catA�logo completo de productos y servicios.',
+          content: 'Este es el módulo de Productos. Administra tu catálogo completo de productos y servicios.',
         },
         {
           target: '.tuto-switch-lista',
@@ -57,26 +57,26 @@ const ProductosPage = () => {
         },
         {
           target: '.tuto-productos-export',
-          content: 'Exporta tu catA�logo de productos a Excel o PDF.',
+          content: 'Exporta tu catálogo de productos a Excel o PDF.',
         },
         {
           target: '.tuto-productos-search',
-          content: 'Busca productos por nombre o cA3digo de referencia.',       
+          content: 'Busca productos por nombre o código de referencia.',       
         },
         {
           target: '.tuto-productos-table',
-          content: 'Tabla de productos con categorA-a, precio base y botA3n de ediciA3n para modificar cada producto.',
+          content: 'Tabla de productos con categoría, precio base y botón de edición para modificar cada producto.',
         }
       ]);
     } else {
       setSteps([
         {
           target: '.tuto-producto-sticky-header',
-          content: 'Barra fija con botA3n de guardar. Se mantiene visible mientras te desplazas por el formulario.',
+          content: 'Barra fija con botón de guardar. Se mantiene visible mientras te desplazas por el formulario.',
         },
         {
           target: '.tuto-producto-identificacion',
-          content: 'Completa los datos bA�sicos: nombre del producto, cA3digo de referencia (SKU) y categorA-a.',
+          content: 'Completa los datos básicos: nombre del producto, código de referencia (SKU) y categoría.',
         },
         {
           target: '.tuto-producto-precio',
@@ -84,23 +84,23 @@ const ProductosPage = () => {
         },
         {
           target: '.tuto-producto-cuentas',
-          content: 'Asocia las cuentas contables (PUC) de ingreso, costo e inventario para la contabilizaciA3n automA�tica.',
+          content: 'Asocia las cuentas contables (PUC) de ingreso, costo e inventario para la contabilización automática.',
         },
         {
           target: '.tuto-producto-fiscal',
-          content: 'Configura el impuesto (IVA), la retenciA3n sugerida y la unidad de medida DIAN.',
+          content: 'Configura el impuesto (IVA), la retención sugerida y la unidad de medida DIAN.',
         }
       ]);
     }
   }, [view, page, pageSize, searchTerm]);
 
-  // Manejador para abrir el formulario en modo ediciA3n
+  // Manejador para abrir el formulario en modo edición
   const handleEdit = (producto: ProductoReadDTO) => {
     setSelectedProducto(producto);
     setView("formulario");
   };
 
-  // Manejador para cerrar el formulario y limpiar la selecciA3n
+  // Manejador para cerrar el formulario y limpiar la selección
   const handleBackToList = () => {
     setSelectedProducto(null);
     setView("lista");
@@ -111,7 +111,7 @@ const ProductosPage = () => {
       <div className="tuto-header">
         <PageHeader
           title="Gestion de Productos"
-          subtitle={`${productos.length} A-tems en el catA�logo`}
+          subtitle={`${productos.length} Ítems en el catálogo`}
           icon={Package}
           switcher={
             <>

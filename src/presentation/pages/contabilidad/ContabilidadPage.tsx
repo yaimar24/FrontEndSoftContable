@@ -80,7 +80,7 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
           <div className="flex flex-col">
             <span className="font-black uppercase text-[11px] text-slate-800">{item.numero || 'S/N'}</span>
             <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">
-              {item.tipoComprobante} � {new Date(item.fecha).toLocaleDateString()}
+              {item.tipoComprobante} \u2022 {new Date(item.fecha).toLocaleDateString()}
             </span>
           </div>
         </div>

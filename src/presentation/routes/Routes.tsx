@@ -26,7 +26,7 @@ import { ContabilidadLibroAuxiliarPage } from "@/presentation/pages/contabilidad
 const AppRoutes = () => (
   <Router>
     <Routes>
-      {/* RUTAS P�BLICAS */}
+      {/* RUTAS PÚBLICAS */}
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
 
@@ -52,10 +52,10 @@ const AppRoutes = () => (
           <Route path="asientos-contables/libro-auxiliar" element={<ContabilidadLibroAuxiliarPage />} />
           <Route path="asientos-contables/:id" element={<ContabilidadDetailPage />} />
         </Route>
-        {/* RUTA DE SOLO IMPRESI�N EXTERNA AL LAYOUT DEL DASHBOARD */}
+        {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />
         <Route path="/purchase-invoice/:id" element={<CompraPrintPage />} />      </Route>
-      {/* REDIRECCI�N GLOBAL */}
+      {/* REDIRECCIÓN GLOBAL */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   </Router>

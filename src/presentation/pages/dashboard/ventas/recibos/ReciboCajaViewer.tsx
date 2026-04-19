@@ -98,7 +98,7 @@ export const ReciboCajaViewer = () => {
 
             <div className="space-y-4 md:border-l-2 border-slate-100 md:pl-8">
               <div>
-                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de Operaci�n</p>
+                <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Tipo de Operaci\u00f3n</p>
                 <span className={`inline-block px-3 py-1 font-black text-xs uppercase border rounded-lg ${recibo.esAbono ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                   {recibo.esAbono ? 'ABONO' : 'PAGO TOTAL'}
                 </span>

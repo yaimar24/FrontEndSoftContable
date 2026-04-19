@@ -53,7 +53,7 @@ const VentasViewerPage: React.FC = () => {
   if (!factura) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontr� la factura</h2>
+        <h2 className="text-xl font-black text-slate-800 mb-4">No se encontró la factura</h2>
         <Button onClick={() => navigate('/dashboard/ventas')} variant="primary">Volver a Ventas</Button>
       </div>
     );
