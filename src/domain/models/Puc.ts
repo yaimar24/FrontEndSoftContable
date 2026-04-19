@@ -8,6 +8,7 @@ export interface PucNodo {
   colegioId: string;
   esGlobal: boolean;
   activo: boolean;
+  tieneHijos?: boolean;
 }
 
 export interface CuentaPuc {
@@ -20,6 +21,16 @@ export interface CuentaPuc {
   esGlobal: boolean;
   activo: boolean;
   hijos: CuentaPuc[];
+}
+
+export interface PucSearchResult {
+  codigo: string;
+  nombre: string;
+  nivel: number;
+  esDetalle: boolean;
+  naturaleza: string;
+  colegioId: string;
+  rutaAncestros: string[];
 }
 
 export interface PucCreateDTO {

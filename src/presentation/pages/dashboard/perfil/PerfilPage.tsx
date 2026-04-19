@@ -21,6 +21,7 @@ const PerfilPage: React.FC = () => {
   const {
     formData,
     parametros,
+    errors,
     showConfirm,
     setShowConfirm,
     resultModal,
@@ -28,6 +29,7 @@ const PerfilPage: React.FC = () => {
     handleChange,
     handleRepChange,
     handleSave,
+    handleConfirmSave,
   } = usePerfilForm(token);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ const PerfilPage: React.FC = () => {
           actions={
             <div className="tuto-perfil-save">
               <Button
-                onClick={() => setShowConfirm(true)}
+                onClick={handleConfirmSave}
                 icon={Save}
               >
                 Guardar Cambios
@@ -101,6 +103,7 @@ const PerfilPage: React.FC = () => {
             departamentos={parametros?.departamentos ?? []}
             municipios={parametros?.municipios ?? []}
             onChange={handleChange}
+            errors={errors}
           />
         </div>
 
@@ -110,6 +113,7 @@ const PerfilPage: React.FC = () => {
               formData={formData}
               parametros={parametros ?? ({} as Parametros)}
               onChange={handleChange}
+              errors={errors}
             />
           </div>
 
@@ -118,6 +122,7 @@ const PerfilPage: React.FC = () => {
               representantes={formData.representantesLegales ?? []}
               tiposId={parametros?.tiposIdentificacion ?? []}
               onRepChange={handleRepChange}
+              errors={errors}
             />
           </div>
         </div>

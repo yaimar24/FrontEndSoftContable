@@ -1,9 +1,17 @@
 import { apiClient } from "../../api/apiClient";
-import type { PucNodo, PucCreateDTO, PucUpdateDTO, CuentaPuc } from "../../../domain/models/Puc";
+import type { PucNodo, PucCreateDTO, PucUpdateDTO, CuentaPuc, PucSearchResult } from "../../../domain/models/Puc";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
 
 export const getPucTree = async (): Promise<ApiResponse<PucNodo[]>> => {
   return await apiClient("/api/Puc/tree");
+};
+
+export const getPucChildren = async (codigoPadre: string): Promise<ApiResponse<PucNodo[]>> => {
+  return await apiClient(`/api/Puc/children?codigoPadre=${encodeURIComponent(codigoPadre)}`);
+};
+
+export const searchPuc = async (q: string): Promise<ApiResponse<PucSearchResult[]>> => {
+  return await apiClient(`/api/Puc/search?q=${encodeURIComponent(q)}`, { skipGlobalLoader: true });
 };
 
 export const getHiddenPuc = async (): Promise<ApiResponse<PucNodo[]>> => {
