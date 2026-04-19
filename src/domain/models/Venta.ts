@@ -54,6 +54,7 @@ export interface FacturaVentaCreateDTO {
   pagos?: ReciboCajaCreate[] | null;
   colegioId?: string;
   usuarioId?: string;
+  observacion?: string;
 }
 
 export interface FacturaDetalleReadDTO {
@@ -94,6 +95,7 @@ export interface FacturaVentaReadDTO {
   colegioNit: string;
   vendedorId?: string;
   fechaElaboracion: string;
+  fechaRegistro?: string;
   estadoId: number;
   estadoNombre: string;
   esCredito: boolean;

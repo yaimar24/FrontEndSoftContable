@@ -222,6 +222,14 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 required
                 error={errors.fechaElaboracion}
               />
+
+              {/* <InputField
+                label="Observación (Opcional)"
+                name="observacion"
+                value={formData.observacion || ""}
+                onChange={handleChange}
+                placeholder="Nota u observación de la factura"
+              /> */}
             </div>
           </section>
         </div>

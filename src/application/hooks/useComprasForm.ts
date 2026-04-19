@@ -29,6 +29,7 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     diasCredito: null,
     pagos: [],
     detalles: initialData?.detalles || [],
+    observacion: initialData?.observacion || "",
   });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);

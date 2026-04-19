@@ -60,8 +60,15 @@ const ComprasPage: React.FC = () => {
   const [confirmModal, setConfirmModal] = useState<{show: boolean, action: 'registrar' | 'anular' | null, id: number | null}>({show: false, action: null, id: null});
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
-  const { searchTerm, setSearchTerm, filteredData } = useFilter(compras, {
+  const { searchTerm, setSearchTerm, filteredData: rawFilteredCompras } = useFilter(compras, {
     searchFields: ["numero", "numeroReferencia", "proveedorNombre"],
+  });
+
+  // Ordenar por fechaRegistro descendente
+  const filteredData = [...rawFilteredCompras].sort((a, b) => {
+    const dateA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
+    const dateB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
+    return dateB - dateA;
   });
   
   const { setSteps } = useTutorial();
@@ -165,9 +172,17 @@ const ComprasPage: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <span className="font-black uppercase text-[11px] text-slate-800">{v.numero || 'S/N'}</span>
-            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Fecha: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Elaboración: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
           </div>
         </div>
+      )
+    },
+    {
+      header: "Registro",
+      render: (v: FacturaCompraReadDTO) => (
+        <span className="text-[10px] font-bold text-slate-500">
+          {v.fechaRegistro ? new Date(v.fechaRegistro).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : '—'}
+        </span>
       )
     },
     {
