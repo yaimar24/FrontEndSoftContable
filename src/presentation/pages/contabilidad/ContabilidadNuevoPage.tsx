@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/organisms/PageHeader';
 import { SelectorCuentaPuc } from '../../components/organisms/SelectorCuentaPuc';
@@ -6,10 +6,12 @@ import { AsyncSearchField } from '../../components/organisms/AsyncSearchField';
 import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoContableCreate } from '../../../domain/models/Contabilidad';
+import { useTutorial } from '../../../application/context/TutorialContext';
 
 export const ContabilidadNuevoPage = () => {
   const navigate = useNavigate();
   const { createAjusteManual, loading } = useContabilidad();
+  const { setSteps } = useTutorial();
 
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
   const [descripcion, setDescripcion] = useState('');
@@ -25,6 +27,27 @@ export const ContabilidadNuevoPage = () => {
     { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' },
     { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' }
   ]);
+
+  useEffect(() => {
+    setSteps([
+      {
+        target: '.tuto-header-nuevo',
+        content: 'Aquí creas un movimiento manual (asiento de ajuste) en tu contabilidad.',
+      },
+      {
+        target: '.tuto-nuevo-fecha',
+        content: 'Selecciona la fecha y agrega una descripción general para el comprobante.',
+      },
+      {
+        target: '.tuto-nuevo-movimientos',
+        content: 'Agrega las líneas del asiento: selecciona la cuenta PUC y coloca los montos de débito o crédito.',
+      },
+      {
+        target: '.tuto-nuevo-totales',
+        content: 'Los totales de débito y crédito deben cuadrar para poder guardar el comprobante.',
+      },
+    ]);
+  }, [setSteps]);
 
   const addLine = () => {
     setMovimientos([...movimientos, { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' }]);
@@ -104,6 +127,7 @@ export const ContabilidadNuevoPage = () => {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
+      <div className="tuto-header-nuevo">
       <PageHeader
         title="Movimiento manual"
         subtitle="Registra un asiento manual en tu contabilidad"
@@ -113,9 +137,10 @@ export const ContabilidadNuevoPage = () => {
           </button>
         }
       />
+      </div>
 
       <div className="bg-white p-6 rounded-lg shadow space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="tuto-nuevo-fecha grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Fecha</label>
             <input 
@@ -137,7 +162,7 @@ export const ContabilidadNuevoPage = () => {
           </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="tuto-nuevo-movimientos border-t pt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Movimientos (Líneas)</h3>
             <button onClick={addLine} className="px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100">
@@ -217,7 +242,7 @@ export const ContabilidadNuevoPage = () => {
           )}
         </div>
 
-        <div className="bg-[#1e3a8a]/5 p-6 rounded-3xl border border-[#1e3a8a]/10 flex flex-col md:flex-row justify-between items-center gap-6 mt-8">
+        <div className="tuto-nuevo-totales bg-[#1e3a8a]/5 p-6 rounded-3xl border border-[#1e3a8a]/10 flex flex-col md:flex-row justify-between items-center gap-6 mt-8">
           <div className="flex gap-8 items-center bg-white py-3 px-6 rounded-2xl shadow-sm border border-[#1e3a8a]/10 w-full md:w-auto">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Débito</p>

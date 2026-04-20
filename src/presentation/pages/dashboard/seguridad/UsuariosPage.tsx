@@ -10,10 +10,12 @@ import { getUsuarios, toggleActivoUsuario } from "../../../../data/services/segu
 import type { UsuarioReadDTO } from "../../../../domain/models/Seguridad";
 import { useFilter } from "../../../../application/hooks/useGenericFilter";
 import { usePerfil } from "../../../../application/context/PerfilContext";
+import { useTutorial } from "../../../../application/context/TutorialContext";
 import UsuarioFormPage from "./UsuarioFormPage";
 
 const UsuariosPage: React.FC = () => {
   const { perfil } = usePerfil();
+  const { setSteps } = useTutorial();
   const [view, setView] = useState<"lista" | "formulario">("lista");
   const [selectedUsuario, setSelectedUsuario] = useState<UsuarioReadDTO | null>(null);
   const [usuarios, setUsuarios] = useState<UsuarioReadDTO[]>([]);
@@ -41,8 +43,39 @@ const UsuariosPage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (view === "lista") fetchUsuarios();
-  }, [view]);
+    if (view === "lista") {
+      fetchUsuarios();
+      setSteps([
+        {
+          target: '.tuto-header-seguridad',
+          content: 'Este es el módulo de Seguridad. Aquí gestionas los usuarios, roles y permisos de acceso al sistema.',
+        },
+        {
+          target: '.tuto-btn-seguridad-lista',
+          content: 'Consulta la lista completa de usuarios registrados en el sistema.',
+        },
+        {
+          target: '.tuto-btn-seguridad-nuevo',
+          content: 'Crea un nuevo usuario y asígnale un rol con permisos específicos.',
+        },
+        {
+          target: '.tuto-seguridad-search',
+          content: 'Busca usuarios por nombre, correo electrónico o rol asignado.',
+        },
+        {
+          target: '.tuto-seguridad-table',
+          content: 'Tabla de usuarios con acciones: editar datos o habilitar/deshabilitar acceso.',
+        },
+      ]);
+    } else {
+      setSteps([
+        {
+          target: '.tuto-header-seguridad',
+          content: 'Formulario de usuario. Aquí puedes crear o editar la información de un usuario.',
+        },
+      ]);
+    }
+  }, [view, setSteps]);
 
   const handleEdit = (u: UsuarioReadDTO) => {
     setSelectedUsuario(u);
@@ -149,6 +182,7 @@ const UsuariosPage: React.FC = () => {
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-5 space-y-5 max-w-[1600px] mx-auto">
       {loading && view === "lista" && <LoadingOverlay message="Sincronizando usuarios..." />}
 
+      <div className="tuto-header-seguridad">
       <PageHeader
         icon={Shield}
         title="Gestión de Usuarios"
@@ -157,14 +191,14 @@ const UsuariosPage: React.FC = () => {
           <>
             <button
               onClick={handleBackToList}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
+              className={`tuto-btn-seguridad-lista flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
                 ${view === "lista" ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-400 hover:text-slate-600"}`}
             >
               <Users size={14} /> Lista de Usuarios
             </button>
             <button
               onClick={() => { setSelectedUsuario(null); setView("formulario"); }}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
+              className={`tuto-btn-seguridad-nuevo flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
                 ${view === "formulario" && !selectedUsuario ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-slate-400 hover:text-slate-600"}`}
             >
               <UserPlus size={14} /> Nuevo Usuario
@@ -172,17 +206,18 @@ const UsuariosPage: React.FC = () => {
           </>
         }
       />
+      </div>
 
       <main className="animate-in fade-in slide-in-from-bottom-3 duration-700">
         {view === "lista" ? (
           <>
             {/* Search Bar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+            <div className="tuto-seguridad-search flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar usuario..." />
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="tuto-seguridad-table bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               {filteredData.length === 0 && !loading ? (
                 <div className="flex flex-col items-center justify-center py-20 text-slate-400">
                   <Users size={40} strokeWidth={1.5} />
