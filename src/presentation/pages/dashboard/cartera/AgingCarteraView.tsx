@@ -64,7 +64,7 @@ export const AgingCarteraView = () => {
       header: 'Vencimiento',
       render: (item) => (
         <span className="text-[10px] font-bold text-slate-600">
-          {new Date(item.fechaVencimiento).toLocaleDateString()}
+          {item.fechaVencimiento ? new Date(item.fechaVencimiento).toLocaleDateString() : 'Contado'}
         </span>
       )
     },
