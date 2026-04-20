@@ -35,7 +35,7 @@ const VentasViewerPage: React.FC = () => {
   }, [id]);
 
   const handlePrint = () => {
-    window.print();
+    window.open(`/invoice/${factura?.id}`, '_blank');
   };
 
   const handleDownloadPDF = async () => {
