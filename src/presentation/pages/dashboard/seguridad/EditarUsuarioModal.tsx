@@ -9,11 +9,12 @@ import type { ModuloPlan, UsuarioReadDTO } from "../../../../domain/models/Segur
 
 interface Props {
   usuario: UsuarioReadDTO;
+  isSelf?: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const EditarUsuarioModal: React.FC<Props> = ({ usuario, onClose, onSuccess }) => {
+const EditarUsuarioModal: React.FC<Props> = ({ usuario, isSelf = false, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState(usuario.nombre);
   const [email, setEmail] = useState(usuario.email);
   const [password, setPassword] = useState("");
@@ -42,11 +43,15 @@ const EditarUsuarioModal: React.FC<Props> = ({ usuario, onClose, onSuccess }) =>
     e.preventDefault();
     setError("");
 
-    if (!nombre.trim() || !email.trim() || !rolNombre.trim()) {
-      setError("Nombre, email y rol son obligatorios.");
+    if (!nombre.trim() || !email.trim()) {
+      setError("Nombre y email son obligatorios.");
       return;
     }
-    if (modulosSeleccionados.length === 0) {
+    if (!isSelf && !rolNombre.trim()) {
+      setError("El nombre del rol es obligatorio.");
+      return;
+    }
+    if (!isSelf && modulosSeleccionados.length === 0) {
       setError("Debe seleccionar al menos un módulo.");
       return;
     }
@@ -56,11 +61,14 @@ const EditarUsuarioModal: React.FC<Props> = ({ usuario, onClose, onSuccess }) =>
       const payload: Record<string, any> = {
         nombre: nombre.trim(),
         email: email.trim(),
-        rolNombre: rolNombre.trim(),
-        modulosPermitidos: modulosSeleccionados,
       };
       if (password.trim()) {
         payload.password = password;
+      }
+      // Solo enviar rol/módulos si NO es edición propia
+      if (!isSelf) {
+        payload.rolNombre = rolNombre.trim();
+        payload.modulosPermitidos = modulosSeleccionados;
       }
 
       const res = await editarUsuario(usuario.id, payload);
@@ -81,7 +89,12 @@ const EditarUsuarioModal: React.FC<Props> = ({ usuario, onClose, onSuccess }) =>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-lg font-black text-slate-800">Editar Usuario</h2>
+          <div>
+            <h2 className="text-lg font-black text-slate-800">{isSelf ? 'Editar Mi Perfil' : 'Editar Usuario'}</h2>
+            {isSelf && (
+              <p className="text-[11px] text-amber-600 font-semibold mt-0.5">No puede modificar sus propios roles ni módulos.</p>
+            )}
+          </div>
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
             <X size={20} />
           </button>
@@ -117,13 +130,14 @@ const EditarUsuarioModal: React.FC<Props> = ({ usuario, onClose, onSuccess }) =>
             name="rolNombre"
             value={rolNombre}
             onChange={(e) => setRolNombre(e.target.value)}
-            placeholder="Ej: Secretaria, Coordinador"
+              placeholder="Ej: Auxiliar contabe, Finanzas"
+            disabled={isSelf}
           />
 
           {/* Módulos checkboxes */}
-          <div>
+          <div className={isSelf ? 'opacity-50 pointer-events-none' : ''}>
             <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-              Módulos permitidos
+              Módulos permitidos {isSelf && <span className="text-amber-500">(bloqueado)</span>}
             </label>
             <div className="grid grid-cols-2 gap-2">
               {modulosDisponibles.map((mod) => (

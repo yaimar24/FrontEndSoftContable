@@ -118,7 +118,7 @@ const CrearUsuarioModal: React.FC<Props> = ({ onClose, onSuccess }) => {
               name="rolNombre"
               value={rolNombre}
               onChange={(e) => setRolNombre(e.target.value)}
-              placeholder="Ej: Secretaria, Coordinador"
+              placeholder="Ej: Auxiliar contabe, Finanzas"
             />
           </div>
 

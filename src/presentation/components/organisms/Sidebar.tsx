@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
     { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
     { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
-    { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 10 },
+    { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 9 },
   ];
 
   // Filtrar items por permisos del usuario (frescos desde /mi-perfil)

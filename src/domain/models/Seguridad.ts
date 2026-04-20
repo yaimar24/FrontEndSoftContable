@@ -48,14 +48,13 @@ export const MODULO_RUTA_MAP: Record<number, string[]> = {
   6: ["/dashboard/productos"],
   7: ["/dashboard/puc"],
   8: ["/dashboard/perfil"],
-  9: ["/dashboard/perfil"],
-  10: ["/dashboard/seguridad"],
+  9: ["/dashboard/seguridad"],
 };
 
 /** Dada la lista de módulos del usuario, retorna la primera ruta accesible */
 export function getFirstAllowedRoute(modulos: number[]): string {
   // Prioridad: Dashboard > Ventas > Compras > Contabilidad > ...
-  const prioridad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const prioridad = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (const moduloId of prioridad) {
     if (modulos.includes(moduloId)) {
       const rutas = MODULO_RUTA_MAP[moduloId];
@@ -69,7 +68,7 @@ export function getFirstAllowedRoute(modulos: number[]): string {
 export function getModuloIdForPath(pathname: string): number | null {
   // Orden de más específico a menos específico
   const routeModuleMap: { pattern: string; moduloId: number }[] = [
-    { pattern: "/dashboard/seguridad", moduloId: 10 },
+    { pattern: "/dashboard/seguridad", moduloId: 9 },
     { pattern: "/dashboard/asientos-contables", moduloId: 4 },
     { pattern: "/dashboard/factura-compra", moduloId: 3 },
     { pattern: "/dashboard/ventas", moduloId: 2 },
