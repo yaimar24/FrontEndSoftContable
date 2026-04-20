@@ -2,6 +2,7 @@ import React from 'react';
 import type { FacturaVentaReadDTO } from '../../../../../domain/models/Venta';
 import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../../../utils/jwt';
 import { useAuth } from '../../../../../application/hooks/useAuth';
+import { formatDate, formatCurrencyDecimals as formatCurrency } from '../../../../../utils/formatters';
 
 interface InvoiceTemplateProps {
   factura: FacturaVentaReadDTO | null;
@@ -27,20 +28,6 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ factura }) => 
 
   const rawLogoUrl = localStorage.getItem('logoUrl') || getLogoUrlFromToken(token);
   const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? new URL(new URL(rawLogoUrl).pathname, window.location.origin).toString() : rawLogoUrl) : null;
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-CO', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hour12: true
-    }).format(date);
-  };
-
-  const formatCurrency = (val?: number) => {
-    return (val || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-  };
 
   // Add 30 days default expiration for preview purposes if the backend doesn't explicitly have it yet
   const expirationDate = new Date(factura.fechaElaboracion || new Date());

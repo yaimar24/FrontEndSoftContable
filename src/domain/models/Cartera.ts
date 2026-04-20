@@ -4,8 +4,11 @@ export interface CuentaPorCobrar {
   facturaId: number;
   numeroFactura: string;
   fecha: string;
-  fechaVencimiento: string;
+  fechaVencimiento: string | null;
   diasVencidos: number;
+  esCredito: boolean;
+  totalNeto: number;
+  totalPagado: number;
   saldo: number;
   estado: string;
 }

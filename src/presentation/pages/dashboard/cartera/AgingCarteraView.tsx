@@ -5,9 +5,7 @@ import { useCartera } from '../../../../application/hooks/useCartera';
 import type { CuentaPorCobrar } from '../../../../domain/models/Cartera';
 import { FileText, Eye, DollarSign, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, PieChart, Pie } from 'recharts';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+import { formatCurrency } from '../../../../utils/formatters';
 
 const COLORS = ['#10b981', '#f59e0b', '#f97316', '#ef4444'];
 
@@ -144,7 +142,7 @@ export const AgingCarteraView = () => {
               <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value) => formatCurrency(value as number)}
                 contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12, fontWeight: 700 }}
               />
               <Bar dataKey="value" radius={[8, 8, 0, 0]}>
@@ -176,7 +174,7 @@ export const AgingCarteraView = () => {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value) => formatCurrency(value as number)}
                 contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12, fontWeight: 700 }}
               />
             </PieChart>

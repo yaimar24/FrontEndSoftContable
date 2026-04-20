@@ -6,16 +6,8 @@ import { useCartera } from '../../../../application/hooks/useCartera';
 import type { ReporteCarteraLinea } from '../../../../domain/models/Cartera';
 import { FileText, Eye, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-
-const getAgingBadge = (rango: string) => {
-  if (rango.includes('0') && rango.includes('30')) return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-  if (rango.includes('31') || rango.includes('60')) return 'bg-amber-50 text-amber-600 border-amber-100';
-  if (rango.includes('61') || rango.includes('90')) return 'bg-orange-50 text-orange-600 border-orange-100';
-  return 'bg-rose-50 text-rose-600 border-rose-100';
-};
+import { formatCurrency } from '../../../../utils/formatters';
+import { getAgingRangeBadge as getAgingBadge } from '../../../../utils/statusHelpers';
 
 export const ReporteView = () => {
   const navigate = useNavigate();

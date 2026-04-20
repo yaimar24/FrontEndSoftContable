@@ -4,9 +4,7 @@ import SearchBar from '../../../components/molecules/SearchBar';
 import { useCartera } from '../../../../application/hooks/useCartera';
 import type { ResumenCliente } from '../../../../domain/models/Cartera';
 import { Users, AlertTriangle } from 'lucide-react';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+import { formatCurrency } from '../../../../utils/formatters';
 
 export const ResumenClienteView = () => {
   const { resumenClientes, loading, fetchResumenClientes } = useCartera();

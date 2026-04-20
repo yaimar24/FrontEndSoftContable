@@ -6,6 +6,7 @@ import { Table } from "../../../../components/organisms/Table";
 import type { FacturaVentaReadDTO } from "../../../../../domain/models/Venta";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
 import { exportToExcel, exportToPDF, type ExportConfig } from "../../../../../utils/exportUtils";
+import { getVentaEstadoInfo } from "../../../../../utils/statusHelpers";
 
 interface Props {
   data: FacturaVentaReadDTO[];
@@ -16,25 +17,6 @@ interface Props {
   searchTerm?: string;
   onSearchChange?: (term: string) => void;
 }
-
-const getEstadoInfo = (estado: string | number) => {
-  const map: Record<string, { label: string, color: string }> = {
-    '0': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-    '1': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-    '2': { label: 'Aprobada', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    '3': { label: 'Enviada', color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
-    '4': { label: 'Pagada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-    '5': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
-    
-    'Borrador': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-    'Pendiente': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-    'Aprobada': { label: 'Aprobada', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    'Enviada': { label: 'Enviada', color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
-    'Pagada': { label: 'Pagada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-    'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' }
-  };
-  return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
-};
 
 const VentasList: React.FC<Props> = ({  data = [], onPreview, onDetails , isServer, paginationProps, searchTerm: externalSearchTerm, onSearchChange }) => {
 const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(data) ? data : []);
@@ -136,7 +118,7 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
     {
       header: "Estado",
       render: (v: FacturaVentaReadDTO) => {
-        const info = getEstadoInfo(v.estadoId);
+        const info = getVentaEstadoInfo(v.estadoId);
         return (
           <span className={`px-3 py-1 text-[9px] font-black uppercase border rounded-lg ${info.color}`}>
             {info.label}
