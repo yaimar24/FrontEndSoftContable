@@ -18,7 +18,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     medioPagoId: initialData?.medioPagoId || null,
     detalles: initialData?.detalles || [],
     pagos: initialData?.pagos || [],
-    observacion: initialData?.observacion || "",
+    observaciones: initialData?.observaciones || "",
   });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);

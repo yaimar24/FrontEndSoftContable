@@ -107,7 +107,7 @@ export const ReciboCajaViewer = () => {
                 <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Fecha de Recibo</p>
                 <p className="text-base font-bold text-slate-800 tracking-tight">{new Date(recibo.fechaRecibo).toLocaleDateString()}</p>
               </div>
-              {(recibo.referencia || recibo.observacion) && (
+              {(recibo.referencia || recibo.observaciones) && (
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                   {recibo.referencia && (
                     <div>
@@ -115,10 +115,10 @@ export const ReciboCajaViewer = () => {
                       <p className="text-sm font-bold text-slate-700">{recibo.referencia}</p>
                     </div>
                   )}
-                  {recibo.observacion && (
+                  {recibo.observaciones && (
                     <div>
                       <p className="text-slate-400 uppercase tracking-widest text-[9px] font-black">Observaciones</p>
-                      <p className="text-sm font-bold text-slate-700">{recibo.observacion}</p>
+                      <p className="text-sm font-bold text-slate-700">{recibo.observaciones}</p>
                     </div>
                   )}
                 </div>

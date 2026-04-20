@@ -21,7 +21,7 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
   const [monto, setMonto] = useState('');
   const [fechaEgreso, setFechaEgreso] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
-  const [observacion, setObservacion] = useState('');
+  const [observaciones, setObservaciones] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -36,7 +36,7 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
       setFechaEgreso(new Date().toISOString().split('T')[0]);
       setSelectedMedio('');
       setReferencia('');
-      setObservacion('');
+      setObservaciones('');
       setPaymentKey(crypto.randomUUID());
       const fetchMediosPago = async () => {
         try {
@@ -64,7 +64,7 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
         fechaEgreso: fechaEgreso,
         esAbono: false,
         referencia: referencia || undefined,
-        observacion: observacion || undefined
+        observaciones: observaciones || undefined
       };
 
       const res = await registrarComprobanteEgreso(factura.id, payload, paymentKey);
@@ -152,9 +152,9 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
 
           <InputField
             label="Observaciones (Opcional)"
-            name="observacion"
-            value={observacion}
-            onChange={(e) => setObservacion(e.target.value)}
+            name="observaciones"
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
             icon={AlignLeft}
             placeholder="Nota adicional..."
           />

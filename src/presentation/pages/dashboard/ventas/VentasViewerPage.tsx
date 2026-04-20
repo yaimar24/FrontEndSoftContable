@@ -158,6 +158,14 @@ const VentasViewerPage: React.FC = () => {
             </div>
          </div>
 
+         {/* Observaciones */}
+         {factura.observaciones && (
+           <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Observaciones</p>
+              <p className="text-sm font-medium text-slate-700">{factura.observaciones}</p>
+           </div>
+         )}
+
          {/* Grid de Tablas: Productos y Recibos */}
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             

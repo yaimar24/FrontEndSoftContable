@@ -21,7 +21,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   const [monto, setMonto] = useState('');
   const [fechaRecibo, setFechaPago] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
-  const [observacion, setObservacion] = useState('');
+  const [observaciones, setObservaciones] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
   
   const [showConfirm, setShowConfirm] = useState(false);
@@ -45,7 +45,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
       setMonto(initialMonto);
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
-      setObservacion('');
+      setObservaciones('');
       setSelectedMedio('');
       // Generar una nueva key cada vez que se abre el modal para un nuevo pago
       setPaymentKey(crypto.randomUUID());
@@ -74,7 +74,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
         monto: Number(monto),
         fechaRecibo,
         referencia,
-        observacion
+        observaciones
       }, paymentKey);
       if (res.success && res.data) {
         const remaining = factura.saldo - numMonto;
@@ -167,9 +167,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 />
                 <InputField
                     label="Observación"
-                    name="observacion"
-                    value={observacion}
-                    onChange={e => setObservacion(e.target.value)}
+                    name="observaciones"
+                    value={observaciones}
+                    onChange={e => setObservaciones(e.target.value)}
                     icon={AlignLeft}
                     placeholder="Opcional"
                 />
