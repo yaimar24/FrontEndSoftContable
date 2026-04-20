@@ -41,10 +41,6 @@ export const ContabilidadLibroAuxiliarPage = () => {
 
   const columns: Column<MovimientoLibroAuxiliar & { saldo: number }>[] = [
     {
-      header: 'Fecha',
-      render: (m) => new Date(m.fecha).toLocaleDateString()
-    },
-    {
       header: 'Cuenta',
       render: (m) => <span className="font-mono text-sm">{m.cuentaCodigo}</span>
     },
