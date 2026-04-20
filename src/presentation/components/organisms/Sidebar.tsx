@@ -15,7 +15,8 @@ import {
   Package,
   BookOpen,
   HelpCircle,
-  Shield
+  Shield,
+  Landmark
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthContext from "../../../application/context/AuthContext";
@@ -116,6 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {  const
     { path: "/dashboard/productos", name: "Productos", icon:  Package, moduloId: 6  },   
     { path: "/dashboard/ventas", name: "Ventas", icon:  ShoppingBag, hasSubItems: true, moduloId: 2 },
     { path: "/dashboard/ventas/recibos", name: "Recibos", icon: ShoppingBag, isSubItem: true, parent: "/dashboard/ventas", moduloId: 2 },
+    { path: "/dashboard/cartera", name: "Cartera", icon: Landmark, moduloId: 2 },
     { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt, hasSubItems: true, moduloId: 3  },
     { path: "/dashboard/factura-compra/egresos", name: "Egresos", icon: Receipt, isSubItem: true, parent: "/dashboard/factura-compra", moduloId: 3 },
     { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true, moduloId: 4 },

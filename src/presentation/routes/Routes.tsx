@@ -24,6 +24,7 @@ import { ContabilidadNuevoPage } from "@/presentation/pages/contabilidad/Contabi
 import { ContabilidadConfiguracionPage } from "@/presentation/pages/contabilidad/ContabilidadConfiguracionPage";
 import { ContabilidadLibroAuxiliarPage } from "@/presentation/pages/contabilidad/ContabilidadLibroAuxiliarPage";
 import SeguridadPage from "@/presentation/pages/dashboard/seguridad/SeguridadPage";
+import CarteraPage from "@/presentation/pages/dashboard/cartera/CarteraPage";
 const AppRoutes = () => (
   <Router>
     <Routes>
@@ -53,6 +54,7 @@ const AppRoutes = () => (
           <Route path="asientos-contables/libro-auxiliar" element={<ContabilidadLibroAuxiliarPage />} />
           <Route path="asientos-contables/:id" element={<ContabilidadDetailPage />} />
           <Route path="seguridad" element={<SeguridadPage />} />
+          <Route path="cartera" element={<CarteraPage />} />
         </Route>
         {/* RUTA DE SOLO IMPRESIÓN EXTERNA AL LAYOUT DEL DASHBOARD */}
         <Route path="/invoice/:id" element={<InvoicePrintPage />} />
