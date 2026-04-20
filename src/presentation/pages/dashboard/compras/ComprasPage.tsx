@@ -110,6 +110,10 @@ const ComprasPage: React.FC = () => {
         {
           target: '.tuto-compra-detalle',
           content: 'Agrega los ítems de la compra. Puedes elegir entre productos, activos fijos o gastos, y asignar las cuentas contables correspondientes.',
+        },
+        {
+          target: '.tuto-compra-pagos',
+          content: 'Selecciona la condición de pago: Contado o Crédito. Si es contado, elige el medio de pago y registra el monto. Si es crédito, indica los días de plazo.',
         }
       ]);
       setLoading(false);
