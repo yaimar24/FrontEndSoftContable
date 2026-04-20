@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { getPucTree } from "../../../../data/services/puc/pucService";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { getPucTree, searchPuc, getPucChildren } from "../../../../data/services/puc/pucService";
 import FormNuevaCuenta from "./FormNuevaCuenta";
 import PucItem from "./PucItem";
 import type { PucNodo } from "../../../../domain/models/Puc";
+import type { PucSearchResult } from "../../../../domain/models/Puc";
 import PageHeader from "../../../components/organisms/PageHeader";
 import SearchBar from "../../../components/molecules/SearchBar";
-import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye, BookOpen } from "lucide-react";
+import { FolderPlus, RefreshCcw, EyeOff, Globe, Eye, BookOpen, Loader2, Search, FileText } from "lucide-react";
 import { hideCuentaContable, restoreCuentaContable, updateCuentaContable, getHiddenPuc } from "../../../../data/services/puc/pucService";
 import Modal from "../../../components/organisms/Modal";
 import StatusModal from "../../../components/organisms/StatusModal";
@@ -21,6 +22,16 @@ const PucPage: React.FC = () => {
     { codigo: string; nombre: string } | undefined
   >(undefined);
   const [hijosDelPadre, setHijosDelPadre] = useState<string[]>([]);
+
+  // Search state
+  const [searchResults, setSearchResults] = useState<PucSearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Highlight & expand state
+  const [highlightCodigo, setHighlightCodigo] = useState<string | undefined>(undefined);
+  const [expandCodigos, setExpandCodigos] = useState<Set<string>>(new Set());
 
   // Edit state
   const [editNode, setEditNode] = useState<PucNodo | undefined>(undefined);
@@ -151,26 +162,60 @@ const PucPage: React.FC = () => {
     ]);
   }, [fetchData, setSteps]);
 
-  const filteredTree = useMemo(() => {
-    if (!searchTerm) return tree;
+  // Debounced search
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setHighlightCodigo(undefined);
+    setExpandCodigos(new Set());
 
-    const filterNodes = (nodes: PucNodo[]): PucNodo[] =>
-      nodes
-        .map((node) => ({ ...node }))
-        .filter((node) => {
-          const match =
-            node.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            node.codigo.includes(searchTerm);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
 
-          if (node.hijos?.length) {
-            node.hijos = filterNodes(node.hijos);
-            return match || node.hijos.length > 0;
-          }
-          return match;
-        });
+    if (value.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      setIsSearching(false);
+      return;
+    }
 
-    return filterNodes(tree);
-  }, [tree, searchTerm]);
+    setIsSearching(true);
+    setShowSearchResults(true);
+
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await searchPuc(value.trim());
+        if (res.success && res.data) {
+          setSearchResults(res.data);
+        } else {
+          setSearchResults([]);
+        }
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  };
+
+  // Navigate to a search result in the tree
+  const handleSelectSearchResult = async (result: PucSearchResult) => {
+    setShowSearchResults(false);
+    setSearchTerm("");
+    setSearchResults([]);
+
+    // Expand ancestors sequentially to load the path
+    const codigos = new Set<string>();
+    for (const ancestorCodigo of result.rutaAncestros) {
+      codigos.add(ancestorCodigo);
+    }
+    
+    // Reload tree to ensure root is fresh, then set expand codes
+    await fetchData();
+    setExpandCodigos(new Set(codigos));
+    setHighlightCodigo(result.codigo);
+
+    // Clear highlight after 3 seconds
+    setTimeout(() => setHighlightCodigo(undefined), 3000);
+  };
 
   const handleOpenModal = (
     padre?: { codigo: string; nombre: string },
@@ -196,7 +241,7 @@ const PucPage: React.FC = () => {
               <div className="tuto-puc-search">
                 <SearchBar
                   value={searchTerm}
-                  onChange={setSearchTerm}
+                  onChange={handleSearchChange}
                   placeholder="BUSCAR CUENTA..."
                   className="md:w-64"
                 />
@@ -235,16 +280,60 @@ const PucPage: React.FC = () => {
 
       {/* Árbol PUC */}
 <div className="tuto-puc-tree bg-white rounded-2xl p-6 shadow-2xl shadow-slate-200/50 border border-slate-50 min-h-[600px]">
-        {filteredTree.length > 0 ? (
+        {showSearchResults ? (
+          // Search results panel
           <div className="max-w-5xl">
-            {filteredTree.map((nodo) => (
+            {isSearching ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                <Loader2 size={32} className="animate-spin text-blue-500 mb-4" />
+                <p className="font-bold uppercase text-xs tracking-widest">Buscando...</p>
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-4">
+                  {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''}
+                </p>
+                {searchResults.map((result) => (
+                  <button
+                    key={result.codigo}
+                    onClick={() => handleSelectSearchResult(result)}
+                    className="w-full flex items-center gap-4 py-3 px-4 rounded-2xl hover:bg-blue-50 transition-all text-left group"
+                  >
+                    <div className={result.esDetalle ? "text-blue-500" : "text-amber-500"}>
+                      {result.esDetalle ? <FileText size={18} /> : <Search size={18} />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tighter">{result.codigo}</span>
+                        <span className="text-[9px] text-slate-300">Nivel {result.nivel}</span>
+                      </div>
+                      <span className="text-sm font-bold text-slate-700 uppercase">{result.nombre}</span>
+                    </div>
+                    <span className="text-[9px] text-slate-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                      {result.rutaAncestros.join(' → ')} → {result.codigo}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-40 text-slate-400">
+                <Search size={48} className="text-slate-200 mb-4" />
+                <p className="font-bold uppercase text-xs tracking-widest">Sin resultados</p>
+                <p className="text-xs mt-2 text-slate-300">Intenta con otro término de búsqueda</p>
+              </div>
+            )}
+          </div>
+        ) : tree.length > 0 ? (
+          <div className="max-w-5xl">
+            {tree.map((nodo) => (
               <PucItem
                 key={nodo.codigo}
                 nodo={nodo}
                 onAddChild={handleOpenModal}
                 onEditNode={startEditNode}
                 onDeleteNode={handleDeleteNode}
-                forceOpen={!!searchTerm}
+                highlightCodigo={highlightCodigo}
+                expandCodigos={expandCodigos}
               />
             ))}
           </div>

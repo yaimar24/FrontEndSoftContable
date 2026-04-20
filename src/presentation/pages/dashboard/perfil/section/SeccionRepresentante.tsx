@@ -10,9 +10,10 @@ interface Props {
   representantes: RepresentanteLegal[];
   tiposId: TipoIdentificacion[];
   onRepChange: (index: number, field: keyof RepresentanteLegal, value: string | number) => void;
+  errors?: Record<string, string>;
 }
 
-export const SeccionRepresentante: React.FC<Props> = ({ representantes, tiposId, onRepChange }) => (
+export const SeccionRepresentante: React.FC<Props> = ({ representantes, tiposId, onRepChange, errors = {} }) => (
   <section className="bg-white p-5 rounded-2xl border border-slate-100 space-y-4 shadow-sm">
     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
       <UserCheck size={14} className="text-purple-500"/> Representante Legal
@@ -26,6 +27,7 @@ export const SeccionRepresentante: React.FC<Props> = ({ representantes, tiposId,
           value={rep.nombre}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onRepChange(index, 'nombre', e.target.value)}
           icon={UserCheck}
+          error={errors.repNombre}
         />
 
         <div className="grid grid-cols-2 gap-4">
@@ -35,6 +37,7 @@ export const SeccionRepresentante: React.FC<Props> = ({ representantes, tiposId,
             value={rep.numeroIdentificacion}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => onRepChange(index, 'numeroIdentificacion', e.target.value)}
             icon={Hash}
+            error={errors.repNumeroIdentificacion}
           />
 
           <SelectField

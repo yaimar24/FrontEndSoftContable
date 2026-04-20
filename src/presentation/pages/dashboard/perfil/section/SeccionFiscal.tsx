@@ -18,12 +18,14 @@ interface Props {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => void;
+  errors?: Record<string, string>;
 }
 
 export const SeccionFiscal: React.FC<Props> = ({
   formData,
   parametros,
   onChange,
+  errors = {},
 }) => {
   // Definición de los campos booleanos para mapear las cards
   const fiscalToggles = [
@@ -80,6 +82,7 @@ export const SeccionFiscal: React.FC<Props> = ({
           icon={Percent}
           onlyNumbers
           allowDecimals
+          error={errors.tarifaIca}
         />
 
         <SelectField

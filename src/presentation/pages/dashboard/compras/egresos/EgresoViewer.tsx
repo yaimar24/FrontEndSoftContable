@@ -107,7 +107,7 @@ export const EgresoViewer = () => {
                 <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-1">Fecha de Egreso</p>
                 <p className="text-base font-bold text-slate-800 tracking-tight">{new Date(egreso.fechaEgreso).toLocaleDateString()}</p>
               </div>
-              {(egreso.referencia || egreso.observacion) && (
+              {(egreso.referencia || egreso.observaciones) && (
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                   {egreso.referencia && (
                     <div>
@@ -115,10 +115,10 @@ export const EgresoViewer = () => {
                       <p className="text-sm font-bold text-slate-700">{egreso.referencia}</p>
                     </div>
                   )}
-                  {egreso.observacion && (
+                  {egreso.observaciones && (
                     <div>
                       <p className="text-slate-400 uppercase tracking-widest text-[9px] font-black">Observaciones</p>
-                      <p className="text-sm font-bold text-slate-700">{egreso.observacion}</p>
+                      <p className="text-sm font-bold text-slate-700">{egreso.observaciones}</p>
                     </div>
                   )}
                 </div>

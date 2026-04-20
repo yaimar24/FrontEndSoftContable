@@ -4,10 +4,11 @@ import InputField from '../../../../components/atoms/InputField';
 import SelectField from '../../../../components/atoms/SelectField';
 import type { Municipio, Departamento } from '../../../../../domain/models/Colegio';
 
-export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onChange }: any) => {
+export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onChange, errors = {} }: any) => {
   const getFullUrl = (path: string) => path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
 
   const [selectedDepartamentoId, setSelectedDepartamentoId] = useState<string>("");
+  const [departamentoChanged, setDepartamentoChanged] = useState(false);
 
   useEffect(() => {
     // Load pre-selected departamento if returning from API details
@@ -65,9 +66,9 @@ export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onCha
         </div>
       </div>
 
-      <InputField label="Nombre Institución" name="nombreColegio" value={formData.nombreColegio || ""} onChange={onChange} icon={Building2} />
+      <InputField label="Nombre Institución" name="nombreColegio" value={formData.nombreColegio || ""} onChange={onChange} icon={Building2} error={errors.nombreColegio} />
       <div className="grid grid-cols-2 gap-4">
-        <InputField label="NIT" name="nit" value={formData.nit || ""} onChange={onChange} icon={Hash} onlyNumbers />
+        <InputField label="NIT" name="nit" value={formData.nit || ""} onChange={onChange} icon={Hash} onlyNumbers error={errors.nit} />
         <InputField label="Teléfono" name="telefono" value={formData.telefono || ""} onChange={onChange} icon={Phone} />
       </div>
       <InputField label="Dirección" name="direccion" value={formData.direccion || ""} onChange={onChange} icon={MapPin} />
@@ -75,14 +76,19 @@ export const SeccionDatosBasicos = ({ formData, departamentos, municipios, onCha
         label="Departamento" name="departamentoId" value={selectedDepartamentoId}
         onChange={(e: any) => {
           setSelectedDepartamentoId(e.target.value);
+          setDepartamentoChanged(true);
           onChange({ target: { name: "municipioId", value: "" } });
         }}
         options={departamentos || []} displayExpr={(d: Departamento) => d.nombre} placeholder="Seleccionar departamento"
       />
       <SelectField
-        label="Municipio" name="municipioId" value={formData.municipioId} onChange={onChange}
+        label="Municipio" name="municipioId" value={formData.municipioId} onChange={(e: any) => {
+          setDepartamentoChanged(false);
+          onChange(e);
+        }}
         options={municipiosFiltrados} displayExpr={(c: Municipio) => c.nombre} placeholder="Seleccionar municipio"
         disabled={!selectedDepartamentoId}
+        error={(departamentoChanged && !formData.municipioId) || errors.municipioId ? (errors.municipioId || "Debes seleccionar un municipio") : undefined}
       />
     </section>
   );

@@ -96,7 +96,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
   useEffect(() => {
     if (condicionPago === 'CONTADO' && !formData.esCredito) {
-      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: null, monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observacion: "" };
+      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: null, monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observaciones: "" };
       handlePagosChange([{ ...p, monto: currentTotal }]);
     } else if (condicionPago === 'CREDITO') {
       handlePagosChange([]);
@@ -221,6 +221,14 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 icon={Calendar}
                 required
                 error={errors.fechaElaboracion}
+              />
+
+              <InputField
+                label="Observación (Opcional)"
+                name="observaciones"
+                value={formData.observaciones || ""}
+                onChange={handleChange}
+                placeholder="Nota u observación de la factura"
               />
             </div>
           </section>

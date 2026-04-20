@@ -19,15 +19,29 @@ interface PaymentModalProps {
 export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, factura, onSuccess }) => {
   const [selectedMedio, setSelectedMedio] = useState('');
   const [monto, setMonto] = useState('');
+  const [montoDisplay, setMontoDisplay] = useState('');
   const [fechaRecibo, setFechaPago] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
-  const [observacion, setObservacion] = useState('');
+  const [observaciones, setObservaciones] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
   
   const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
   const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
+
+  const formatWithDots = (val: string) => {
+    const num = val.replace(/\D/g, '');
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
+  const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\./g, '');
+    if (raw === '' || /^\d+$/.test(raw)) {
+      setMonto(raw);
+      setMontoDisplay(formatWithDots(raw));
+    }
+  };
 
   useEffect(() => {
     getParametrosFacturacion().then(res => {
@@ -41,11 +55,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
 
   useEffect(() => {
     if (isOpen) {
-      const initialMonto = factura.saldo.toString();
+      const initialMonto = Math.round(factura.saldo).toString();
       setMonto(initialMonto);
+      setMontoDisplay(formatWithDots(initialMonto));
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
-      setObservacion('');
+      setObservaciones('');
       setSelectedMedio('');
       // Generar una nueva key cada vez que se abre el modal para un nuevo pago
       setPaymentKey(crypto.randomUUID());
@@ -74,7 +89,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
         monto: Number(monto),
         fechaRecibo,
         referencia,
-        observacion
+        observaciones
       }, paymentKey);
       if (res.success && res.data) {
         const remaining = factura.saldo - numMonto;
@@ -139,9 +154,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 <InputField
                     label="Monto a Pagar"
                     name="monto"
-                    type="number"
-                    value={monto}
-                    onChange={e => setMonto(e.target.value)}
+                    type="text"
+                    value={montoDisplay}
+                    onChange={handleMontoChange}
                     icon={DollarSign}
                     required
                 />
@@ -167,9 +182,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 />
                 <InputField
                     label="Observación"
-                    name="observacion"
-                    value={observacion}
-                    onChange={e => setObservacion(e.target.value)}
+                    name="observaciones"
+                    value={observaciones}
+                    onChange={e => setObservaciones(e.target.value)}
                     icon={AlignLeft}
                     placeholder="Opcional"
                 />

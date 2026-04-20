@@ -10,6 +10,7 @@ export const usePerfilForm = (token: string | null) => {
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<Colegio>>({});
   const [parametros, setParametros] = useState<any>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: '' });
@@ -56,6 +57,26 @@ export const usePerfilForm = (token: string | null) => {
     });
   };
 
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.nombreColegio?.trim()) newErrors.nombreColegio = "El nombre es obligatorio";
+    if (!formData.nit?.trim()) newErrors.nit = "El NIT es obligatorio";
+    if (!formData.municipioId) newErrors.municipioId = "Debes seleccionar un municipio";
+    if (formData.tarifaIca === undefined || formData.tarifaIca === null || formData.tarifaIca === "") newErrors.tarifaIca = "La tarifa ICA es obligatoria";
+
+    const rep = formData.representantesLegales?.[0];
+    if (!rep?.nombre?.trim()) newErrors.repNombre = "El nombre del representante es obligatorio";
+    if (!rep?.numeroIdentificacion?.trim()) newErrors.repNumeroIdentificacion = "La identificación del representante es obligatoria";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleConfirmSave = () => {
+    if (!validate()) return;
+    setShowConfirm(true);
+  };
+
   const handleSave = async () => {
     if (!colegioId) return;
     setShowConfirm(false);
@@ -91,8 +112,8 @@ export const usePerfilForm = (token: string | null) => {
   };
 
   return {
-    colegioId, isSaving, formData, parametros,
+    colegioId, isSaving, formData, parametros, errors,
     showConfirm, setShowConfirm, resultModal, setResultModal,
-    handleChange, handleRepChange, handleSave
+    handleChange, handleRepChange, handleSave, handleConfirmSave
   };
 };

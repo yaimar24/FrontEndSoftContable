@@ -61,14 +61,13 @@ export interface ConfiguracionContableUpdate {
 }
 
 export interface MovimientoLibroAuxiliar {
+  id: number;
   cuentaCodigo: string;
   cuentaNombre: string;
   naturalezaCuenta: 'D' | 'C';
   terceroId: string | null;
   terceroNombre: string | null;
   descripcion: string | null;
-  fecha: string;
   debito: number;
   credito: number;
-  saldo: number;
 }

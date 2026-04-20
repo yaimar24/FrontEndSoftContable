@@ -143,10 +143,12 @@ export const CompraInvoiceTemplate: React.FC<CompraInvoiceTemplateProps> = ({ fa
       {/* Summary Footer */}
       <div className="flex justify-between items-start">
         <div className="w-1/2 pr-8">
-          <div className="mb-6">
-            <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2 border-b border-slate-200 pb-1">Observaciones / Notas</h4>
-            <p className="text-xs text-slate-600 italic">N/A</p>
-          </div>
+          {factura.observaciones && (
+            <div className="mb-6">
+              <h4 className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-2 border-b border-slate-200 pb-1">Observaciones / Notas</h4>
+              <p className="text-xs text-slate-600 italic">{factura.observaciones}</p>
+            </div>
+          )}
         </div>
 
         <div className="w-[40%] bg-slate-50 rounded-2xl border border-slate-200 p-6">

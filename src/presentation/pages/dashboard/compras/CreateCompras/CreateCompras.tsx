@@ -116,7 +116,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
   useEffect(() => {
     if (condicionPago === 'CONTADO' && !formData.esCredito) {
       const defaultMedioPagoId = parametrosFacturacion.mediosPago?.length > 0 ? parametrosFacturacion.mediosPago[0].id : null;
-      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: defaultMedioPagoId, monto: 0, fechaEgreso: formData.fechaElaboracion, referencia: "", observacion: "" };
+      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: defaultMedioPagoId, monto: 0, fechaEgreso: formData.fechaElaboracion, referencia: "", observaciones: "" };
       handlePagosChange([{ ...p, monto: currentTotal } as any]);
       handleChange({ target: { name: 'medioPagoId', value: p.medioPagoId || defaultMedioPagoId } } as any);
     } else if (condicionPago === 'CREDITO') {
@@ -237,6 +237,14 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 icon={Calendar}
                 required
                 error={errors.fechaElaboracion}
+              />
+
+              <InputField
+                label="Observación (Opcional)"
+                name="observaciones"
+                value={formData.observaciones || ""}
+                onChange={(e) => handleChange({ target: { name: 'observaciones', value: e.target.value } } as any)}
+                placeholder="Nota u observación de la factura"
               />
             </div>
           </section>

@@ -11,7 +11,7 @@ export interface ReciboCajaCreate {
   monto: number;
   fechaRecibo: string;
   referencia?: string;
-  observacion?: string;
+  observaciones?: string;
 }
 
 export interface ReciboCajaRead {
@@ -26,7 +26,7 @@ export interface ReciboCajaRead {
   esAbono: boolean;
   fechaRecibo: string;
   referencia?: string;
-  observacion?: string;
+  observaciones?: string;
 }
 
 export interface FacturaDetalleCreateDTO {
@@ -54,6 +54,7 @@ export interface FacturaVentaCreateDTO {
   pagos?: ReciboCajaCreate[] | null;
   colegioId?: string;
   usuarioId?: string;
+  observaciones?: string;
 }
 
 export interface FacturaDetalleReadDTO {
@@ -94,6 +95,7 @@ export interface FacturaVentaReadDTO {
   colegioNit: string;
   vendedorId?: string;
   fechaElaboracion: string;
+  fechaRegistro?: string;
   estadoId: number;
   estadoNombre: string;
   esCredito: boolean;
@@ -113,4 +115,5 @@ export interface FacturaVentaReadDTO {
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
   comprobantes?: any[];
+  observaciones?: string;
 }

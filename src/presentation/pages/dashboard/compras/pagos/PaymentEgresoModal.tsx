@@ -19,9 +19,10 @@ interface PaymentEgresoModalProps {
 export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, onClose, factura, onSuccess }) => {
   const [selectedMedio, setSelectedMedio] = useState('');
   const [monto, setMonto] = useState('');
+  const [montoDisplay, setMontoDisplay] = useState('');
   const [fechaEgreso, setFechaEgreso] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
-  const [observacion, setObservacion] = useState('');
+  const [observaciones, setObservaciones] = useState('');
   const [paymentKey, setPaymentKey] = useState(() => crypto.randomUUID());
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -29,14 +30,28 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
   const [loading, setLoading] = useState(false);
   const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
 
+  const formatWithDots = (val: string) => {
+    const num = val.replace(/\D/g, '');
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
+  const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\./g, '');
+    if (raw === '' || /^\d+$/.test(raw)) {
+      setMonto(raw);
+      setMontoDisplay(formatWithDots(raw));
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       const currentSaldo = factura.saldo ?? factura.totalNeto;
       setMonto(currentSaldo.toString());
+      setMontoDisplay(formatWithDots(Math.round(currentSaldo).toString()));
       setFechaEgreso(new Date().toISOString().split('T')[0]);
       setSelectedMedio('');
       setReferencia('');
-      setObservacion('');
+      setObservaciones('');
       setPaymentKey(crypto.randomUUID());
       const fetchMediosPago = async () => {
         try {
@@ -64,7 +79,7 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
         fechaEgreso: fechaEgreso,
         esAbono: false,
         referencia: referencia || undefined,
-        observacion: observacion || undefined
+        observaciones: observaciones || undefined
       };
 
       const res = await registrarComprobanteEgreso(factura.id, payload, paymentKey);
@@ -114,11 +129,11 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
             <InputField
               label="Monto a Pagar"
               name="monto"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
+              value={montoDisplay}
+              onChange={handleMontoChange}
               icon={DollarSign}
               required
-              type="number"
+              type="text"
             />
             <InputField
               label="Fecha de Pago"
@@ -152,9 +167,9 @@ export const PaymentEgresoModal: React.FC<PaymentEgresoModalProps> = ({ isOpen, 
 
           <InputField
             label="Observaciones (Opcional)"
-            name="observacion"
-            value={observacion}
-            onChange={(e) => setObservacion(e.target.value)}
+            name="observaciones"
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
             icon={AlignLeft}
             placeholder="Nota adicional..."
           />

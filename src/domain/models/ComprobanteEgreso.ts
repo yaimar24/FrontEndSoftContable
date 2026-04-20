@@ -4,7 +4,7 @@ export interface ComprobanteEgresoCreate {
   fechaEgreso: string;
   esAbono: boolean;
   referencia?: string;
-  observacion?: string;
+  observaciones?: string;
 }
 
 export interface ComprobanteEgresoRead {
@@ -19,7 +19,7 @@ export interface ComprobanteEgresoRead {
   esAbono: boolean;
   fechaEgreso: string;
   referencia?: string;
-  observacion?: string;
+  observaciones?: string;
   estadoId?: number;
   estadoNombre?: string;
 }

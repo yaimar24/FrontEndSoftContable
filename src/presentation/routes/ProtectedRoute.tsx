@@ -1,15 +1,38 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { getModulosFromToken, getRoleFromToken } from '../../utils/jwt';
+import { getModuloIdForPath, getFirstAllowedRoute } from '../../domain/models/Seguridad';
+import { usePerfil } from '../../application/context/PerfilContext';
 
 const ProtectedRoute = () => {
-  // Verificamos si existe el token en el storage
-  const isAuthenticated = !!localStorage.getItem('token');
+  const location = useLocation();
+  const token = localStorage.getItem('token');
+  const isAuthenticated = !!token;
+
+  // Hooks siempre se llaman en el mismo orden (regla de React)
+  const { modulos: perfilModulos, isAdmin: perfilIsAdmin, loading } = usePerfil();
 
   if (!isAuthenticated) {
-    // Redirigir al login si no está autenticado
     return <Navigate to="/login" replace />;
   }
 
-  // Si está autenticado, renderiza las rutas hijas (el Dashboard)
+  // Permisos frescos del contexto con fallback al JWT mientras carga
+  const jwtModulos = getModulosFromToken(token);
+  const jwtRole = getRoleFromToken(token);
+  const jwtIsAdmin = jwtRole === 'Administrador';
+
+  const modulos = loading ? jwtModulos : perfilModulos;
+  const isAdmin = loading ? jwtIsAdmin : perfilIsAdmin;
+
+  const requiredModulo = getModuloIdForPath(location.pathname);
+
+  if (requiredModulo && !isAdmin && !modulos.includes(requiredModulo)) {
+    const fallback = getFirstAllowedRoute(modulos);
+    if (fallback === location.pathname) {
+      return <Navigate to="/login" replace />;
+    }
+    return <Navigate to={fallback} replace />;
+  }
+
   return <Outlet />;
 };
 

@@ -31,7 +31,7 @@ export interface PagoEgresoCreate {
   monto: number;
   fechaEgreso: string;
   referencia?: string;
-  observacion?: string;
+  observaciones?: string;
 }
 
 export interface FacturaCompraCreateDTO {
@@ -44,6 +44,7 @@ export interface FacturaCompraCreateDTO {
   medioPagoId?: number | null;
   pagos?: PagoEgresoCreate[];
   detalles: FacturaCompraDetalleCreateDTO[];
+  observaciones?: string;
 }
 
 export interface FacturaCompraUpdateDTO {
@@ -94,6 +95,7 @@ export interface FacturaCompraReadDTO {
   colegioNombre: string;
   colegioNit: string;
   fechaElaboracion: string;
+  fechaRegistro?: string;
   estadoId: number;
   estadoNombre: string;
   esCredito: boolean;
@@ -110,4 +112,5 @@ export interface FacturaCompraReadDTO {
   totalNeto: number;    totalPagado?: number;
     saldo?: number;  detalles: FacturaCompraDetalleReadDTO[];
     egresos?: any[]; comprobantes?: any[];
+  observaciones?: string;
 }

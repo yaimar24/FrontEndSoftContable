@@ -137,7 +137,8 @@ export const useContabilidad = () => {
     try {
       const resp = await contabilidadService.getLibroAuxiliar(cuentaCodigo, desde, hasta);
       if (resp.success && resp.data) {
-        setLibroAuxiliar(resp.data);
+        const items = resp.data.items ?? (Array.isArray(resp.data) ? resp.data : []);
+        setLibroAuxiliar(items);
       } else {
         setError(resp.message);
       }

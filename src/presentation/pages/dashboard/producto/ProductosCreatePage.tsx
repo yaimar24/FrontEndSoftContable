@@ -54,6 +54,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      setResultModal({ show: true, success: false, message: "Por favor corrija los campos en rojo." });
       return;
     }
     

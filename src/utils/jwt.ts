@@ -6,6 +6,9 @@ export interface JWTPayload {
   colegioId: string;
   nombreColegio: string;
   logoUrl?: string;
+  role: string;
+  rolId: string;
+  modulos: string;
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': string;
   exp: number;
   iss: string;
@@ -50,6 +53,37 @@ export const getColegioIdFromToken = (token: string | null): string | null => {
   try {
     const decoded = jwtDecode<JWTPayload>(token);
     return decoded.colegioId;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getRoleFromToken = (token: string | null): string | null => {
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode<JWTPayload>(token);
+    return decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getModulosFromToken = (token: string | null): number[] => {
+  if (!token) return [];
+  try {
+    const decoded = jwtDecode<JWTPayload>(token);
+    if (!decoded.modulos) return [];
+    return decoded.modulos.split(',').map(Number).filter((n) => !isNaN(n));
+  } catch (err) {
+    return [];
+  }
+};
+
+export const getRolIdFromToken = (token: string | null): number | null => {
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode<JWTPayload>(token);
+    return decoded.rolId ? Number(decoded.rolId) : null;
   } catch (err) {
     return null;
   }

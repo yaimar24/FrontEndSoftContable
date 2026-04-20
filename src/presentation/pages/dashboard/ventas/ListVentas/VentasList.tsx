@@ -47,12 +47,19 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
     }
   }, [data]);
 
-  const { searchTerm: internalSearchTerm, setSearchTerm: internalSetSearchTerm, filteredData } = useFilter(localData || [], {
+  const { searchTerm: internalSearchTerm, setSearchTerm: internalSetSearchTerm, filteredData: rawFiltered } = useFilter(localData || [], {
     searchFields: ["numero", "clienteNombre", "tipoFacturaNombre"],
   });
   
   const searchTerm = isServer ? (externalSearchTerm ?? internalSearchTerm) : internalSearchTerm;
   const setSearchTerm = isServer ? (onSearchChange ?? internalSetSearchTerm) : internalSetSearchTerm;
+
+  // Ordenar por fechaRegistro descendente (más recientes primero)
+  const filteredData = [...rawFiltered].sort((a, b) => {
+    const dateA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
+    const dateB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
+    return dateB - dateA;
+  });
 
   const exportConfig: ExportConfig<FacturaVentaReadDTO> = {
     filename: `Reporte_Ventas`,
@@ -60,7 +67,8 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
     columns: [
       { header: "NÚMERO", dataKey: "numero" },
       { header: "CLIENTE", dataKey: "clienteNombre" },
-      { header: "FECHA", dataKey: (v) => new Date(v.fechaElaboracion).toLocaleDateString() },     
+      { header: "FECHA ELABORACIÓN", dataKey: (v) => new Date(v.fechaElaboracion).toLocaleDateString() },
+      { header: "FECHA REGISTRO", dataKey: (v) => v.fechaRegistro ? new Date(v.fechaRegistro).toLocaleString() : 'N/A' },
       { header: "TIPO", dataKey: "tipoFacturaNombre" },
       { header: "TOTAL", dataKey: (v) => `$${v.totalNeto.toLocaleString()}` },
       { header: "ESTADO", dataKey: "estadoNombre" },
@@ -78,9 +86,17 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
           </div>
           <div className="flex flex-col">
             <span className="font-black uppercase text-[11px] text-slate-800">{v.numero || 'S/N'} - {v.tipoFacturaNombre}</span>
-            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Fecha: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Elaboración: {new Date(v.fechaElaboracion).toLocaleDateString()}</span>
           </div>
         </div>
+      )
+    },
+    {
+      header: "Registro",
+      render: (v: FacturaVentaReadDTO) => (
+        <span className="text-[10px] font-bold text-slate-500">
+          {v.fechaRegistro ? new Date(v.fechaRegistro).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : '—'}
+        </span>
       )
     },
     {
