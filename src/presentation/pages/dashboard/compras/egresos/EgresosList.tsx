@@ -8,15 +8,34 @@ import { useGlobalLoading as useLoading } from "../../../../../application/conte
 import { Eye, FileText, Banknote } from "lucide-react";
 import SearchBar from "../../../../components/molecules/SearchBar";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
+import { useTutorial } from "../../../../../application/context/TutorialContext";
 
 export const EgresosList = () => {
   const [data, setData] = useState<ComprobanteEgresoRead[]>([]);
   const { show, hide } = useLoading();
   const navigate = useNavigate();
+  const { setSteps } = useTutorial();
 
   useEffect(() => {
     fetchEgresos();
   }, []);
+
+  useEffect(() => {
+    setSteps([
+      {
+        target: '.tuto-header-egresos',
+        content: 'Este es el módulo de Comprobantes de Egreso. Aquí consultas los pagos emitidos a proveedores.',
+      },
+      {
+        target: '.tuto-egresos-search',
+        content: 'Busca egresos por número, factura asociada, proveedor o referencia.',
+      },
+      {
+        target: '.tuto-egresos-table',
+        content: 'Tabla con todos los comprobantes de egreso. Puedes ver el detalle de cada pago.',
+      },
+    ]);
+  }, [setSteps]);
 
   const fetchEgresos = async () => {
     try {
@@ -112,19 +131,21 @@ export const EgresosList = () => {
 
   return (
     <div className="space-y-4">
+      <div className="tuto-header-egresos">
       <PageHeader
         title="Comprobantes de Egreso"
         subtitle="Listado general de los comprobantes de pago emitidos"
         icon={Banknote}
       />
+      </div>
 
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="w-full lg:w-1/3">
+        <div className="tuto-egresos-search w-full lg:w-1/3">
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por egreso, factura o proveedor..." />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-egresos-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
     </div>

@@ -8,15 +8,34 @@ import { useGlobalLoading as useLoading } from "../../../../../application/conte
 import { Eye, FileText, Banknote } from "lucide-react";
 import SearchBar from "../../../../components/molecules/SearchBar";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
+import { useTutorial } from "../../../../../application/context/TutorialContext";
 
 export const RecibosList = () => {
   const [data, setData] = useState<ReciboCajaRead[]>([]);
   const { show, hide } = useLoading();
   const navigate = useNavigate();
+  const { setSteps } = useTutorial();
 
   useEffect(() => {
     fetchRecibos();
   }, []);
+
+  useEffect(() => {
+    setSteps([
+      {
+        target: '.tuto-header-recibos',
+        content: 'Este es el módulo de Recibos de Caja. Aquí consultas los comprobantes de pago recibidos.',
+      },
+      {
+        target: '.tuto-recibos-search',
+        content: 'Busca recibos por número, factura asociada o nombre del cliente.',
+      },
+      {
+        target: '.tuto-recibos-table',
+        content: 'Tabla con todos los recibos de caja. Puedes ver el detalle de cada comprobante.',
+      },
+    ]);
+  }, [setSteps]);
 
   const fetchRecibos = async () => {
     try {
@@ -101,19 +120,21 @@ export const RecibosList = () => {
 
   return (
     <div className="space-y-4">
+      <div className="tuto-header-recibos">
       <PageHeader 
         title="Recibos de Caja" 
         subtitle="Listado general de los comprobantes de pago recibidos"
         icon={Banknote} 
       />
+      </div>
 
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="w-full lg:w-1/3">
+        <div className="tuto-recibos-search w-full lg:w-1/3">
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por recibo, factura o cliente..." />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
+      <div className="tuto-recibos-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">
         <Table columns={columns} data={filteredData} />
       </div>
     </div>

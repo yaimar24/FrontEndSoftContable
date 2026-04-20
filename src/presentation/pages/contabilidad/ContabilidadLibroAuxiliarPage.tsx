@@ -1,13 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import PageHeader from '../../components/organisms/PageHeader';
 import { SelectorCuentaPuc } from '../../components/organisms/SelectorCuentaPuc';
 import { Table, type Column } from '../../components/organisms/Table';
 import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoLibroAuxiliar } from '../../../domain/models/Contabilidad';
+import { useTutorial } from '../../../application/context/TutorialContext';
 
 export const ContabilidadLibroAuxiliarPage = () => {
   const { libroAuxiliar, fetchLibroAuxiliar, loading, error } = useContabilidad();
+  const { setSteps } = useTutorial();
 
   const [cuentaCodigo, setCuentaCodigo] = useState<string | null>('');
   const [desde, setDesde] = useState(() => {
@@ -16,6 +18,23 @@ export const ContabilidadLibroAuxiliarPage = () => {
     return d.toISOString().split('T')[0];
   });
   const [hasta, setHasta] = useState(() => new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    setSteps([
+      {
+        target: '.tuto-header-auxiliar',
+        content: 'El Auxiliar Contable muestra los movimientos detallados y saldos de una cuenta específica.',
+      },
+      {
+        target: '.tuto-auxiliar-filtros',
+        content: 'Selecciona una cuenta PUC y un rango de fechas para consultar los movimientos.',
+      },
+      {
+        target: '.tuto-auxiliar-consultar',
+        content: 'Presiona este botón para ejecutar la consulta y ver los resultados.',
+      },
+    ]);
+  }, [setSteps]);
 
   const handleConsultar = () => {
     fetchLibroAuxiliar(cuentaCodigo || null, desde || null, hasta || null);
@@ -80,13 +99,15 @@ export const ContabilidadLibroAuxiliarPage = () => {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
+      <div className="tuto-header-auxiliar">
       <PageHeader
         title="Auxiliar contable"
         subtitle="Consulta los movimientos detallados y saldos de una cuenta contable"
       />
+      </div>
 
       <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">       
+        <div className="tuto-auxiliar-filtros grid grid-cols-1 md:grid-cols-4 gap-6 items-end">       
           <div className="col-span-2 relative z-50">
             <SelectorCuentaPuc
               label="Cuenta Contable (opcional)"
@@ -119,7 +140,7 @@ export const ContabilidadLibroAuxiliarPage = () => {
           <button
             onClick={handleConsultar}
             disabled={loading}
-            className={`px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-colors shadow-lg ${(loading) ? 'bg-slate-200 text-slate-400 shadow-none' : 'bg-[#1e3a8a] text-white hover:bg-blue-900 shadow-[#1e3a8a]/20'}`}
+            className={`tuto-auxiliar-consultar px-8 py-3 rounded-xl font-black text-sm uppercase tracking-widest transition-colors shadow-lg ${(loading) ? 'bg-slate-200 text-slate-400 shadow-none' : 'bg-[#1e3a8a] text-white hover:bg-blue-900 shadow-[#1e3a8a]/20'}`}
           >
             {loading ? 'Consultando...' : 'Consultar Movimientos'}
           </button>

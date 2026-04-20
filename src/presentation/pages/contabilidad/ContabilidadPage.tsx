@@ -9,10 +9,12 @@ import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { ComprobanteContableRead } from '../../../domain/models/Contabilidad';
 import { Eye, FileText, PlusCircle } from 'lucide-react';
 import LoadingOverlay from '../../components/shared/LoadingOverlay';
+import { useTutorial } from '../../../application/context/TutorialContext';
 
 export const ContabilidadPage = () => {
   const navigate = useNavigate();
   const { comprobantes, fetchComprobantes, pagination, anular, loading } = useContabilidad();
+  const { setSteps } = useTutorial();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
@@ -28,6 +30,31 @@ export const ContabilidadPage = () => {
   useEffect(() => {
     fetchComprobantes(page, pageSize, searchTerm);
   }, [fetchComprobantes, page, pageSize, searchTerm]);
+
+  useEffect(() => {
+    setSteps([
+      {
+        target: '.tuto-header-contabilidad',
+        content: 'Este es el módulo de Comprobantes Contables. Aquí puedes ver todos los asientos registrados en el sistema.',
+      },
+      {
+        target: '.tuto-contabilidad-nuevo',
+        content: 'Crea un nuevo movimiento manual para registrar ajustes contables.',
+      },
+      {
+        target: '.tuto-contabilidad-search',
+        content: 'Busca comprobantes por número o descripción.',
+      },
+      {
+        target: '.tuto-contabilidad-filters',
+        content: 'Filtra los comprobantes por tipo (Recibos, Ajustes) o por estado (Aprobado, Anulado).',
+      },
+      {
+        target: '.tuto-contabilidad-table',
+        content: 'Tabla con todos los comprobantes contables. Puedes ver el detalle de cada uno.',
+      },
+    ]);
+  }, [setSteps]);
 
   const handleAnular = async () => {
     if (comprobanteToAnular) {
@@ -147,19 +174,23 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
 
   return (
     <div className="space-y-6 pb-20">
+      <div className="tuto-header-contabilidad">
       <PageHeader 
         title="Comprobantes contables"
         subtitle="Gestiona los comprobantes contables registrados en el sistema"      
-        actions={<button onClick={() => navigate('/dashboard/asientos-contables/nuevo')} className="flex items-center gap-2 px-4 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-sm shadow-blue-900/20 active:scale-95 text-[13px]"><PlusCircle size={18} strokeWidth={2.5} /><span>Movimiento manual</span></button>}
+        actions={<button onClick={() => navigate('/dashboard/asientos-contables/nuevo')} className="tuto-contabilidad-nuevo flex items-center gap-2 px-4 py-2.5 bg-[#1e3a8a] text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-sm shadow-blue-900/20 active:scale-95 text-[13px]"><PlusCircle size={18} strokeWidth={2.5} /><span>Movimiento manual</span></button>}
       />
+      </div>
 
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center relative z-10">
+        <div className="tuto-contabilidad-search">
         <SearchBar
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Buscar por numero o descripcion..."
         />
-        <div className="flex gap-2 w-full md:w-auto">
+        </div>
+        <div className="tuto-contabilidad-filters flex gap-2 w-full md:w-auto">
           <FilterGroup
             options={[
               {label: 'Todos', id: ''},
@@ -181,7 +212,7 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden relative">
+      <div className="tuto-contabilidad-table bg-white rounded-xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden relative">
         {loading && <LoadingOverlay message="Cargando asientos..." />}
         {loading ? (
           <div className="text-center py-4">Cargando...</div>
