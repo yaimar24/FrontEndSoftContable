@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { getPucTree, searchPuc, getPucChildren } from "../../../../data/services/puc/pucService";
+import { getPucTree, searchPuc } from "../../../../data/services/puc/pucService";
 import FormNuevaCuenta from "./FormNuevaCuenta";
 import PucItem from "./PucItem";
 import type { PucNodo } from "../../../../domain/models/Puc";

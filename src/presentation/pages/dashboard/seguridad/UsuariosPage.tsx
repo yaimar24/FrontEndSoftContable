@@ -178,7 +178,7 @@ const UsuariosPage: React.FC = () => {
           <>
             {/* Search Bar */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeholder="Buscar usuario..." />
+              <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar usuario..." />
             </div>
 
             {/* Table */}
