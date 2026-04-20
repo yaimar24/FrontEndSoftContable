@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useModuleAccess } from "../../application/hooks/useModuleAccess";
+import { useModuleAccess } from "../../../application/hooks/useModuleAccess";
 
 interface Props {
   /** Ruta destino que requiere permiso (ej: "/dashboard/asientos-contables") */
