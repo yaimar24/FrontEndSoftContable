@@ -68,7 +68,7 @@ const ComprasViewerPage: React.FC = () => {
   };
 
   const handlePrint = () => {
-    window.open(`/purchase-invoice/${compra.id}`, '_blank');
+    window.open(`/purchase-invoice/${compra?.id}`, '_blank');
   };
 
   const handleDownloadPDF = async () => {
