@@ -208,7 +208,7 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
 
       <StatusModal
         show={resultModal.show}
-        type={resultModal.success ? "success" : "error"}
+        success={resultModal.success}
         message={resultModal.message}
         onClose={() => setResultModal({ ...resultModal, show: false })}
       />

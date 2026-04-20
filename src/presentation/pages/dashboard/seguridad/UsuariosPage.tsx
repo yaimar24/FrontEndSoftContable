@@ -216,7 +216,7 @@ const UsuariosPage: React.FC = () => {
       {/* Result Modal */}
       <StatusModal
         show={resultModal.show}
-        type={resultModal.success ? "success" : "error"}
+        success={resultModal.success}
         message={resultModal.message}
         onClose={() => setResultModal({ ...resultModal, show: false })}
       />

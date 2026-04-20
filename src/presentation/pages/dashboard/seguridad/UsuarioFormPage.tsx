@@ -59,7 +59,7 @@ const UsuarioFormPage: React.FC<Props> = ({ initialData, isSelf = false, onBack 
   const handleSaveClick = () => {
     const err = validate();
     if (err) {
-      setError(err);
+      setResultModal({ show: true, success: false, message: err });
       return;
     }
     setError("");
@@ -258,10 +258,6 @@ const UsuarioFormPage: React.FC<Props> = ({ initialData, isSelf = false, onBack 
               ))}
             </div>
           </section>
-
-          {error && (
-            <p className="text-xs font-bold text-red-500 bg-red-50 px-4 py-3 rounded-xl border border-red-100">{error}</p>
-          )}
         </div>
       </div>
     </div>

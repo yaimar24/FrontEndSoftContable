@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import PageHeader from '../../components/organisms/PageHeader';
 import { SelectorCuentaPuc } from '../../components/organisms/SelectorCuentaPuc';
 import { Table, type Column } from '../../components/organisms/Table';
+import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoLibroAuxiliar } from '../../../domain/models/Contabilidad';
 
@@ -129,12 +130,13 @@ export const ContabilidadLibroAuxiliarPage = () => {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-rose-50 text-rose-800 p-4 rounded-xl font-bold border border-rose-100 flex items-center gap-3">
-          <span className="text-xl">⚠️</span>
-          {error}
-        </div>
-      )}
+      {/* Error Modal */}
+      <StatusModal
+        show={!!error}
+        success={false}
+        message={error || ''}
+        onClose={() => fetchLibroAuxiliar(null, null, null)}
+      />
 
       {processedData.length > 0 ? (
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
