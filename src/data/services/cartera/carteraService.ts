@@ -1,6 +1,7 @@
 import { apiClient } from "../../api/apiClient";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
 import type { CuentaPorCobrar, AgingData, FacturaPorVencer, ReporteCartera, IndicadoresCartera, ResumenCliente, HistoricoCartera } from "../../../domain/models/Cartera";
+import { buildQueryParams } from "../../../utils/queryBuilder";
 
 export const getCuentasPorCobrar = async (
   clienteId?: string,
@@ -8,12 +9,7 @@ export const getCuentasPorCobrar = async (
   hasta?: string,
   estado?: number
 ): Promise<ApiResponse<CuentaPorCobrar[]>> => {
-  const params = new URLSearchParams();
-  if (clienteId) params.append("clienteId", clienteId);
-  if (desde) params.append("desde", desde);
-  if (hasta) params.append("hasta", hasta);
-  if (estado !== undefined && estado !== null) params.append("estado", estado.toString());
-  const query = params.toString();
+  const query = buildQueryParams({ clienteId, desde, hasta, estado });
   return await apiClient(`/api/Cartera/cuentas-por-cobrar${query ? `?${query}` : ""}`);
 };
 
@@ -38,19 +34,7 @@ export interface ReporteCarteraParams {
 }
 
 export const getReporteCartera = async (params?: ReporteCarteraParams): Promise<ApiResponse<ReporteCartera>> => {
-  const searchParams = new URLSearchParams();
-  if (params) {
-    if (params.clienteId) searchParams.append("clienteId", params.clienteId);
-    if (params.desde) searchParams.append("desde", params.desde);
-    if (params.hasta) searchParams.append("hasta", params.hasta);
-    if (params.estado !== undefined && params.estado !== null) searchParams.append("estado", params.estado.toString());
-    if (params.fechaVencimientoDesde) searchParams.append("fechaVencimientoDesde", params.fechaVencimientoDesde);
-    if (params.fechaVencimientoHasta) searchParams.append("fechaVencimientoHasta", params.fechaVencimientoHasta);
-    if (params.rangoDiasVencidosMin !== undefined) searchParams.append("rangoDiasVencidosMin", params.rangoDiasVencidosMin.toString());
-    if (params.rangoMontoMin !== undefined) searchParams.append("rangoMontoMin", params.rangoMontoMin.toString());
-    if (params.rangoMontoMax !== undefined) searchParams.append("rangoMontoMax", params.rangoMontoMax.toString());
-  }
-  const query = searchParams.toString();
+  const query = params ? buildQueryParams(params as Record<string, string | number | undefined>) : '';
   return await apiClient(`/api/Cartera/reporte${query ? `?${query}` : ""}`);
 };
 

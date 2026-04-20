@@ -6,25 +6,8 @@ import { useCartera } from '../../../../application/hooks/useCartera';
 import type { CuentaPorCobrar } from '../../../../domain/models/Cartera';
 import { FileText, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-
-const getDiasVencidosBadge = (dias: number) => {
-  if (dias <= 0) return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-  if (dias <= 30) return 'bg-amber-50 text-amber-600 border-amber-100';
-  if (dias <= 60) return 'bg-orange-50 text-orange-600 border-orange-100';
-  return 'bg-rose-50 text-rose-600 border-rose-100';
-};
-
-const getEstadoBadge = (estado: string) => {
-  switch (estado?.toLowerCase()) {
-    case 'pagada': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-    case 'pendiente': return 'bg-amber-50 text-amber-600 border-amber-100';
-    case 'anulada': return 'bg-rose-50 text-rose-600 border-rose-100';
-    default: return 'bg-slate-50 text-slate-600 border-slate-100';
-  }
-};
+import { formatCurrency } from '../../../../utils/formatters';
+import { getDiasVencidosBadge, getEstadoBadgeColor as getEstadoBadge } from '../../../../utils/statusHelpers';
 
 export const CuentasPorCobrarView = () => {
   const navigate = useNavigate();
@@ -40,11 +23,11 @@ export const CuentasPorCobrarView = () => {
     fetchCuentasPorCobrar(undefined, desde || undefined, hasta || undefined, estadoNum);
   }, [fetchCuentasPorCobrar, filterEstado, desde, hasta]);
 
-  const filteredData = cuentas.filter(c => {
+  const filteredData = (cuentas || []).filter(c => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
-    return c.clienteNombre.toLowerCase().includes(term) ||
-      c.numeroFactura.toLowerCase().includes(term);
+    return (c.clienteNombre || '').toLowerCase().includes(term) ||
+      (c.numeroFactura || '').toLowerCase().includes(term);
   });
 
   const columns: Column<CuentaPorCobrar>[] = [
@@ -74,7 +57,7 @@ export const CuentasPorCobrarView = () => {
       header: 'Vencimiento',
       render: (item) => (
         <span className="text-[10px] font-bold text-slate-600">
-          {new Date(item.fechaVencimiento).toLocaleDateString()}
+          {item.fechaVencimiento ? new Date(item.fechaVencimiento).toLocaleDateString() : 'Contado'}
         </span>
       )
     },

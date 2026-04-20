@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { useCartera } from '../../../../application/hooks/useCartera';
 import { TrendingUp, TrendingDown, Clock, RotateCw, Percent, DollarSign } from 'lucide-react';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+import { formatCurrency } from '../../../../utils/formatters';
 
 export const IndicadoresView = () => {
   const { indicadores, loading, fetchIndicadores } = useCartera();

@@ -1,8 +1,8 @@
 import { apiClient } from "../../api/apiClient";
-import type { TerceroCreateDTO, TerceroupdateDTO } from "../../../domain/models/Tercero";
+import type { TerceroCreateDTO, TerceroUpdateDTO } from "../../../domain/models/Tercero";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
 
-export const vincularTercero = async (data: TerceroCreateDTO): Promise<ApiResponse<TerceroupdateDTO[]>> => {
+export const vincularTercero = async (data: TerceroCreateDTO): Promise<ApiResponse<TerceroUpdateDTO[]>> => {
   return await apiClient("/api/Tercero/vincular", {
     method: "POST",
     body: JSON.stringify(data),
@@ -18,7 +18,7 @@ export const getTercerosByColegio = async (page: number = 1, pageSize: number = 
   return await apiClient(`/api/Tercero?${queryParams}`);
 };
 
-export const updateTercero = async (id: string | number, data: TerceroupdateDTO): Promise<ApiResponse<string>> => {
+export const updateTercero = async (id: string | number, data: TerceroUpdateDTO): Promise<ApiResponse<string>> => {
   return await apiClient(`/api/Tercero/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
@@ -31,7 +31,7 @@ export const desvincularTercero = async (terceroId: string): Promise<ApiResponse
   });
 };
 
-export const buscarTerceros = async (tipo: string, nombre?: string, skipGlobalLoader: boolean = false): Promise<ApiResponse<TerceroupdateDTO[]>> => {
+export const buscarTerceros = async (tipo: string, nombre?: string, skipGlobalLoader: boolean = false): Promise<ApiResponse<TerceroUpdateDTO[]>> => {
   const url = nombre 
     ? `/api/Tercero/buscar?tipo=${encodeURIComponent(tipo)}&nombre=${encodeURIComponent(nombre)}`
     : `/api/Tercero/buscar?tipo=${encodeURIComponent(tipo)}`;

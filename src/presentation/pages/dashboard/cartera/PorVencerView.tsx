@@ -5,9 +5,7 @@ import { FilterGroup } from '../../../components/molecules/FilterGroup';
 import { useCartera } from '../../../../application/hooks/useCartera';
 import type { FacturaPorVencer } from '../../../../domain/models/Cartera';
 import { FileText, Eye } from 'lucide-react';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+import { formatCurrency } from '../../../../utils/formatters';
 
 export const PorVencerView = () => {
   const navigate = useNavigate();

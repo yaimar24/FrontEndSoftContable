@@ -5,7 +5,7 @@ import { getTercerosByColegio } from "../../../../data/services/terceros/tercero
 import { ShieldCheck, UserPlus, Users } from "lucide-react";
 import LoadingOverlay from "../../../components/shared/LoadingOverlay";
 import PageHeader from "../../../components/organisms/PageHeader";
-import type { TerceroCreateDTO, TerceroupdateDTO } from "../../../../domain/models/Tercero";
+import type { TerceroCreateDTO, TerceroUpdateDTO } from "../../../../domain/models/Tercero";
 import { useTutorial } from "../../../../application/context/TutorialContext";
 
 const TercerosPage = () => {
@@ -14,7 +14,7 @@ const TercerosPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [tercerosInfo, setTercerosInfo] = useState<any>(null);
-  const [terceros, setTerceros] = useState<TerceroupdateDTO[]>([]);
+  const [terceros, setTerceros] = useState<TerceroUpdateDTO[]>([]);
   const [selectedTercero, setSelectedTercero] = useState<TerceroCreateDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const { setSteps } = useTutorial();

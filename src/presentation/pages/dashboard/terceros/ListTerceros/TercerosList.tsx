@@ -6,7 +6,7 @@ import { ExportButtons } from "../../../../components/molecules/ExportButtons";
 import StatusModal from "../../../../components/organisms/StatusModal";
 import SearchBar from "../../../../components/molecules/SearchBar"; 
 import { desvincularTercero } from "../../../../../data/services/terceros/terceroService";
-import type { TerceroupdateDTO } from "../../../../../domain/models/Tercero";
+import type { TerceroUpdateDTO } from "../../../../../domain/models/Tercero";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
 import {
   exportToExcel,
@@ -15,8 +15,8 @@ import {
 } from "../../../../../utils/exportUtils";
 
 interface TercerosListProps {
-  data: TerceroupdateDTO[];
-  onEdit: (tercero: TerceroupdateDTO) => void;
+  data: TerceroUpdateDTO[];
+  onEdit: (tercero: TerceroUpdateDTO) => void;
   isServer?: boolean;
   paginationProps?: any;
   searchTerm?: string;
@@ -24,7 +24,7 @@ interface TercerosListProps {
 }
 
 const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, paginationProps, searchTerm: externalSearchTerm, onSearchChange }) => {
-  const [localData, setLocalData] = useState<TerceroupdateDTO[]>(Array.isArray(data) ? data : []);
+  const [localData, setLocalData] = useState<TerceroUpdateDTO[]>(Array.isArray(data) ? data : []);
 
   useEffect(() => {
     if (data && (data as any).items) {
@@ -65,7 +65,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, pag
     message?: string;
   }>({ show: false });
 
-  const exportConfig: ExportConfig<TerceroupdateDTO> = {
+  const exportConfig: ExportConfig<TerceroUpdateDTO> = {
     filename: `Reporte_Terceros`,
     data: filteredData,
     columns: [
@@ -103,7 +103,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, pag
     {
       header: "Terceros",
       className: "min-w-[300px] sticky left-0 bg-white group-hover:bg-slate-50 z-20 transition-colors",
-      render: (t: TerceroupdateDTO) => {
+      render: (t: TerceroUpdateDTO) => {
         const esNatural = t.tipoPersonaId === 1;
         return (
           <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, pag
     {
       header: "Identificación",
       className: "min-w-[140px]",
-      render: (t: TerceroupdateDTO) => (
+      render: (t: TerceroUpdateDTO) => (
         <div className="flex flex-col">
           <span className="font-bold text-slate-700 text-xs">{t.identificacion}</span>
           <span className="text-[10px] text-slate-400 font-black uppercase">DV: {t.dv}</span>
@@ -150,7 +150,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, pag
     {
       header: "Acciones",
       className: "text-right sticky right-0 bg-white group-hover:bg-slate-50 z-20 transition-colors",
-      render: (t: TerceroupdateDTO) => (
+      render: (t: TerceroUpdateDTO) => (
         <div className="flex justify-end gap-2">
           {/* Botón Editar Reutilizable */}
           <button

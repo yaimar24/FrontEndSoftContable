@@ -3,6 +3,7 @@ import autoTable from "jspdf-autotable";
 import type { FacturaVentaReadDTO } from "../domain/models/Venta";
 import type { FacturaCompraReadDTO } from "../domain/models/FacturaCompra";
 import { getNombreColegioFromToken, getLogoUrlFromToken } from "./jwt";
+import { formatDate, formatCurrencyDecimals as formatCurrency } from "./formatters";
 
 export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaCompraReadDTO, token: string | null) => {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -20,18 +21,6 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaC
   const telefono = perfilInstitucional.telefono || 'N/A';
   const direccion = perfilInstitucional.direccion || 'N/A';
   const regimenIva = perfilInstitucional.regimenIva?.nombre || 'N/A';
-  
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-CO', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hour12: true
-    }).format(date);
-  };
-  
-  const formatCurrency = (val?: number) => (val || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
 
   // Expiration
   const expirationDate = new Date(factura.fechaElaboracion || new Date());

@@ -25,7 +25,8 @@ export const useCartera = () => {
     try {
       const resp = await carteraService.getCuentasPorCobrar(clienteId, desde, hasta, estado);
       if (resp.success && resp.data) {
-        setCuentas(resp.data);
+        const items = Array.isArray(resp.data) ? resp.data : (resp.data as any).items || [];
+        setCuentas(items);
       } else {
         setError(resp.message || "Error al obtener cuentas por cobrar");
       }

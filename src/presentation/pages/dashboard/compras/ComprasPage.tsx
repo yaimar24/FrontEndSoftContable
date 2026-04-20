@@ -14,23 +14,7 @@ import { DocumentViewerModal } from '../../../components/organisms/DocumentViewe
 import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import PageHeader from "../../../components/organisms/PageHeader";
 import { useTutorial } from '../../../../application/context/TutorialContext';
-
-const getEstadoInfo = (estado: string | number) => {
-  const map: Record<string, { label: string, color: string }> = {
-    '0': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-    '2': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
-    '3': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-    '4': { label: 'Parcial', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    '5': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-    
-    'Borrador': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-    'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
-    'Pendiente': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
-    'Parcial': { label: 'Parcial', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    'Pagado': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-  };
-  return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
-};
+import { getCompraEstadoInfo } from '../../../../utils/statusHelpers';
 
 const ComprasPage: React.FC = () => {
   const navigate = useNavigate();
@@ -218,7 +202,7 @@ const ComprasPage: React.FC = () => {
     {
       header: "Estado",
       render: (v: FacturaCompraReadDTO) => {
-        const info = getEstadoInfo(v.estadoId);
+        const info = getCompraEstadoInfo(v.estadoId);
         return (
           <span className={`px-3 py-1 text-[9px] font-black uppercase border rounded-lg ${info.color}`}>
             {info.label}

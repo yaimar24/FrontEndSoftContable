@@ -23,7 +23,7 @@ export interface TerceroCreateDTO {
   responsabilidadesFiscalesIds: number[];
   activo?: boolean;
 }
-export interface TerceroupdateDTO {
+export interface TerceroUpdateDTO {
   id: string; 
   tipoPersonaId: number;
   tipoIdentificacionId: number;
