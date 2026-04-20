@@ -30,7 +30,7 @@ const UsuarioFormPage: React.FC<Props> = ({ initialData, isSelf = false, onBack 
 
   const [modulosDisponibles, setModulosDisponibles] = useState<ModuloPlan[]>([]);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [_error, setError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
