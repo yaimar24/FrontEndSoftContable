@@ -17,17 +17,16 @@ import { useTutorial } from '../../../../application/context/TutorialContext';
 
 const getEstadoInfo = (estado: string | number) => {
   const map: Record<string, { label: string, color: string }> = {
-    '0': { label: 'Borrador', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-    '1': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-    '2': { label: 'Anulada', color: 'bg-red-50 text-red-600 border-red-100' },
+    '0': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    '2': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
     '3': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
     '4': { label: 'Parcial', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     '5': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
     
     'Borrador': { label: 'Borrador', color: 'bg-slate-100 text-slate-600 border-slate-200' },
-    'Registrada': { label: 'Registrada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
     'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
     'Pendiente': { label: 'Pendiente', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+    'Parcial': { label: 'Parcial', color: 'bg-blue-50 text-blue-600 border-blue-100' },
     'Pagado': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
   };
   return map[estado?.toString()] || { label: estado?.toString() || 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
@@ -204,6 +203,15 @@ const ComprasPage: React.FC = () => {
       )
     },
     {
+      header: "Saldo",
+      render: (v: FacturaCompraReadDTO) => {
+        const saldo = v.saldo ?? 0;
+        return (
+          <span className={`font-bold ${saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>${saldo.toLocaleString()}</span>
+        );
+      }
+    },
+    {
       header: "Estado",
       render: (v: FacturaCompraReadDTO) => {
         const info = getEstadoInfo(v.estadoId);
@@ -231,28 +239,21 @@ const ComprasPage: React.FC = () => {
               >
                 <CheckCircle size={15} strokeWidth={2.5} />
               </button>
-              <button 
-                onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })} 
-                className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" 
-                title="Anular"
-              >
-                <XCircle size={15} strokeWidth={2.5} />
-              </button>
             </>
           )}
-          {v.estadoId === 1 && (
-            <>
-              <button onClick={() => setSelectedInvoice(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Vista Previa PDF">
-                <Eye size={15} strokeWidth={2.5} />
-              </button>
-              <button
-                onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })}
-                className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
-                title="Anular"
-              >
-                <XCircle size={15} strokeWidth={2.5} />
-              </button>
-            </>
+          {[0, 3, 4, 5].includes(v.estadoId) && (
+            <button 
+              onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })} 
+              className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" 
+              title="Anular"
+            >
+              <XCircle size={15} strokeWidth={2.5} />
+            </button>
+          )}
+          {v.estadoId !== 0 && v.estadoId !== 2 && (
+            <button onClick={() => setSelectedInvoice(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Vista Previa PDF">
+              <Eye size={15} strokeWidth={2.5} />
+            </button>
           )}
           <button onClick={() => navigate(`/dashboard/factura-compra/${v.id}`)} className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-700 hover:text-white transition-all shadow-sm" title="Ver Detalles de Compra">
             <ArrowRight size={15} strokeWidth={2.5} />

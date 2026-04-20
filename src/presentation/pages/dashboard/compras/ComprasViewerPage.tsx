@@ -68,7 +68,7 @@ const ComprasViewerPage: React.FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    window.open(`/purchase-invoice/${compra.id}`, '_blank');
   };
 
   const handleDownloadPDF = async () => {
@@ -95,9 +95,10 @@ const ComprasViewerPage: React.FC = () => {
   // Determine Badge Colors
   let badgeColor = "bg-slate-100 text-slate-600";
   if (compra.estadoId === 0) badgeColor = "bg-blue-100 text-blue-600"; // Borrador
-  if (compra.estadoId === 1) badgeColor = "bg-emerald-100 text-emerald-600"; // Registrada
   if (compra.estadoId === 2) badgeColor = "bg-red-100 text-red-600"; // Anulada
-  if (compra.estadoId === 5 || compra.estadoNombre === 'Pagada') badgeColor = "bg-teal-100 text-teal-600"; // Pagada
+  if (compra.estadoId === 3) badgeColor = "bg-amber-100 text-amber-600"; // Pendiente
+  if (compra.estadoId === 4) badgeColor = "bg-blue-100 text-blue-600"; // Parcial
+  if (compra.estadoId === 5) badgeColor = "bg-emerald-100 text-emerald-600"; // Pagado
 
   const formatCurrency = (value: number | undefined | null) => {
     if (value === undefined || value === null) return '$ 0';
@@ -147,7 +148,7 @@ const ComprasViewerPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {[1, 3, 4].includes(compra.estadoId) && (compra.saldo ?? compra.totalNeto) > 0 && (
+          {[3, 4].includes(compra.estadoId) && (compra.saldo ?? compra.totalNeto) > 0 && (
             <Button
               variant="secondary"
               icon={Banknote}
@@ -165,12 +166,9 @@ const ComprasViewerPage: React.FC = () => {
               <Button variant="success" onClick={() => setConfirmModal({ show: true, action: 'registrar' })} icon={CheckCircle}>
                 Registrar
               </Button>
-              <Button variant="danger" onClick={() => setConfirmModal({ show: true, action: 'anular' })} icon={XCircle}>
-                Anular
-              </Button>
             </>
           )}
-          {compra.estadoId === 1 && (
+          {[0, 3, 4, 5].includes(compra.estadoId) && (
             <Button variant="danger" onClick={() => setConfirmModal({ show: true, action: 'anular' })} icon={XCircle}>
               Anular
             </Button>
