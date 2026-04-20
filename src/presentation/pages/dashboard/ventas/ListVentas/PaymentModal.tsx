@@ -19,6 +19,7 @@ interface PaymentModalProps {
 export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, factura, onSuccess }) => {
   const [selectedMedio, setSelectedMedio] = useState('');
   const [monto, setMonto] = useState('');
+  const [montoDisplay, setMontoDisplay] = useState('');
   const [fechaRecibo, setFechaPago] = useState(() => new Date().toISOString().split('T')[0]);
   const [referencia, setReferencia] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -28,6 +29,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
   const [status, setStatus] = useState<{ show: boolean, type: 'error' | 'success', message: string }>({ show: false, type: 'success', message: '' });
   const [loading, setLoading] = useState(false);
   const [mediosPago, setMediosPago] = useState<{ id: number; nombre: string }[]>([]);
+
+  const formatWithDots = (val: string) => {
+    const num = val.replace(/\D/g, '');
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
+  const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\./g, '');
+    if (raw === '' || /^\d+$/.test(raw)) {
+      setMonto(raw);
+      setMontoDisplay(formatWithDots(raw));
+    }
+  };
 
   useEffect(() => {
     getParametrosFacturacion().then(res => {
@@ -41,8 +55,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
 
   useEffect(() => {
     if (isOpen) {
-      const initialMonto = factura.saldo.toString();
+      const initialMonto = Math.round(factura.saldo).toString();
       setMonto(initialMonto);
+      setMontoDisplay(formatWithDots(initialMonto));
       setFechaPago(new Date().toISOString().split('T')[0]);
       setReferencia('');
       setObservaciones('');
@@ -139,9 +154,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, fac
                 <InputField
                     label="Monto a Pagar"
                     name="monto"
-                    type="number"
-                    value={monto}
-                    onChange={e => setMonto(e.target.value)}
+                    type="text"
+                    value={montoDisplay}
+                    onChange={handleMontoChange}
                     icon={DollarSign}
                     required
                 />
