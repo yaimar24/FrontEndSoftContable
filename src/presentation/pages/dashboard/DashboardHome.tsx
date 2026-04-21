@@ -1,274 +1,264 @@
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Calculator, Users, ShoppingCart, ShoppingBag, Package, Building2, TrendingUp, TrendingDown, Activity, Wallet, FileText } from 'lucide-react';
-import { useAuth } from '../../../application/hooks/useAuth';
-import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../utils/jwt';
+import { useDeferredValue, useState } from 'react';
 import { motion } from 'framer-motion';
-import { getDashboardDatos, type DashboardDTO } from '../../../data/services/dashboard/dashboardService';
-import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip } from 'recharts';
-import LoadingOverlay from '../../components/shared/LoadingOverlay';
+import { useNavigate } from 'react-router-dom';
+import {
+  ArrowUpRight,
+  BookOpen,
+  Building2,
+  CalendarDays,
+  Clock3,
+  FolderTree,
+  History,
+  Landmark,
+  Package,
+  Receipt,
+  Search,
+  Shield,
+  ShoppingBag,
+  User,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
+import { useAuth } from '../../../application/hooks/useAuth';
+import { useModuleAccess } from '../../../application/hooks/useModuleAccess';
+import { usePerfil } from '../../../application/context/PerfilContext';
+import type { Colegio } from '../../../domain/models/Colegio';
+import { getDashboardRecentActivity } from '../../../utils/dashboardRecentActivity';
+import { getLogoUrlFromToken, getNombreColegioFromToken, getRoleFromToken } from '../../../utils/jwt';
 
-const formatCurrency = (val: number) => 
-  new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+interface ShortcutItem {
+  path: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
 
-const formatShortDate = (dateStr: string) => {
-  const d = new Date(dateStr);
-  return `${d.getDate()} ${d.toLocaleString('es-CO', { month: 'short' }).substring(0, 3)} ${d.getFullYear()}`;
+const shortcutItems: ShortcutItem[] = [
+  { path: '/dashboard/perfil', title: 'Perfil', description: 'Ajusta la información institucional.', icon: User },
+  { path: '/dashboard/terceros', title: 'Terceros', description: 'Consulta clientes y proveedores.', icon: Users },
+  { path: '/dashboard/puc', title: 'PUC', description: 'Organiza tu plan de cuentas.', icon: FolderTree },
+  { path: '/dashboard/productos', title: 'Productos', description: 'Administra tu catálogo.', icon: Package },
+  { path: '/dashboard/ventas', title: 'Ventas', description: 'Crea y revisa facturas.', icon: ShoppingBag },
+  { path: '/dashboard/factura-compra', title: 'Compras', description: 'Lleva el control de compras.', icon: Receipt },
+  { path: '/dashboard/cartera', title: 'Cartera', description: 'Haz seguimiento a tus cobros.', icon: Landmark },
+  { path: '/dashboard/asientos-contables', title: 'Contabilidad', description: 'Gestiona comprobantes y auxiliares.', icon: BookOpen },
+  { path: '/dashboard/seguridad', title: 'Seguridad', description: 'Configura usuarios y permisos.', icon: Shield },
+];
+
+const parsePerfilInstitucional = (): Partial<Colegio> => {
+  try {
+    const storedPerfil = localStorage.getItem('perfilInstitucional');
+    return storedPerfil ? JSON.parse(storedPerfil) : {};
+  } catch {
+    return {};
+  }
+};
+
+const resolveLogoUrl = (rawLogoUrl: string | null) => {
+  if (!rawLogoUrl) return null;
+  return rawLogoUrl.startsWith('http') ? rawLogoUrl : `${import.meta.env.VITE_API_URL}${rawLogoUrl}`;
+};
+
+const formatRelativeTime = (dateString: string) => {
+  const diffMs = Date.now() - new Date(dateString).getTime();
+  const diffMinutes = Math.max(1, Math.round(diffMs / 60000));
+
+  if (diffMinutes < 60) return `Hace ${diffMinutes} min`;
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return `Hace ${diffHours} h`;
+
+  const diffDays = Math.round(diffHours / 24);
+  return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
 };
 
 const DashboardHome = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
-  
-  const [data, setData] = useState<DashboardDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  const nombreColegio = getNombreColegioFromToken(token) || "Mi Empresa";
-  
-  let perfilInstitucional: any = {};
-  try {
-    const storedPerfil = localStorage.getItem('perfilInstitucional');
-    if (storedPerfil) perfilInstitucional = JSON.parse(storedPerfil);
-  } catch (e) {
-    // Ignorar
-  }
+  const { canNavigateTo, isAdmin } = useModuleAccess();
+  const { rolNombre } = usePerfil();
+  const [moduleSearch, setModuleSearch] = useState('');
 
-  const nombreMostrar = perfilInstitucional?.nombreColegio || nombreColegio;
+  const perfilInstitucional = parsePerfilInstitucional();
+  const nombreColegio = getNombreColegioFromToken(token) || 'Mi Empresa';
+  const nombreMostrar = perfilInstitucional.nombreColegio || nombreColegio;
   const rawLogoUrl = localStorage.getItem('logoUrl') || (token ? getLogoUrlFromToken(token) : null);
-  const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? rawLogoUrl : `${import.meta.env.VITE_API_URL}${rawLogoUrl}`) : null;
+  const logoUrl = resolveLogoUrl(rawLogoUrl);
+  const roleLabel = rolNombre || getRoleFromToken(token) || (isAdmin ? 'Administrador' : 'Usuario');
+  const fechaActual = new Intl.DateTimeFormat('es-CO', { dateStyle: 'long' }).format(new Date());
+  const deferredModuleSearch = useDeferredValue(moduleSearch.trim().toLowerCase());
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchDashboard = async () => {
-      try {
-        const response = await getDashboardDatos();
-        if (isMounted) {
-          if (response.success && response.data) {
-             setData(response.data);
-          }
-          setLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) setLoading(false);
-      }
-    };
-    fetchDashboard();
-    return () => { isMounted = false; };
-  }, []);
+  const visibleModules = shortcutItems.filter((item) => canNavigateTo(item.path));
+  const featuredModules = visibleModules.slice(0, 4);
+  const filteredModules = deferredModuleSearch
+    ? visibleModules.filter((item) => {
+        const searchableText = `${item.title} ${item.description}`.toLowerCase();
+        return searchableText.includes(deferredModuleSearch);
+      })
+    : featuredModules;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
+  const recentActivity = getDashboardRecentActivity()
+    .filter((item) => canNavigateTo(item.path))
+    .slice(0, 4)
+    .map((item) => {
+      const relatedShortcut = shortcutItems.find((shortcut) => item.path.startsWith(shortcut.path));
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
-  };
-
-  if (loading) {
-     return <LoadingOverlay message="Cargando dashboard..." />;
-  }
-
-  const d = data!;
+      return {
+        ...item,
+        icon: relatedShortcut?.icon ?? History,
+        helperText: relatedShortcut?.description ?? 'Visitado recientemente dentro del sistema.',
+      };
+    });
 
   return (
-    <div className="w-full h-full min-h-screen bg-slate-50 overflow-y-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
+    <div className="min-h-full bg-slate-50">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="tuto-dash-header flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white p-6 sm:p-5 rounded-2xl shadow-sm border border-slate-200"
+          className="relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
         >
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-100 rounded-full blur-md transform scale-110"></div>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.09),transparent_60%)]" />
+          <div className="flex items-start gap-4 sm:gap-5">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-900 text-lg font-semibold text-white">
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo Empresa" className="relative h-16 w-16 md:h-20 md:w-20 rounded-full object-cover border-4 border-white shadow-sm bg-white" />
+                <img src={logoUrl} alt="Logo institución" className="h-full w-full object-cover" />
               ) : (
-                <div className="relative h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center border-4 border-white shadow-sm">
-                  <Building2 className="w-8 h-8 text-white" />
-                </div>
+                nombreMostrar.charAt(0).toUpperCase() || <Building2 size={22} />
               )}
             </div>
-            <div>
-              <p className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-1">Panel de Control</p>
-              <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">
-                Hola, {nombreMostrar} 👋
+
+            <div className="relative z-10">
+              <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-medium text-slate-600">
+                Inicio
+              </span>
+              <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                Bienvenido de nuevo, {nombreMostrar}
               </h1>
-              <p className="text-sm font-medium text-slate-500 mt-1">
-                Aquí tienes un resumen de hoy, {new Intl.DateTimeFormat('es-CO', { dateStyle: 'long' }).format(new Date())}.
-              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2.5">
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                  {roleLabel}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                  <CalendarDays size={14} />
+                  {fechaActual}
+                </span>
+                {perfilInstitucional.municipioNombre && (
+                  <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                    {perfilInstitucional.municipioNombre}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </motion.div>
+        </motion.section>
 
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="space-y-5"
-        >
-          {/* Top Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Ventas Mes */}
-            <motion.div variants={itemVariants} className="tuto-dash-ventas bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                <TrendingUp size={120} />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(330px,0.95fr)]">
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm"
+          >
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Exploración</p>
+                <h2 className="mt-2 text-lg font-semibold text-slate-900">Módulos</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Busca más módulos cuando los necesites.
+                </p>
               </div>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Ventas Mes</p>
-              <h3 className="text-3xl font-black text-emerald-600 tracking-tight">{formatCurrency(d.ventas.totalMesActual)}</h3>
-              <div className="mt-4 flex items-center justify-between">
-                <span className={`px-2 py-0.5 rounded-md text-sm font-bold ${d.ventas.porcentajeCambio >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                   {d.ventas.porcentajeCambio >= 0 ? '↑' : '↓'} {Math.abs(d.ventas.porcentajeCambio)}%
-                </span>
-                <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">{d.ventas.cantidadMesActual} facturas</span>
-              </div>
-            </motion.div>
 
-            {/* Compras Mes */}
-            <motion.div variants={itemVariants} className="tuto-dash-compras bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                <TrendingDown size={120} />
-              </div>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Compras Mes</p>
-              <h3 className="text-3xl font-black text-rose-600 tracking-tight">{formatCurrency(d.compras.totalMesActual)}</h3>
-              <div className="mt-4 flex items-center justify-between">
-                <span className={`px-2 py-0.5 rounded-md text-sm font-bold ${d.compras.porcentajeCambio <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                   {d.compras.porcentajeCambio > 0 ? '↑' : '↓'} {Math.abs(d.compras.porcentajeCambio)}%
-                </span>
-                <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">{d.compras.cantidadMesActual} facturas</span>
-              </div>
-            </motion.div>
+              <label className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-500 lg:max-w-sm">
+                <Search size={18} className="shrink-0" />
+                <input
+                  type="text"
+                  value={moduleSearch}
+                  onChange={(event) => setModuleSearch(event.target.value)}
+                  placeholder="Buscar módulos"
+                  className="w-full border-none bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                />
+              </label>
+            </div>
 
-            {/* Cartera */}
-            <motion.div variants={itemVariants} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
-               <div className="absolute -right-4 -top-4 opacity-5">
-                <Wallet size={120} />
-              </div>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Cartera Por Cobrar</p>
-              <h3 className="text-3xl font-black text-blue-600 tracking-tight">{formatCurrency(d.cartera.totalPorCobrar)}</h3>
-              <div className="mt-4 flex flex-col gap-2">
-                 <div className="flex gap-2">
-                    <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">{d.cartera.facturasPendientes} Pendientes</span>
-                    <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">{d.cartera.facturasConAbono} Con Abono</span>
-                 </div>
-                 <p className="text-xs font-bold text-slate-500">Recaudado este mes: <span className="text-emerald-600">{formatCurrency(d.cartera.totalRecaudadoMes)}</span></p>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Chart Area */}
-            <motion.div variants={itemVariants} className="col-span-1 lg:col-span-3 bg-white p-6 sm:p-5 rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[300px]">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
-                 <h2 className="text-sm font-black text-slate-400 tracking-widest uppercase flex items-center gap-2">
-                    <Activity size={18} className="text-indigo-500" />
-                    Dinámica de Ventas y Compras (Últimos 6 Meses)
-                 </h2>
-                 <div className="flex gap-4 mt-4 sm:mt-0 text-xs font-bold text-slate-500">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"></span>Ventas</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-rose-500"></span>Compras</div>
-                 </div>
-              </div>
-              <div className="h-64 sm:h-72 w-full">
-                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={d.resumenMensual.map(r => ({ ...r, mesNombre: r.mesNombre.substring(0,3).toUpperCase() }))} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                       <Tooltip
-                          cursor={{ fill: 'transparent' }}
-                          formatter={(value: any) => formatCurrency(Number(value) || 0)}
-                          contentStyle={{ borderRadius: '16px', border: '1px solid #e2e8f0', fontWeight: 'bold' }}
-                       />
-                       <XAxis dataKey="mesNombre" tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 'bold' }} axisLine={false} tickLine={false} />
-                       <Bar dataKey="totalVentas" fill="#10b981" radius={[6, 6, 6, 6]} barSize={30} />
-                       <Bar dataKey="totalCompras" fill="#f43f5e" radius={[6, 6, 6, 6]} barSize={30} />
-                    </BarChart>
-                 </ResponsiveContainer>
-              </div>
-            </motion.div>
-
-            {/* List Activity */}
-            <motion.div variants={itemVariants} className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">Últimos Movimientos</h2>
-              </div>
-              <div className="p-0">
-                <div className="divide-y divide-slate-100 max-h-[350px] overflow-y-auto">
-                  {d.ultimosMovimientos.length === 0 ? (
-                    <div className="py-12 text-center text-slate-400">
-                      <FileText size={32} className="mx-auto mb-3 opacity-20" />
-                      <p className="text-sm font-medium">Aún no hay actividad registrada.</p>
-                    </div>
-                  ) : (
-                    d.ultimosMovimientos.map((act, i) => {
-                      const isVenta = act.tipo === 'VENTA';
-                      const isCompra = act.tipo === 'COMPRA';
-                      return (
-                      <div key={i} className="flex items-center justify-between p-5 hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 ${isVenta ? 'text-emerald-500' : isCompra ? 'text-rose-500' : 'text-blue-500'}`}>
-                             {isVenta ? <ShoppingCart size={18}/> : isCompra ? <ShoppingBag size={18}/> : <Calculator size={18} />}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                               <p className="font-bold text-slate-800 text-sm tracking-tight">{act.numero}</p>
-                               <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded-md ${isVenta ? 'bg-emerald-50 text-emerald-600' : isCompra ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'}`}>{act.tipo}</span>
-                            </div>
-                            <p className="text-xs font-medium text-slate-500 mt-0.5">{act.terceroNombre} • {formatShortDate(act.fecha)}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                           <span className={`font-black text-sm block ${isCompra ? 'text-rose-600' : 'text-slate-800'}`}>
-                              {isVenta ? '+' : isCompra ? '-' : ''}{formatCurrency(act.monto)}
-                           </span>
-                           <span className="text-[10px] font-bold text-slate-400 uppercase">{act.estado}</span>
-                        </div>
-                      </div>
-                    )})
-                  )}
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredModules.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500 sm:col-span-2 xl:col-span-3">
+                  {deferredModuleSearch
+                    ? 'No encontramos módulos que coincidan con esa búsqueda.'
+                    : 'No hay módulos visibles para mostrar en este inicio.'}
                 </div>
-              </div>
-            </motion.div>
+              ) : (
+                filteredModules.map((item) => (
+                  <button
+                    key={item.path}
+                    type="button"
+                    onClick={() => navigate(item.path)}
+                    className="group rounded-3xl border border-slate-200 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm"
+                  >
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                      <item.icon size={18} />
+                    </div>
+                    <h3 className="mt-4 text-sm font-semibold text-slate-900">{item.title}</h3>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">{item.description}</p>
+                    <div className="mt-4 flex items-center gap-2 text-xs font-medium text-slate-400 transition-colors group-hover:text-slate-700">
+                      Abrir módulo
+                      <ArrowUpRight size={14} />
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
 
-            {/* Side Modules & Counters */}
-            <motion.div variants={itemVariants} className="space-y-4">
-              {/* Counters */}
-              <div className="grid grid-cols-1 gap-4">
-                 <div onClick={() => navigate('/dashboard/terceros')} className="cursor-pointer bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between hover:-translate-y-1 transition-transform group">
-                   <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                         <Users size={18} />
-                      </div>
-                      <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">Clientes</span>
-                   </div>
-                   <span className="text-xl font-black text-slate-800">{d.contadores.totalClientes}</span>
-                 </div>
-                 
-                 <div onClick={() => navigate('/dashboard/terceros')} className="cursor-pointer bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between hover:-translate-y-1 transition-transform group">
-                   <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                         <Building2 size={18} />
-                      </div>
-                      <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">Proveedores</span>
-                   </div>
-                   <span className="text-xl font-black text-slate-800">{d.contadores.totalProveedores}</span>
-                 </div>
+          </motion.section>
 
-                 <div onClick={() => navigate('/dashboard/productos')} className="cursor-pointer bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between hover:-translate-y-1 transition-transform group">
-                   <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                         <Package size={18} />
-                      </div>
-                      <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">Productos</span>
-                   </div>
-                   <span className="text-xl font-black text-slate-800">{d.contadores.totalProductos}</span>
-                 </div>
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Actividad reciente</p>
+                <h2 className="mt-2 text-lg font-semibold text-slate-900">Lo último que revisaste</h2>
               </div>
-            </motion.div>
-          </div>
-        </motion.div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <Clock3 size={18} />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3">
+              {recentActivity.length === 0 ? (
+                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm leading-6 text-slate-500">
+                  Cuando empieces a navegar por módulos, aquí aparecerán tus accesos recientes para retomar más rápido.
+                </div>
+              ) : (
+                recentActivity.map((item) => (
+                  <button
+                    key={item.path}
+                    type="button"
+                    onClick={() => navigate(item.path)}
+                    className="group flex w-full items-start gap-3 rounded-3xl border border-slate-200 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                      <item.icon size={18} />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-sm font-semibold text-slate-900">{item.label}</p>
+                        <span className="shrink-0 text-xs font-medium text-slate-400">{formatRelativeTime(item.visitedAt)}</span>
+                      </div>
+                      <p className="mt-1 text-sm leading-6 text-slate-500">{item.helperText}</p>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </motion.section>
+        </div>
       </div>
     </div>
   );

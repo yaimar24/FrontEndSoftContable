@@ -9,21 +9,21 @@ interface FetchOptions extends RequestInit {
 }
 
 /**
- * Cliente API que devuelve siempre la estructura ApiResponse del backend
+ * Cliente API genérico con tipado fuerte.
  * @returns ApiResponse<T> Estructura con success, message y data
  */
-export const apiClient = async (
+export const apiClient = async <T = unknown>(
   endpoint: string,
   options: FetchOptions = {}
-): Promise<ApiResponse<any>> => {
+): Promise<ApiResponse<T>> => {
   const {
     useAuth = true,
     skipGlobalLoader = false,
     ...customOptions
   } = options;
 
-  const headers: HeadersInit = {
-    ...customOptions.headers,
+  const headers: Record<string, string> = {
+    ...(customOptions.headers as Record<string, string>),
   };
 
   if (!skipGlobalLoader) {
@@ -31,16 +31,15 @@ export const apiClient = async (
   }
 
   try {
-    // 🔐 Token automático
     if (useAuth) {
       const token = localStorage.getItem("token");
       if (token) {
-        (headers as any).Authorization = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
       }
     }
 
     if (!(customOptions.body instanceof FormData)) {
-      (headers as any)["Content-Type"] = "application/json";
+      headers["Content-Type"] = "application/json";
     }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -48,49 +47,43 @@ export const apiClient = async (
       headers,
     });
 
-    // 🚫 401 global - redirigir al login
     if (response.status === 401) {
       localStorage.removeItem("token");
       window.location.href = "/login";
       return {
         success: false,
         message: "Sesión expirada. Redirigiendo al login...",
-      };
+      } as ApiResponse<T>;
     }
 
-    // Parsear respuesta
-    const data: ApiResponse<any> = await response.json().catch(() => ({
+    const data = await response.json().catch(() => ({
       success: false,
       message: `Error HTTP ${response.status}: ${response.statusText}`,
     }));
 
-    // Si la respuesta ya tiene estructura ApiResponse, devolverla
     if (data?.success !== undefined) {
-      return data;
+      return data as ApiResponse<T>;
     }
 
-    // Si no es exitosa pero hay estructura, devolver como está
     if (!response.ok) {
       return {
         success: false,
         message: data?.message || `Error ${response.status}: ${response.statusText}`,
         data: data,
-      };
+      } as ApiResponse<T>;
     }
 
-    // Si es exitosa y no tiene estructura, asumir que es data
     return {
       success: true,
       message: "",
       data,
-    };
+    } as ApiResponse<T>;
   } catch (error) {
-    const message = (error as Error)?.message || "Error desconocido";
-    console.error("API Error:", error);
+    const message = (error as Error)?.message || "Error de conexión";
     return {
       success: false,
       message,
-    };
+    } as ApiResponse<T>;
   } finally {
     if (!skipGlobalLoader) {
       loadingController.hide();

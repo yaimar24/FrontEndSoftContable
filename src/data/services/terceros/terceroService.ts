@@ -1,6 +1,7 @@
 import { apiClient } from "../../api/apiClient";
 import type { TerceroCreateDTO, TerceroUpdateDTO } from "../../../domain/models/Tercero";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
+import { buildQueryParams } from "../../../utils/queryBuilder";
 
 export const vincularTercero = async (data: TerceroCreateDTO): Promise<ApiResponse<TerceroUpdateDTO[]>> => {
   return await apiClient("/api/Tercero/vincular", {
@@ -10,12 +11,8 @@ export const vincularTercero = async (data: TerceroCreateDTO): Promise<ApiRespon
 };
 
 export const getTercerosByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
-  const queryParams = new URLSearchParams({
-    page: page.toString(),
-    pageSize: pageSize.toString(),
-    ...(searchTerm && { searchTerm }),
-  });
-  return await apiClient(`/api/Tercero?${queryParams}`);
+  const query = buildQueryParams({ page, pageSize, searchTerm: searchTerm || undefined });
+  return await apiClient(`/api/Tercero?${query}`);
 };
 
 export const updateTercero = async (id: string | number, data: TerceroUpdateDTO): Promise<ApiResponse<string>> => {
