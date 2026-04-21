@@ -1,14 +1,11 @@
 import { apiClient } from "../../api/apiClient";
 import type { ProductoReadDTO, ProductoCreateDTO } from "../../../domain/models/Producto";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
+import { buildQueryParams } from "../../../utils/queryBuilder";
 
 export const getProductosByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
-  const queryParams = new URLSearchParams({
-    page: page.toString(),
-    pageSize: pageSize.toString(),
-    ...(searchTerm && { searchTerm }),
-  });
-  return await apiClient(`/api/Producto?${queryParams}`);
+  const query = buildQueryParams({ page, pageSize, searchTerm: searchTerm || undefined });
+  return await apiClient(`/api/Producto?${query}`);
 };
 
 export const crearProducto = async (data: ProductoCreateDTO): Promise<ApiResponse<string>> => {

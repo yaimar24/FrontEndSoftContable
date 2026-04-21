@@ -2,6 +2,7 @@ import { apiClient } from "../../api/apiClient";
 import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
 import type { FacturaVentaCreateDTO, FacturaVentaReadDTO, ReciboCajaCreate, ReciboCajaRead } from "../../../domain/models/Venta";
 import type { PucNodo } from "../../../domain/models/Puc";
+import { buildQueryParams } from "../../../utils/queryBuilder";
 
 export const getMediosPago = async (): Promise<ApiResponse<PucNodo[]>> => {
   return await apiClient("/api/puc/medios-pago?codigoRaiz=11");
@@ -26,12 +27,8 @@ export const getVentaById = async (id: number): Promise<ApiResponse<FacturaVenta
 };
 
 export const getVentasByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
-  const queryParams = new URLSearchParams({
-    page: page.toString(),
-    pageSize: pageSize.toString(),
-    ...(searchTerm && { searchTerm }),
-  });
-  return await apiClient(`/api/FacturaVenta?${queryParams}`);
+  const query = buildQueryParams({ page, pageSize, searchTerm: searchTerm || undefined });
+  return await apiClient(`/api/FacturaVenta?${query}`);
 };
 
 export const createVenta = async (venta: FacturaVentaCreateDTO, idempotencyKey?: string): Promise<ApiResponse<FacturaVentaReadDTO>> => {
