@@ -34,7 +34,7 @@ interface MenuItem {
   path: string;
   name: string;
   icon: LucideIcon;
-  moduloId: number;
+  moduloId?: number;
   hasSubItems?: boolean;
   isSubItem?: boolean;
   parent?: string;
@@ -43,14 +43,14 @@ interface MenuItem {
 type SectionKey = "principal" | "operacion" | "administracion";
 
 const MENU_ITEMS: MenuItem[] = [
-  { path: "/dashboard", name: "Inicio", icon: LayoutDashboard, moduloId: 1 },
+  { path: "/dashboard", name: "Inicio", icon: LayoutDashboard },
   { path: "/dashboard/perfil", name: "Perfil", icon: User, moduloId: 8 },
   { path: "/dashboard/terceros", name: "Terceros", icon: Users, moduloId: 5 },
   { path: "/dashboard/puc", name: "Cuentas(puc)", icon: FolderTree, moduloId: 7 },
   { path: "/dashboard/productos", name: "Productos", icon: Package, moduloId: 6 },
   { path: "/dashboard/ventas", name: "Ventas", icon: ShoppingBag, hasSubItems: true, moduloId: 2 },
   { path: "/dashboard/ventas/recibos", name: "Recibos", icon: ShoppingBag, isSubItem: true, parent: "/dashboard/ventas", moduloId: 2 },
-  { path: "/dashboard/cartera", name: "Cartera", icon: Landmark, moduloId: 2 },
+  { path: "/dashboard/cartera", name: "Cartera", icon: Landmark, moduloId: 10 },
   { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt, hasSubItems: true, moduloId: 3 },
   { path: "/dashboard/factura-compra/egresos", name: "Egresos", icon: Receipt, isSubItem: true, parent: "/dashboard/factura-compra", moduloId: 3 },
   { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true, moduloId: 4 },
@@ -167,6 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {
 
   const visibleMenuItems = MENU_ITEMS.filter((item) => {
     if (isAdmin) return true;
+    if (!item.moduloId) return true;
     return userModulos.includes(item.moduloId);
   });
 
