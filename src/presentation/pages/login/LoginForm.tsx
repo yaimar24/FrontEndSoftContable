@@ -102,6 +102,7 @@ const LoginForm = () => {
             placeholder="ejemplo@colegio.edu.co"
             icon={Mail}
             required
+            autoComplete="email"
           />
 
           <InputField
@@ -116,6 +117,7 @@ const LoginForm = () => {
             showPassword={showPassword}
             setShowPassword={setShowPassword}
             required
+            autoComplete="current-password"
           />
 
           {/* Botón Login */}
