@@ -1,4 +1,5 @@
 import type { User } from "./User";
+import type { ModuloPlan } from "./Seguridad";
 
 export interface Departamento {
   id: number;
@@ -72,6 +73,8 @@ export interface Colegio {
   tributoId: number;
   tributo?: Tributo;
   planSeleccionado: string;
+  planNombre?: string;
+  modulosDelPlan?: ModuloPlan[];
   logoPath?: string;
   archivoDianPath?: string;
   telefono?: string;

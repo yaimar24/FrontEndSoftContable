@@ -8,6 +8,7 @@ import Button from "../../../components/atoms/Button";
 import { SeccionDatosBasicos } from "./section/SeccionDatosBasicos";
 import { SeccionFiscal } from "./section/SeccionFiscal";
 import { SeccionRepresentante } from "./section/SeccionRepresentante";
+import { SeccionPlan } from "./section/SeccionPlan";
 
 import { usePerfilForm } from "../../../../application/hooks/usePerfilForm";
 import type { Parametros } from "../../../../domain/models/Parametros";
@@ -94,6 +95,12 @@ const PerfilPage: React.FC = () => {
           }
         />
       </div>
+
+      {/* Plan */}
+      <SeccionPlan
+        planNombre={formData.planNombre}
+        modulosDelPlan={formData.modulosDelPlan}
+      />
 
       {/* Form Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 opacity-100 items-start">
