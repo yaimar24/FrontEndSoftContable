@@ -111,7 +111,8 @@ export const useCartera = () => {
     try {
       const resp = await carteraService.getResumenPorCliente();
       if (resp.success && resp.data) {
-        setResumenClientes(resp.data);
+        const items = Array.isArray(resp.data) ? resp.data : (resp.data as any).items || [];
+        setResumenClientes(items);
       } else {
         setError(resp.message || "Error al obtener resumen por cliente");
       }

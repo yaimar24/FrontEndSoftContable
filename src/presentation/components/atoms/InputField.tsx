@@ -21,6 +21,7 @@ interface InputFieldProps {
   min?: number | string;
   max?: number | string;
   step?: number | string;
+  autoComplete?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -43,6 +44,7 @@ const InputField: React.FC<InputFieldProps> = ({
   min,
   max,
   step,
+  autoComplete,
 }) => {
 
   // Filtro de teclado para proteger el campo
@@ -100,6 +102,7 @@ const InputField: React.FC<InputFieldProps> = ({
           `}
           required={required}
           disabled={disabled}
+          autoComplete={autoComplete}
         />
 
         {/* Toggle password */}
