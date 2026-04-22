@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Lock, ShieldCheck, Upload } from "lucide-react";
 import InputField from "../../../components/atoms/InputField";
-import { validators } from "../../../../utils/validators";
+import { validators, type ValidatorFn } from "../../../../utils/validators";
 import { validateForm } from "../../../../utils/validateForm";
 import type { RegistroFormData } from "../RegisterForm";
 import Button from "../../../components/atoms/Button";
@@ -38,8 +38,8 @@ const Step3Account: React.FC<Step3Props> = ({
       : null;
 
   // Validación de contraseñas
-  const passwordsMatch = () => (_value: string, form: RegistroFormData) =>
-    form.password !== form.confirmPassword
+  const passwordsMatch = (): ValidatorFn => (_value: unknown, form?: Record<string, unknown>) =>
+    form?.password !== form?.confirmPassword
       ? "Las contraseñas no coinciden"
       : null;
 
@@ -69,12 +69,12 @@ const Step3Account: React.FC<Step3Props> = ({
   // Manejar submit
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const validationErrors = validateForm(localFormData, schema);
+    const validationErrors = validateForm(localFormData as unknown as Record<string, unknown>, schema);
 
     if (Object.keys(validationErrors).length === 0) {
       onSubmit(localFormData); // Enviar datos al parent
     } else {
-      setErrors(validationErrors);
+      setErrors(validationErrors as Record<string, string>);
     }
   };
 

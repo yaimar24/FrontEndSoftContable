@@ -38,7 +38,7 @@ const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, pr
   ];
 
   const handleNext = () => {
-    const errs = validateForm(formData, schema);
+    const errs = validateForm(formData as unknown as Record<string, unknown>, schema);
     if (Object.keys(errs).length === 0) {
       setErrors({});
       nextStep();

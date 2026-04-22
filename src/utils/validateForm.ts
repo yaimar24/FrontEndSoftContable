@@ -4,7 +4,7 @@ type Schema<T> = {
   [K in keyof T]?: ValidatorFn[];
 };
 
-export const validateForm = <T extends Record<string, unknown>>(
+export const validateForm = <T extends object>(
   formData: T,
   schema: Schema<T>
 ) => {
@@ -13,8 +13,8 @@ export const validateForm = <T extends Record<string, unknown>>(
   Object.entries(schema).forEach(([field, rules]) => {
     const value = formData[field as keyof T];
 
-    for (const rule of rules ?? []) {
-      const error = rule(value, formData);
+    for (const rule of (rules ?? []) as ValidatorFn[]) {
+      const error = rule(value, formData as Record<string, unknown>);
       if (error) {
         errors[field as keyof T] = error;
         break;

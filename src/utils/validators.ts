@@ -14,24 +14,23 @@ export const validators = {
   minLength:
     (len: number, msg?: string): ValidatorFn =>
     (value) =>
-      value && value.length < len ? msg || `Mínimo ${len} caracteres` : null,
+      value && String(value).length < len ? msg || `Mínimo ${len} caracteres` : null,
 
   strongPassword:
     (msg = "Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&)."): ValidatorFn =>
     (value) => {
       if (!value) return null;
-      // Expresión regular para contraseña segura
       const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-      return !strongRegex.test(value) ? msg : null;
+      return !strongRegex.test(String(value)) ? msg : null;
     },
 
   onlyNumbers:
     (msg = "Solo números"): ValidatorFn =>
     (value) =>
-      value && !/^\d+$/.test(value) ? msg : null,
+      value && !/^\d+$/.test(String(value)) ? msg : null,
 
   email:
     (msg = "Correo electrónico inválido"): ValidatorFn =>
     (v) =>
-      v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? msg : null,
+      v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v)) ? msg : null,
 };

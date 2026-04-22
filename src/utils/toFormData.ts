@@ -12,9 +12,10 @@ export const toFormData = (obj: unknown, formData: FormData = new FormData(), pa
       toFormData(element, formData, `${parentKey}[${index}]`);
     });
   } else if (typeof obj === 'object' && !(obj instanceof Date)) {
-    Object.keys(obj).forEach((key) => {
+    const record = obj as Record<string, unknown>;
+    Object.keys(record).forEach((key) => {
       const fullKey = parentKey ? `${parentKey}.${key}` : key;
-      toFormData(obj[key], formData, fullKey);
+      toFormData(record[key], formData, fullKey);
     });
   } else {
     // Para valores primitivos (string, number, boolean)

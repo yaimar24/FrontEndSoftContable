@@ -164,7 +164,7 @@ const ProductosPage = () => {
           />
         ) : (
           <ProductosCreatePage
-            initialData={selectedProducto}
+            initialData={selectedProducto as unknown as Record<string, unknown> | undefined}
             onBack={handleBackToList}
           />
         )}

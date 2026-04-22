@@ -96,7 +96,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
   useEffect(() => {
     if (condicionPago === 'CONTADO' && !formData.esCredito) {
-      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: null, monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observaciones: "" };
+      const p = formData.pagos && formData.pagos.length > 0 ? formData.pagos[0] : { medioPagoId: 1, monto: 0, fechaRecibo: formData.fechaElaboracion, referencia: "", observaciones: "" };
       handlePagosChange([{ ...p, monto: currentTotal }]);
     } else if (condicionPago === 'CREDITO') {
       handlePagosChange([]);
