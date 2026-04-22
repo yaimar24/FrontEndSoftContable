@@ -17,7 +17,7 @@ import { SelectorCuentaPuc } from "../../../components/organisms/SelectorCuentaP
 import { useProductosForm } from "../../../../application/hooks/useProductosForm";
 
 interface Props {
-  initialData?: any;
+  initialData?: Record<string, unknown>;
   onBack: () => void;
 }
 
@@ -41,7 +41,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     const newErrors: Record<string, string> = {};
     if (!formData.nombre?.trim()) newErrors.nombre = "Requerido";
     if (!formData.sku?.trim()) newErrors.sku = "Requerido";
-    if (!formData.categoriaId) newErrors.categoriaId = "Requerido";
+    if (!formData.categoriaProductoId) newErrors.categoriaProductoId = "Requerido";
     if (!formData.tipoUso) newErrors.tipoUso = "Requerido";
     if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
       newErrors.valor = "Requerido";
@@ -122,7 +122,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 <InputField
                   label="Nombre"
                   name="nombre"
-                  value={formData.nombre}
+                  value={formData.nombre || ""}
                   onChange={handleChange}
                   icon={Package}
                   required
@@ -132,7 +132,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <InputField
                 label="Código de referencia"
                 name="sku"
-                value={formData.sku}
+                value={formData.sku || ""}
                 onChange={handleChange}
                 icon={Tag}
                 required
@@ -140,13 +140,13 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
               <SelectField
                 label="Categoría"
-                name="categoriaId"
-                value={formData.categoriaId}
+                name="categoriaProductoId"
+                value={formData.categoriaProductoId}
                 onChange={handleChange}
-                options={parametros?.categorias || []}
-                displayExpr={(c) => c.nombre}
+                options={Array.isArray(parametros?.categorias) ? parametros.categorias : []}
+                displayExpr={(c: Record<string, unknown>) => c.nombre as string}
                 required
-                error={errors.categoriaId}
+                error={errors.categoriaProductoId}
               />
               <SelectField
                 label="Tipo de Uso"
@@ -157,7 +157,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                   { id: 1, nombre: 'Venta' },
                   { id: 2, nombre: 'Compra' }
                 ]}
-                displayExpr={(t) => t.nombre}
+                displayExpr={(t: Record<string, unknown>) => t.nombre as string}
                 required
                 error={errors.tipoUso}
               />
@@ -184,7 +184,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                   }
                   newPrecios[0].valor = Number(e.target.value);
                   handleChange({
-                    target: { name: "precios", value: newPrecios },
+                    target: { name: "precios", value: newPrecios as unknown },
                   });
                 }}
                 icon={DollarSign}
@@ -202,25 +202,25 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <SelectorCuentaPuc
                 label="Cuenta de Ingreso"
                 codigoRaiz="41"
-                value={formData.cuentaIngresoCodigo || null}
-                displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : formData.cuentaIngresoCodigo}
-                onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val }})}
+                value={formData.cuentaIngresoCodigo ?? null}
+                displayValue={formData.cuentaIngresoNombre ? `${formData.cuentaIngresoCodigo} - ${formData.cuentaIngresoNombre}` : (formData.cuentaIngresoCodigo ?? undefined)}
+                onChange={(val) => handleChange({ target: { name: 'cuentaIngresoCodigo', value: val ?? '' }})}
                 error={errors.cuentaIngresoCodigo}
               />
               <SelectorCuentaPuc
                 label="Cuenta de Costo"
                 codigoRaiz="6"
-                value={formData.cuentaCostoCodigo || null}
-                displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : formData.cuentaCostoCodigo}
-                onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val }})}
+                value={formData.cuentaCostoCodigo ?? null}
+                displayValue={formData.cuentaCostoNombre ? `${formData.cuentaCostoCodigo} - ${formData.cuentaCostoNombre}` : (formData.cuentaCostoCodigo ?? undefined)}
+                onChange={(val) => handleChange({ target: { name: 'cuentaCostoCodigo', value: val ?? '' }})}
                 error={errors.cuentaCostoCodigo}
               />
               <SelectorCuentaPuc
                 label="Cuenta de Inventario"
                 codigoRaiz="14"
-                value={formData.cuentaInventarioCodigo || null}
-                displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : formData.cuentaInventarioCodigo}
-                onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val }})}
+                value={formData.cuentaInventarioCodigo ?? null}
+                displayValue={formData.cuentaInventarioNombre ? `${formData.cuentaInventarioCodigo} - ${formData.cuentaInventarioNombre}` : (formData.cuentaInventarioCodigo ?? undefined)}
+                onChange={(val) => handleChange({ target: { name: 'cuentaInventarioCodigo', value: val ?? '' }})}
                 error={errors.cuentaInventarioCodigo}
               />
             </div>
@@ -240,18 +240,18 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 name="impuestoCargoId"
                 value={formData.impuestoCargoId}
                 onChange={handleChange}
-                options={parametros?.impuestos || []}
-                displayExpr={(i) => i.nombre}
+                options={Array.isArray(parametros?.impuestos) ? parametros.impuestos : []}
+                displayExpr={(i: Record<string, unknown>) => i.nombre as string}
                 required
                 error={errors.impuestoCargoId}
               />
               <SelectField
                 label="Retención Sugerida"
                 name="retencionId"
-                value={formData.retencionId || ""}
+                value={formData.retencionId ?? ""}
                 onChange={handleChange}
-                options={parametros?.retenciones || []}
-                displayExpr={(r) => `${r.nombre} (${r.tarifa}%)`}
+                options={Array.isArray(parametros?.retenciones) ? parametros.retenciones : []}
+                displayExpr={(r: Record<string, unknown>) => `${r.nombre} (${r.tarifa}%)`}
                 placeholder="Ninguna / No aplica"
               />
               <SelectField
@@ -259,8 +259,8 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 name="unidadMedidaDianId"
                 value={formData.unidadMedidaDianId}
                 onChange={handleChange}
-                options={parametros?.unidadesMedida || []}
-                displayExpr={(u) => u.nombre}
+                options={Array.isArray(parametros?.unidadesMedida) ? parametros.unidadesMedida : []}
+                displayExpr={(u: Record<string, unknown>) => u.nombre as string}
                 required
                 error={errors.unidadMedidaDianId}
               />

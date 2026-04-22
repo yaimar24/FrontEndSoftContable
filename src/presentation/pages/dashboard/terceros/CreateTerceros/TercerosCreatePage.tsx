@@ -69,7 +69,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="tuto-terceros-identificacion">
-          <SeccionIdentificacion formData={formData} parametros={parametros} errors={errors} onChange={handleChange} />
+          <SeccionIdentificacion formData={formData} parametros={parametros!} errors={errors} onChange={handleChange} />
         </div>
         <div className="lg:col-span-2 space-y-5">
           <section className="tuto-terceros-info bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
@@ -129,7 +129,7 @@ const TercerosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
           </section>
         </div>
         <div className="tuto-terceros-fiscal lg:col-span-3">
-          <SeccionFiscal formData={formData} parametros={parametros} errors={errors} onChange={handleChange} onCheckboxChange={handleCheckboxChange} onCategoriaChange={handleCategoriaChange} />
+          <SeccionFiscal formData={formData} parametros={parametros!} errors={errors} onChange={handleChange} onCheckboxChange={handleCheckboxChange} onCategoriaChange={handleCategoriaChange} />
         </div>
       </div>
     </div>

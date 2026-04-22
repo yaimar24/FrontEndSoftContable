@@ -45,7 +45,7 @@ const TercerosList: React.FC<TercerosListProps> = ({ data, onEdit, isServer, pag
     customFilters: {
       categoria: (item, value) => {
         if (value === "all") return true;
-        return item.categoriaIds && item.categoriaIds.includes(value as number);
+        return item.categoriaIds && item.categoriaIds.includes(Number(value));
       },
     },
   });

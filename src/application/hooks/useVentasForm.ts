@@ -9,8 +9,16 @@ import type { ParametrosFacturacionDTO } from "../../data/services/colegio/param
 export const useVentasForm = (token: string | null, initialData?: Partial<FacturaVentaReadDTO>) => {
   const colegioId = getColegioIdFromToken(token) || "";
 
+  const readToCreatePagos = (initialData?.recibos ?? []).map((r) => ({
+    medioPagoId: r.medioPagoId,
+    monto: r.monto,
+    fechaRecibo: r.fechaRecibo,
+    referencia: r.referencia,
+    observaciones: r.observaciones,
+  }));
+
   const [formData, setFormData] = useState<FacturaVentaCreateDTO>({
-    tipoFacturaId: initialData?.tipoFacturaId || 1,
+    tipoFacturaId: 1,
     clienteId: initialData?.clienteId || "",
     vendedorId: colegioId,
     colegioId: colegioId,
@@ -19,7 +27,7 @@ export const useVentasForm = (token: string | null, initialData?: Partial<Factur
     diasCredito: initialData?.diasCredito || null,
     medioPagoId: initialData?.medioPagoId || null,
     detalles: initialData?.detalles || [],
-    pagos: initialData?.pagos || [],
+    pagos: readToCreatePagos.length > 0 ? readToCreatePagos : [],
     observaciones: initialData?.observaciones || "",
   });  const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });

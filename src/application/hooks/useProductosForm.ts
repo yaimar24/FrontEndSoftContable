@@ -3,40 +3,57 @@ import { crearProducto, getProductoParametros, updateProducto } from '../../data
 
 import type { ProductoCreateDTO } from '../../domain/models/Producto';
 
-export const useProductosForm = (initialData?: Partial<ProductoCreateDTO> & { id?: string }) => {
-  const [formData, setFormData] = useState(initialData || {
+interface ProductoFormData extends Partial<ProductoCreateDTO> {
+  id?: string;
+  categoriaProductoId?: number;
+  cuentaIngresoNombre?: string;
+  cuentaCostoNombre?: string;
+  cuentaInventarioNombre?: string;
+}
+
+interface ProductoParametros {
+  categorias?: { id: number; nombre: string }[];
+  impuestos?: { id: number; nombre: string }[];
+  retenciones?: { id: number; nombre: string; tarifa: number }[];
+  unidadesMedida?: { id: number; nombre: string }[];
+  [key: string]: unknown;
+}
+
+export const useProductosForm = (initialData?: ProductoFormData) => {
+  const [formData, setFormData] = useState<ProductoFormData>(initialData || {
     nombre: "", sku: "", codigoBarras: "", esServicio: true,
     esInventariable: false, visibleEnFacturas: true, categoriaProductoId: 1,
     unidadMedidaDianId: 1, impuestoCargoId: 1, tipoUso: 1, precios: [{ nombreLista: "General", valor: 0, incluyeIva: false }]
   });
 
-  const [parametros, setParametros] = useState<Record<string, unknown> | null>(null);
+  const [parametros, setParametros] = useState<ProductoParametros | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
 
   useEffect(() => {
     (async () => {
       const resp = await getProductoParametros();
-      if (resp.success) setParametros(resp.data);
+      if (resp.success && resp.data) setParametros(resp.data as ProductoParametros);
     })();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | { target: { name: string; value: unknown } }) => {
+    const { name, value } = e.target;
+    const type = 'type' in e.target ? e.target.type : undefined;
+    const checked = 'checked' in e.target ? (e.target as HTMLInputElement).checked : undefined;
     
-    let parsedValue = value;
+    let parsedValue: unknown = value;
     if (name === 'tipoUso' || name === 'categoriaId' || name === 'unidadMedidaDianId' || name === 'impuestoCargoId' || name === 'retencionId' || name === 'categoriaProductoId') {
        parsedValue = value ? Number(value) : value;
     }
     
-    setFormData((prev: Record<string, unknown>) => ({ ...prev, [name]: type === 'checkbox' ? checked : parsedValue }));
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : parsedValue }));
   };
 
   const handleConfirmSave = async () => {
-    const resp = initialData 
-      ? await updateProducto(initialData.id, formData)
-      : await crearProducto(formData);
+    const resp = initialData?.id
+      ? await updateProducto(initialData.id, formData as Partial<ProductoCreateDTO>)
+      : await crearProducto(formData as ProductoCreateDTO);
     
     setResultModal({ show: true, success: resp.success, message: resp.message });
     setShowConfirm(false);
