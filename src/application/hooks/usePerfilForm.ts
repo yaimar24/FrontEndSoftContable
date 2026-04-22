@@ -3,13 +3,14 @@ import { getColegioIdFromToken } from '../../utils/jwt';
 import { getParametros } from '../../data/services/colegio/parametrosService';
 import { getColegioById, updateColegio } from '../../data/services/colegio/colegioService';
 import type { Colegio } from '../../domain/models/Colegio';
+import type { Parametros } from '../../domain/models/Parametros';
 
 
 export const usePerfilForm = (token: string | null) => {
   const colegioId = getColegioIdFromToken(token);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<Colegio>>({});
-  const [parametros, setParametros] = useState<any>(null);
+  const [parametros, setParametros] = useState<Parametros | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,7 +50,7 @@ export const usePerfilForm = (token: string | null) => {
     }
   };
 
-  const handleRepChange = (index: number, field: string, value: any) => {
+  const handleRepChange = (index: number, field: string, value: string | number) => {
     setFormData(prev => {
       const reps = [...(prev.representantesLegales || [])];
       reps[index] = { ...reps[index], [field]: value };

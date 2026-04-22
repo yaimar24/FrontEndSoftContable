@@ -3,13 +3,13 @@ import { useState, useMemo } from 'react';
 export interface FilterConfig<T> {
   searchFields: (keyof T)[];
   customFilters?: {
-    [key: string]: (item: T, value: any) => boolean;
+    [key: string]: (item: T, value: string) => boolean;
   };
 }
 
 export function useFilter<T>(data: T[], config: FilterConfig<T>) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
 
   const filteredData = useMemo(() => {
     return data.filter((item) => {
@@ -30,7 +30,7 @@ export function useFilter<T>(data: T[], config: FilterConfig<T>) {
     });
   }, [data, searchTerm, activeFilters, config]);
 
-  const updateFilter = (filterName: string, value: any) => {
+  const updateFilter = (filterName: string, value: string) => {
     setActiveFilters(prev => ({ ...prev, [filterName]: value }));
   };
 

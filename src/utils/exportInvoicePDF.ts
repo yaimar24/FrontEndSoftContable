@@ -4,11 +4,12 @@ import type { FacturaVentaReadDTO } from "../domain/models/Venta";
 import type { FacturaCompraReadDTO } from "../domain/models/FacturaCompra";
 import { getNombreColegioFromToken, getLogoUrlFromToken } from "./jwt";
 import { formatDate, formatCurrencyDecimals as formatCurrency } from "./formatters";
+import type { Colegio } from "../domain/models/Colegio";
 
 export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaCompraReadDTO, token: string | null) => {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   
-  let perfilInstitucional: any = {};
+  let perfilInstitucional: Partial<Colegio> = {};
   try {
     const storedPerfil = localStorage.getItem('perfilInstitucional');
     if (storedPerfil) perfilInstitucional = JSON.parse(storedPerfil);
@@ -20,7 +21,7 @@ export const exportInvoiceToPDF = async (factura: FacturaVentaReadDTO | FacturaC
   const nit = perfilInstitucional.nit || perfilInstitucional.identificacion || 'N/A';
   const telefono = perfilInstitucional.telefono || 'N/A';
   const direccion = perfilInstitucional.direccion || 'N/A';
-  const regimenIva = perfilInstitucional.regimenIva?.nombre || 'N/A';
+  const regimenIva = perfilInstitucional.regimenIva?.nombre ?? 'N/A';
 
   // Expiration
   const expirationDate = new Date(factura.fechaElaboracion || new Date());

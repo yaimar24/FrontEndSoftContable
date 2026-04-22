@@ -47,8 +47,8 @@ export function usePagination<T>({
       } else {
         setError(response.message || 'Error fetching data');
       }
-    } catch (err: any) {
-      setError(err.message || 'Error occurred during fetch');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error occurred during fetch');
     } finally {
       setLoading(false);
     }

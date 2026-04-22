@@ -8,6 +8,7 @@ import { FileText, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../../../utils/formatters';
 import { getDiasVencidosBadge, getEstadoBadgeColor as getEstadoBadge } from '../../../../utils/statusHelpers';
+import { ModuleGate } from '../../../components/shared/ModuleGate';
 
 export const CuentasPorCobrarView = () => {
   const navigate = useNavigate();
@@ -87,15 +88,17 @@ export const CuentasPorCobrarView = () => {
       header: 'Acciones',
       className: 'text-right',
       render: (item) => (
-        <div className="flex justify-end">
-          <button
-            onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
-            className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
-            title="Ver Factura"
-          >
-            <Eye size={15} strokeWidth={2.5} />
-          </button>
-        </div>
+        <ModuleGate route="/dashboard/ventas">
+          <div className="flex justify-end">
+            <button
+              onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
+              className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
+              title="Ver Factura"
+            >
+              <Eye size={15} strokeWidth={2.5} />
+            </button>
+          </div>
+        </ModuleGate>
       )
     }
   ];

@@ -8,7 +8,7 @@ export interface ValidationRule {
 
 export type FormRules = Record<string, ValidationRule>;
 
-export const validateForm = (data: any, rules: FormRules) => {
+export const validateForm = (data: Record<string, unknown>, rules: FormRules) => {
   const errors: Record<string, string> = {};
 
   Object.keys(rules).forEach((field) => {

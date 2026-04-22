@@ -1,4 +1,4 @@
-export type ValidatorFn = (value: any, formData?: any) => string | null;
+export type ValidatorFn = (value: unknown, formData?: Record<string, unknown>) => string | null;
 
 export const validators = {
   required:
@@ -7,7 +7,7 @@ export const validators = {
       value === undefined || value === null || value === "" ? msg : null,
 
   requiredSelect:
-    (invalidValue: any = "0", msg = "Selecciona una opción"): ValidatorFn =>
+    (invalidValue: string | number = "0", msg = "Selecciona una opción"): ValidatorFn =>
     (value) =>
       !value || value === invalidValue ? msg : null,
 

@@ -1,4 +1,6 @@
-﻿export type EstadoFactura = 
+﻿import type { ComprobanteContableRead } from './Contabilidad';
+
+export type EstadoFactura = 
   | 'Borrador'
   | 'Aprobada'
   | 'Enviada'
@@ -114,6 +116,6 @@ export interface FacturaVentaReadDTO {
   saldo: number;
   recibos: ReciboCajaRead[];
   detalles: FacturaDetalleReadDTO[];
-  comprobantes?: any[];
+  comprobantes?: ComprobanteContableRead[];
   observaciones?: string;
 }

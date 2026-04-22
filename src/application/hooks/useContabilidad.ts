@@ -17,7 +17,7 @@ export const useContabilidad = () => {
   const [libroAuxiliar, setLibroAuxiliar] = useState<MovimientoLibroAuxiliar[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<Omit<PaginatedResponse<any>, 'items'> | null>(null);
+  const [pagination, setPagination] = useState<Omit<PaginatedResponse<unknown>, 'items'> | null>(null);
 
   const fetchComprobantes = useCallback(async (page: number = 1, pageSize: number = 10, searchTerm: string = "") => {
     setLoading(true);
@@ -37,8 +37,8 @@ export const useContabilidad = () => {
         setError(resp.message);
         setComprobantes([]);
       }
-    } catch (err: any) {
-      setError(err.message || "Error al cargar comprobantes");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar comprobantes");
       setComprobantes([]);
     } finally {
       setLoading(false);
@@ -55,8 +55,8 @@ export const useContabilidad = () => {
       } else {
         setError(resp.message);
       }
-    } catch (err: any) {
-      setError(err.message || "Error al cargar detalle del comprobante");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar detalle del comprobante");
     } finally {
       setLoading(false);
     }
@@ -71,8 +71,8 @@ export const useContabilidad = () => {
         throw new Error(resp.message);
       }
       return resp;
-    } catch (err: any) {
-      setError(err.message || "Error al anular comprobante");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al anular comprobante");
       throw err;
     } finally {
       setLoading(false);
@@ -88,8 +88,8 @@ export const useContabilidad = () => {
         throw new Error(resp.message);
       }
       return resp;
-    } catch (err: any) {
-      setError(err.message || "Error al crear ajuste manual");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al crear ajuste manual");
       throw err;
     } finally {
       setLoading(false);
@@ -106,8 +106,8 @@ export const useContabilidad = () => {
       } else {
         setError(resp.message);
       }
-    } catch (err: any) {
-      setError(err.message || "Error al cargar configuracion contable");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar configuracion contable");
     } finally {
       setLoading(false);
     }
@@ -123,8 +123,8 @@ export const useContabilidad = () => {
       }
       setConfiguracion(resp.data as ConfiguracionContableRead);
       return resp;
-    } catch (err: any) {
-      setError(err.message || "Error al actualizar configuracion");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al actualizar configuracion");
       throw err;
     } finally {
       setLoading(false);
@@ -142,8 +142,8 @@ export const useContabilidad = () => {
       } else {
         setError(resp.message);
       }
-    } catch (err: any) {
-      setError(err.message || "Error al cargar auxiliar contable");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar auxiliar contable");
     } finally {
       setLoading(false);
     }

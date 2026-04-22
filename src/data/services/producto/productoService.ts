@@ -1,9 +1,9 @@
 import { apiClient } from "../../api/apiClient";
 import type { ProductoReadDTO, ProductoCreateDTO } from "../../../domain/models/Producto";
-import type { ApiResponse } from "../../../domain/models/types/ApiResponse";
+import type { ApiResponse, PaginatedResponse } from "../../../domain/models/types/ApiResponse";
 import { buildQueryParams } from "../../../utils/queryBuilder";
 
-export const getProductosByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+export const getProductosByColegio = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<PaginatedResponse<ProductoReadDTO>>> => {
   const query = buildQueryParams({ page, pageSize, searchTerm: searchTerm || undefined });
   return await apiClient(`/api/Producto?${query}`);
 };
@@ -22,7 +22,7 @@ export const updateProducto = async (id: string, data: Partial<ProductoCreateDTO
   });
 };
 
-export const getProductoParametros = async (): Promise<ApiResponse<any>> => {
+export const getProductoParametros = async (): Promise<ApiResponse<Record<string, unknown>>> => {
   return await apiClient("/api/Parametros/productos");
 };
 

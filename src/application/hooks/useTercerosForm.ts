@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { getColegioIdFromToken } from "../../utils/jwt";
-import type { TerceroCreateDTO } from "../../domain/models/Tercero";
+import type { TerceroCreateDTO, TerceroUpdateDTO } from "../../domain/models/Tercero";
 import { getParametros } from "../../data/services/colegio/parametrosService";
+import type { Parametros } from "../../domain/models/Parametros";
 import { calcularDV } from "../../utils/calcularDV";
 import {
   vincularTercero,
   updateTercero,
 } from "../../data/services/terceros/terceroService";
 import { validators } from "../../utils/validators";
+import type { ValidatorFn } from "../../utils/validators";
 import { validateForm } from "../../utils/validateForm";
 
-export const useTercerosForm = (token: string | null, initialData?: any) => {
+export const useTercerosForm = (token: string | null, initialData?: Partial<TerceroCreateDTO> & { id?: string; responsabilidades?: { id: number }[]; categorias?: { id: number }[] }) => {
   const colegioId = getColegioIdFromToken(token);
   const [isSaving, setIsSaving] = useState(false);
-  const [parametros, setParametros] = useState<any>(null);
+  const [parametros, setParametros] = useState<Parametros | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<TerceroCreateDTO>({
@@ -61,20 +63,21 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   // Sincronización para edición
   useEffect(() => {
     if (initialData) {
-      setFormData({
+      setFormData(prev => ({
+        ...prev,
         ...initialData,
         nombres: initialData.nombres || "",
         apellidos: initialData.apellidos || "",
         nombreComercial: initialData.nombreComercial || "",
         responsabilidadesFiscalesIds:
           initialData.responsabilidadesFiscalesIds ||
-          initialData.responsabilidades?.map((r: any) => r.id) ||
+          initialData.responsabilidades?.map((r) => r.id) ||
           [],
         categoriaIds:
           initialData.categoriaIds ||
-          initialData.categorias?.map((c: any) => c.id) ||
+          initialData.categorias?.map((c) => c.id) ||
           [],
-      });
+      }));
     }
   }, [initialData]);
 
@@ -123,7 +126,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
   };
 
   const handleSaveClick = () => {
-    const schema: Record<string, any[]> = {
+    const schema: Record<string, ValidatorFn[]> = {
       // Usamos requiredSelect para que el valor 0 dispare el error
       tipoPersonaId: [validators.requiredSelect("Seleccione el tipo de persona")],
       tipoIdentificacionId: [validators.requiredSelect("Seleccione el tipo de documento")],
@@ -140,7 +143,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
           }),
       
       // Sección Fiscal
-      categoriaIds: [(val: any[]) => (!val || val.length === 0) ? "Debe seleccionar al menos una categoría" : null],
+      categoriaIds: [(val: unknown) => (!Array.isArray(val) || val.length === 0) ? "Debe seleccionar al menos una categoría" : null],
       regimenIvaId: [validators.requiredSelect("El régimen es obligatorio")],
     };
 
@@ -153,7 +156,7 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
         schema.correoFacturacion = [validators.email?.()];
     }
 
-    const validationErrors = validateForm(formData, schema) as Record<string, string>;
+    const validationErrors = validateForm(formData as unknown as Record<string, unknown>, schema) as Record<string, string>;
 
   
 
@@ -171,17 +174,17 @@ export const useTercerosForm = (token: string | null, initialData?: any) => {
     setIsSaving(true);
 
     try {
-        const payload: Record<string, any> = { ...formData, colegioId };
+        const payload = { ...formData, colegioId };
         
         // Convert empty strings to null for optional fields to match backend requirements
-        if (!payload.email || payload.email.trim() === "") payload.email = null;
-        if (!payload.telefono || payload.telefono.trim() === "") payload.telefono = null;
-        if (!payload.direccion || payload.direccion.trim() === "") payload.direccion = null;
+        if (!payload.email || (typeof payload.email === 'string' && payload.email.trim() === "")) payload.email = null;
+        if (!payload.telefono || (typeof payload.telefono === 'string' && payload.telefono.trim() === "")) payload.telefono = null;
+        if (!payload.direccion || (typeof payload.direccion === 'string' && payload.direccion.trim() === "")) payload.direccion = null;
         if (!payload.municipioId || payload.municipioId === 0) payload.municipioId = null;
 
       const result = initialData?.id
-        ? await updateTercero(initialData.id, { ...payload, id: initialData.id } as any)
-        : await vincularTercero(payload as any);
+        ? await updateTercero(initialData.id, { ...payload, id: initialData.id } as TerceroUpdateDTO)
+        : await vincularTercero(payload as TerceroCreateDTO);
 
       setResultModal({
         show: true,

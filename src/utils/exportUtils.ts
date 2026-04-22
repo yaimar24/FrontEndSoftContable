@@ -13,7 +13,7 @@ export interface ExportConfig<T> {
 
 export const exportToExcel = <T,>({ filename, columns, data }: ExportConfig<T>) => {
   const worksheetData = data.map(item => {
-    const row: any = {};
+    const row: Record<string, unknown> = {};
     columns.forEach(col => {
       row[col.header] = typeof col.dataKey === 'function' 
         ? col.dataKey(item) 
