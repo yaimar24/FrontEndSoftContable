@@ -6,6 +6,7 @@ import { useCartera } from '../../../../application/hooks/useCartera';
 import type { FacturaPorVencer } from '../../../../domain/models/Cartera';
 import { FileText, Eye } from 'lucide-react';
 import { formatCurrency } from '../../../../utils/formatters';
+import { ModuleGate } from '../../../components/shared/ModuleGate';
 
 export const PorVencerView = () => {
   const navigate = useNavigate();
@@ -81,15 +82,17 @@ export const PorVencerView = () => {
       header: 'Acciones',
       className: 'text-right',
       render: (item) => (
-        <div className="flex justify-end">
-          <button
-            onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
-            className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
-            title="Ver Factura"
-          >
-            <Eye size={15} strokeWidth={2.5} />
-          </button>
-        </div>
+        <ModuleGate route="/dashboard/ventas">
+          <div className="flex justify-end">
+            <button
+              onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
+              className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
+              title="Ver Factura"
+            >
+              <Eye size={15} strokeWidth={2.5} />
+            </button>
+          </div>
+        </ModuleGate>
       )
     }
   ];
