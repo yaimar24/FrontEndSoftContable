@@ -138,9 +138,9 @@ const Step1BasicInfo: React.FC<Step1Props> = ({
           label="Departamento"
           name="departamentoId"
           value={selectedDepartamentoId}
-          onChange={(e: any) => {
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             setSelectedDepartamentoId(e.target.value);
-            handleChange({ target: { name: "municipioId", value: "" } } as any);
+            handleChange({ target: { name: "municipioId", value: "" } } as React.ChangeEvent<HTMLSelectElement>);
           }}
           options={departamentos || []}
           placeholder="Selecciona Departamento"

@@ -4,7 +4,7 @@ type Schema<T> = {
   [K in keyof T]?: ValidatorFn[];
 };
 
-export const validateForm = <T extends Record<string, any>>(
+export const validateForm = <T extends Record<string, unknown>>(
   formData: T,
   schema: Schema<T>
 ) => {

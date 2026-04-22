@@ -53,12 +53,12 @@ export const ContabilidadNuevoPage = () => {
     setMovimientos([...movimientos, { cuentaCodigo: '', debito: 0, credito: 0, descripcion: '' }]);
   };
 
-  const updateLine = (index: number, field: keyof MovimientoContableCreate, value: any) => {
+  const updateLine = (index: number, field: keyof MovimientoContableCreate, value: string | number) => {
     const updated = [...movimientos];
-    (updated[index] as any)[field] = value;
+    updated[index] = { ...updated[index], [field]: value };
 
-    if (field === 'debito' && value > 0) updated[index].credito = 0;
-    if (field === 'credito' && value > 0) updated[index].debito = 0;
+    if (field === 'debito' && (value as number) > 0) updated[index].credito = 0;
+    if (field === 'credito' && (value as number) > 0) updated[index].debito = 0;
 
     setMovimientos(updated);
   };

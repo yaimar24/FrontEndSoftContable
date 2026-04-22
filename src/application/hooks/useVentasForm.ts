@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import type { FacturaVentaCreateDTO, FacturaDetalleCreateDTO } from "../../domain/models/Venta";
+import type { FacturaVentaCreateDTO, FacturaVentaReadDTO, FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../domain/models/Venta";
 import { createVenta, updateVenta } from "../../data/services/venta/ventaService";
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
 import { getColegioIdFromToken } from "../../utils/jwt";
 
-export const useVentasForm = (token: string | null, initialData?: any) => {
+import type { ParametrosFacturacionDTO } from "../../data/services/colegio/parametrosService";
+
+export const useVentasForm = (token: string | null, initialData?: Partial<FacturaVentaReadDTO>) => {
   const colegioId = getColegioIdFromToken(token) || "";
 
   const [formData, setFormData] = useState<FacturaVentaCreateDTO>({
@@ -23,7 +25,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [loading, setLoading] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState("");
-  const [parametrosFacturacion, setParametrosFacturacion] = useState<{mediosPago: any[], frecuenciasPago: any[]}>({ mediosPago: [], frecuenciasPago: [] });     
+  const [parametrosFacturacion, setParametrosFacturacion] = useState<ParametrosFacturacionDTO>({ mediosPago: [], frecuenciasPago: [] });     
 
   useEffect(() => {
     setIdempotencyKey(crypto.randomUUID());
@@ -45,7 +47,7 @@ export const useVentasForm = (token: string | null, initialData?: any) => {
     setFormData((prev: FacturaVentaCreateDTO) => ({ ...prev, detalles }));
   };
 
-  const handlePagosChange = (pagos: any[]) => {
+  const handlePagosChange = (pagos: ReciboCajaCreate[]) => {
     setFormData((prev: FacturaVentaCreateDTO) => ({ ...prev, pagos }));
   };
 

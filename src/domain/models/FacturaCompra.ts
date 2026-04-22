@@ -1,3 +1,6 @@
+import type { ComprobanteContableRead } from './Contabilidad';
+import type { ComprobanteEgresoRead } from './ComprobanteEgreso';
+
 export const EstadoFacturaCompra = {
   Borrador: 0,
   Registrada: 1,
@@ -111,6 +114,6 @@ export interface FacturaCompraReadDTO {
   totalImpuestos: number;
   totalNeto: number;    totalPagado?: number;
     saldo?: number;  detalles: FacturaCompraDetalleReadDTO[];
-    egresos?: any[]; comprobantes?: any[];
+    egresos?: ComprobanteEgresoRead[]; comprobantes?: ComprobanteContableRead[];
   observaciones?: string;
 }

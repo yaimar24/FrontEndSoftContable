@@ -6,6 +6,7 @@ import { ShieldCheck, UserPlus, Users } from "lucide-react";
 import LoadingOverlay from "../../../components/shared/LoadingOverlay";
 import PageHeader from "../../../components/organisms/PageHeader";
 import type { TerceroCreateDTO, TerceroUpdateDTO } from "../../../../domain/models/Tercero";
+import type { PaginatedResponse } from "../../../../domain/models/types/ApiResponse";
 import { useTutorial } from "../../../../application/context/TutorialContext";
 
 const TercerosPage = () => {
@@ -13,7 +14,7 @@ const TercerosPage = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  const [tercerosInfo, setTercerosInfo] = useState<any>(null);
+  const [tercerosInfo, setTercerosInfo] = useState<PaginatedResponse<TerceroUpdateDTO> | null>(null);
   const [terceros, setTerceros] = useState<TerceroUpdateDTO[]>([]);
   const [selectedTercero, setSelectedTercero] = useState<TerceroCreateDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ const TercerosPage = () => {
       const response = await getTercerosByColegio(page, pageSize, searchTerm);
       if (response.success && response.data) {
         setTercerosInfo(response.data);
-        setTerceros((response.data as any).items || []);
+        setTerceros(response.data.items || []);
       }
     } finally { setLoading(false); }
   };

@@ -2,7 +2,7 @@
  * Convierte un objeto plano o complejo a FormData siguiendo la convención
  * de nombres de .NET para colecciones: Propiedad[index].SubPropiedad
  */
-export const toFormData = (obj: any, formData: FormData = new FormData(), parentKey: string = '') => {
+export const toFormData = (obj: unknown, formData: FormData = new FormData(), parentKey: string = ''): FormData => {
   if (obj === null || obj === undefined) return formData;
 
   if (obj instanceof File) {

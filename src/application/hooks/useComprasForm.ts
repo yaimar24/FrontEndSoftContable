@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO, PagoEgresoCreate } from "../../domain/models/FacturaCompra";
+import type { FacturaCompraCreateDTO, FacturaCompraDetalleCreateDTO, FacturaCompraReadDTO, PagoEgresoCreate } from "../../domain/models/FacturaCompra";
 import { createCompra, getCompraById, updateFacturaCompra } from "../../data/services/compra/compraService";
 
 import { getParametrosFacturacion } from "../../data/services/colegio/parametrosService";
@@ -44,9 +44,9 @@ export const useComprasForm = (initialCompraId?: number, initialData?: Partial<F
     try {
       const res = await getCompraById(id);
       if (res.success && res.data) {
-        const d = res.data;
+        const d = res.data as FacturaCompraReadDTO & { tipoFacturaId?: number };
         setFormData({
-          tipoFacturaId: (d as any).tipoFacturaId || 1,
+          tipoFacturaId: d.tipoFacturaId || 1,
           proveedorId: d.proveedorId || "",
           fechaElaboracion: new Date(d.fechaElaboracion).toISOString().split('T')[0],
           esCredito: d.esCredito,

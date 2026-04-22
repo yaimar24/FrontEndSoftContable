@@ -160,7 +160,7 @@ const Step2Legal: React.FC<Step2Props> = ({ formData, handleChange, nextStep, pr
                 onClick={() => {
                    const event = {
                      target: { name: cb.name, type: 'checkbox', checked: !isChecked }
-                   } as any;
+                   } as React.ChangeEvent<HTMLInputElement>;
                    handleChange(event);
                 }}
                 className={`flex items-center p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer 

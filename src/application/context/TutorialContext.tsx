@@ -44,7 +44,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({ children }
   const handleJoyrideEvent = useCallback((data: EventData) => {
     const { status, type } = data;
 
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as typeof STATUS.FINISHED)) {
       setRunTutorial(false);
     }
 

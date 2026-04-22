@@ -4,11 +4,13 @@ import type {
   ComprobanteContableRead, 
   ComprobanteContableCreate, 
   ConfiguracionContableRead, 
-  ConfiguracionContableUpdate 
+  ConfiguracionContableUpdate,
+  MovimientoLibroAuxiliar
 } from "../../../domain/models/Contabilidad";
+import type { PaginatedResponse } from "../../../domain/models/types/ApiResponse";
 
 // Listar comprobantes
-export const getComprobantes = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<any>> => {
+export const getComprobantes = async (page: number = 1, pageSize: number = 10, searchTerm: string = ""): Promise<ApiResponse<PaginatedResponse<ComprobanteContableRead>>> => {
   const queryParams = new URLSearchParams({
     page: page.toString(),
     pageSize: pageSize.toString(),
@@ -56,7 +58,7 @@ export const updateConfiguracionContable = async (data: ConfiguracionContableUpd
 };
 
 // Auxiliar accounting book
-export const getLibroAuxiliar = async (cuentaCodigo?: string | null, desde?: string | null, hasta?: string | null): Promise<ApiResponse<any>> => { // Update return type if we have read interface for Auxiliary book
+export const getLibroAuxiliar = async (cuentaCodigo?: string | null, desde?: string | null, hasta?: string | null): Promise<ApiResponse<PaginatedResponse<MovimientoLibroAuxiliar>>> => {
   const params = new URLSearchParams();
   if (cuentaCodigo) params.append("cuentaCodigo", cuentaCodigo);
   if (desde) params.append("desde", desde);

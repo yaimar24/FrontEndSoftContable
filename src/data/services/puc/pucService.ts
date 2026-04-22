@@ -18,27 +18,27 @@ export const getHiddenPuc = async (): Promise<ApiResponse<PucNodo[]>> => {
   return await apiClient("/api/Puc/hidden");
 };
 
-export const createCuentaContable = async (data: PucCreateDTO): Promise<ApiResponse<any>> => {
+export const createCuentaContable = async (data: PucCreateDTO): Promise<ApiResponse<CuentaPuc>> => {
   return await apiClient("/api/Puc", {
     method: "POST",
     body: JSON.stringify(data)
   });
 };
 
-export const updateCuentaContable = async (codigo: string, data: PucUpdateDTO): Promise<ApiResponse<any>> => {
+export const updateCuentaContable = async (codigo: string, data: PucUpdateDTO): Promise<ApiResponse<CuentaPuc>> => {
   return await apiClient(`/api/Puc/${codigo}`, {
     method: "PUT",
     body: JSON.stringify(data)
   });
 };
 
-export const hideCuentaContable = async (codigo: string): Promise<ApiResponse<any>> => {
+export const hideCuentaContable = async (codigo: string): Promise<ApiResponse<null>> => {
   return await apiClient(`/api/Puc/${codigo}`, {
     method: "DELETE"
   });
 };
 
-export const restoreCuentaContable = async (codigo: string): Promise<ApiResponse<any>> => {
+export const restoreCuentaContable = async (codigo: string): Promise<ApiResponse<null>> => {
   return await apiClient(`/api/Puc/${codigo}/restore`, {
     method: "PATCH"
   });
