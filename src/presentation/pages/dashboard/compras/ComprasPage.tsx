@@ -5,7 +5,7 @@ import type { Column } from '../../../components/organisms/Table';
 import LoadingOverlay from '../../../components/shared/LoadingOverlay';
 import { getComprasByColegio, registrarFacturaCompra, anularFacturaCompra } from '../../../../data/services/compra/compraService';
 import type { FacturaCompraReadDTO } from '../../../../domain/models/FacturaCompra';
-import { ShoppingCart, FilePlus, FileText, ArrowRight, Edit2, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { ShoppingCart, FilePlus, FileText, ArrowRight, Edit2, CheckCircle, Eye } from 'lucide-react';
 import SearchBar from '../../../components/molecules/SearchBar';
 import StatusModal from '../../../components/organisms/StatusModal';
 import { useFilter } from '../../../../application/hooks/useGenericFilter';
