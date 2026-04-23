@@ -9,7 +9,7 @@ import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import { exportInvoiceToPDF } from '../../../../utils/exportInvoicePDF';
 import { AsientosContablesSection } from '../../../components/organisms/AsientosContablesSection';
 import { PaymentEgresoModal } from './pagos/PaymentEgresoModal';
-import { FileText, Banknote, ShoppingCart, CheckCircle, XCircle, Edit2, Download, ArrowLeft, Printer, StickyNote } from 'lucide-react';
+import { FileText, Banknote, ShoppingCart, CheckCircle, Edit2, Download, ArrowLeft, Printer, StickyNote } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NotasFacturaSection from '../notas/NotasFacturaSection';
 import NotaCreatePage from '../notas/NotaCreatePage';
