@@ -36,6 +36,13 @@ const COMPRA_ESTADOS: Record<string, EstadoInfo> = {
   'Pagado': { label: 'Pagado', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
 };
 
+const NOTA_ESTADOS: Record<string, EstadoInfo> = {
+  '1': { label: 'Aplicada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+  '2': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
+  'Aplicada': { label: 'Aplicada', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+  'Anulada': { label: 'Anulada', color: 'bg-rose-50 text-rose-600 border-rose-100' },
+};
+
 const DEFAULT_ESTADO: EstadoInfo = { label: 'Desconocido', color: 'bg-gray-50 text-gray-600 border-gray-100' };
 
 export const getVentaEstadoInfo = (estado: string | number): EstadoInfo =>
@@ -43,6 +50,9 @@ export const getVentaEstadoInfo = (estado: string | number): EstadoInfo =>
 
 export const getCompraEstadoInfo = (estado: string | number): EstadoInfo =>
   COMPRA_ESTADOS[estado?.toString()] || { label: estado?.toString() || DEFAULT_ESTADO.label, color: DEFAULT_ESTADO.color };
+
+export const getNotaEstadoInfo = (estado: string | number): EstadoInfo =>
+  NOTA_ESTADOS[estado?.toString()] || { label: estado?.toString() || DEFAULT_ESTADO.label, color: DEFAULT_ESTADO.color };
 
 export const getEstadoBadgeColor = (estado: string): string => {
   switch (estado?.toLowerCase()) {

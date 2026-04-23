@@ -9,8 +9,10 @@ import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import { exportInvoiceToPDF } from '../../../../utils/exportInvoicePDF';
 import { AsientosContablesSection } from '../../../components/organisms/AsientosContablesSection';
 import { PaymentEgresoModal } from './pagos/PaymentEgresoModal';
-import { FileText, Banknote, ShoppingCart, CheckCircle, XCircle, Edit2, Download, ArrowLeft, Printer } from 'lucide-react';
+import { FileText, Banknote, ShoppingCart, CheckCircle, XCircle, Edit2, Download, ArrowLeft, Printer, StickyNote } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import NotasFacturaSection from '../notas/NotasFacturaSection';
+import NotaCreatePage from '../notas/NotaCreatePage';
 
 const ComprasViewerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +23,8 @@ const ComprasViewerPage: React.FC = () => {
   const [confirmModal, setConfirmModal] = useState<{show: boolean, action: 'registrar' | 'anular' | null}>({show: false, action: null});
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: "" });
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"detalle" | "notas">("detalle");
+  const [creatingNotaTipo, setCreatingNotaTipo] = useState<number | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -182,7 +186,62 @@ const ComprasViewerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content Area (Printable Dashboard View) */}
+      {/* Tab Bar */}
+      <div className="bg-white border-b border-slate-200 print:hidden">
+        <div className="max-w-6xl mx-auto px-4 flex gap-0">
+          <button
+            onClick={() => { setActiveTab("detalle"); setCreatingNotaTipo(null); }}
+            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "detalle"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <FileText size={14} className="inline mr-2 -mt-0.5" />
+            Detalle Factura
+          </button>
+          <button
+            onClick={() => { setActiveTab("notas"); setCreatingNotaTipo(null); }}
+            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "notas"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <StickyNote size={14} className="inline mr-2 -mt-0.5" />
+            Notas Crédito / Débito
+          </button>
+        </div>
+      </div>
+
+      {/* Tab: Crear Nota */}
+      {activeTab === "notas" && creatingNotaTipo !== null && compra && (
+        <NotaCreatePage
+          defaultTipo={creatingNotaTipo}
+          defaultOrigen={2}
+          defaultFacturaId={compra.id}
+          facturaNumero={compra.numero}
+          onBack={() => setCreatingNotaTipo(null)}
+          onSuccess={() => setCreatingNotaTipo(null)}
+        />
+      )}
+
+      {/* Tab: Notas List */}
+      {activeTab === "notas" && creatingNotaTipo === null && compra && (
+        <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6">
+            <NotasFacturaSection
+              facturaId={compra.id}
+              facturaNumero={compra.numero}
+              origen="compra"
+              onCreateNota={(tipo) => setCreatingNotaTipo(tipo)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Detalle Factura */}
+      {activeTab === "detalle" && (
       <div className="max-w-6xl mx-auto mt-8 px-4 print:mt-0 print:px-0 space-y-4">
          
          {/* Alerta de Anulación / Reverso */}
@@ -423,6 +482,7 @@ const ComprasViewerPage: React.FC = () => {
 
          </div>
       </div>
+      )}
 
       {/* Hidden Printable Template */}
       <div className="hidden print:block">
