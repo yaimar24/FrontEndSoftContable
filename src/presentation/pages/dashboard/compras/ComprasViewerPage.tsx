@@ -172,11 +172,6 @@ const ComprasViewerPage: React.FC = () => {
               </Button>
             </>
           )}
-          {[0, 3, 4, 5].includes(compra.estadoId) && (
-            <Button variant="danger" onClick={() => setConfirmModal({ show: true, action: 'anular' })} icon={XCircle}>
-              Anular
-            </Button>
-          )}
           <Button variant="outline" onClick={handleDownloadPDF} icon={Download}>
             PDF
           </Button>
