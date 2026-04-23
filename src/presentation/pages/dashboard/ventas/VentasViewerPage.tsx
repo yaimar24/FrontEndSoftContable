@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Printer, Download, Banknote, FileText } from "lucide-react";
+import { ArrowLeft, Printer, Download, Banknote, FileText, StickyNote } from "lucide-react";
 import { getVentaById } from "../../../../data/services/venta/ventaService";
 import { InvoiceTemplate } from "./ListVentas/InvoiceTemplate";
 import type { FacturaVentaReadDTO, ReciboCajaRead } from "../../../../domain/models/Venta";
@@ -11,6 +11,8 @@ import { AsientosContablesSection } from "../../../components/organisms/Asientos
 import { PaymentModal } from "./ListVentas/PaymentModal";
 import { formatCurrencyDecimals as formatCurrency } from "../../../../utils/formatters";
 import { getVentaEstadoInfo } from "../../../../utils/statusHelpers";
+import NotasFacturaSection from "../notas/NotasFacturaSection";
+import NotaCreatePage from "../notas/NotaCreatePage";
 
 const VentasViewerPage: React.FC = () => {
   const { id } = useParams();
@@ -18,6 +20,8 @@ const VentasViewerPage: React.FC = () => {
   const [factura, setFactura] = useState<FacturaVentaReadDTO | null>(null);     
   const [loading, setLoading] = useState(true);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"detalle" | "notas">("detalle");
+  const [creatingNotaTipo, setCreatingNotaTipo] = useState<number | null>(null);
   
   const fetchFactura = async (background = false) => {
     if (!id) return;
@@ -78,7 +82,7 @@ const VentasViewerPage: React.FC = () => {
           <div className="hidden sm:flex items-center gap-3">
              <h1 className="text-xl font-black text-slate-800 tracking-tight">Factura #{factura.numero}</h1>
              <span className={`px-3 py-1 rounded-full text-xs font-bold ${badgeColor}`}>
-               {factura.estadoNombre === "PendienteConAbono" ? "Abonada" : factura.estadoNombre}
+               {factura.estadoNombre === "PendienteConAbono" ? "Pendiente" : factura.estadoNombre}
              </span>
           </div>
         </div>
@@ -102,7 +106,62 @@ const VentasViewerPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content Area (Not the printable, but the Dashboard View) */}
+      {/* Tab Bar */}
+      <div className="bg-white border-b border-slate-200 print:hidden">
+        <div className="max-w-6xl mx-auto px-4 flex gap-0">
+          <button
+            onClick={() => { setActiveTab("detalle"); setCreatingNotaTipo(null); }}
+            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "detalle"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <FileText size={14} className="inline mr-2 -mt-0.5" />
+            Detalle Factura
+          </button>
+          <button
+            onClick={() => { setActiveTab("notas"); setCreatingNotaTipo(null); }}
+            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${
+              activeTab === "notas"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <StickyNote size={14} className="inline mr-2 -mt-0.5" />
+            Notas Crédito / Débito
+          </button>
+        </div>
+      </div>
+
+      {/* Tab: Crear Nota */}
+      {activeTab === "notas" && creatingNotaTipo !== null && factura && (
+        <NotaCreatePage
+          defaultTipo={creatingNotaTipo}
+          defaultOrigen={1}
+          defaultFacturaId={factura.id}
+          facturaNumero={factura.numero}
+          onBack={() => setCreatingNotaTipo(null)}
+          onSuccess={() => setCreatingNotaTipo(null)}
+        />
+      )}
+
+      {/* Tab: Notas List */}
+      {activeTab === "notas" && creatingNotaTipo === null && factura && (
+        <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6">
+            <NotasFacturaSection
+              facturaId={factura.id}
+              facturaNumero={factura.numero}
+              origen="venta"
+              onCreateNota={(tipo) => setCreatingNotaTipo(tipo)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Detalle Factura */}
+      {activeTab === "detalle" && (
       <div className="max-w-6xl mx-auto mt-8 px-4 print:hidden space-y-4">
          
          {/* Alerta de Anulación / Reverso */}
@@ -318,6 +377,7 @@ const VentasViewerPage: React.FC = () => {
             </div>
          </div>
       </div>
+      )}
 
       <PaymentModal
           isOpen={isPaymentModalOpen}

@@ -78,11 +78,14 @@ export const CuentasPorCobrarView = () => {
     },
     {
       header: 'Estado',
-      render: (item) => (
-        <span className={`px-2.5 py-1 border rounded-lg text-[9px] font-black uppercase tracking-wider ${getEstadoBadge(item.estado)}`}>
-          {item.estado}
-        </span>
-      )
+      render: (item) => {
+        const displayEstado = (item.estado === 'Abonada' || item.estado === 'PendienteConAbono') ? 'Pendiente' : item.estado;
+        return (
+          <span className={`px-2.5 py-1 border rounded-lg text-[9px] font-black uppercase tracking-wider ${getEstadoBadge(displayEstado)}`}>
+            {displayEstado}
+          </span>
+        );
+      }
     },
     {
       header: 'Acciones',
