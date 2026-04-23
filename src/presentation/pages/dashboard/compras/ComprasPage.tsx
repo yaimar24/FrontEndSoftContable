@@ -229,15 +229,6 @@ const ComprasPage: React.FC = () => {
               </button>
             </>
           )}
-          {[0, 3, 4, 5].includes(v.estadoId) && (
-            <button 
-              onClick={() => setConfirmModal({ show: true, action: 'anular', id: v.id })} 
-              className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" 
-              title="Anular"
-            >
-              <XCircle size={15} strokeWidth={2.5} />
-            </button>
-          )}
           {v.estadoId !== 0 && v.estadoId !== 2 && (
             <button onClick={() => setSelectedInvoice(v)} className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Vista Previa PDF">
               <Eye size={15} strokeWidth={2.5} />
