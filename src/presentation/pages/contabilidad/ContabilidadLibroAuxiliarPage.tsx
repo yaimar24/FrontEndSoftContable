@@ -6,6 +6,7 @@ import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoLibroAuxiliar } from '../../../domain/models/Contabilidad';
 import { useTutorial } from '../../../application/context/TutorialContext';
+import { formatCurrency } from '../../../utils/formatters';
 
 export const ContabilidadLibroAuxiliarPage = () => {
   const { libroAuxiliar, fetchLibroAuxiliar, loading, error } = useContabilidad();
@@ -85,15 +86,15 @@ export const ContabilidadLibroAuxiliarPage = () => {
     },
     {
       header: 'Débito',
-      render: (m) => <span className="text-emerald-700 font-bold">${m.debito.toLocaleString()}</span>
+      render: (m) => <span className="text-emerald-700 font-bold">{formatCurrency(m.debito)}</span>
     },
     {
       header: 'Crédito',
-      render: (m) => <span className="text-rose-600 font-bold">${m.credito.toLocaleString()}</span>
+      render: (m) => <span className="text-rose-600 font-bold">{formatCurrency(m.credito)}</span>
     },
     {
       header: 'Saldo',
-      render: (m) => <span className={`font-black tracking-tight ${m.saldo < 0 ? 'text-red-600' : 'text-[#1e3a8a]'}`}>${m.saldo.toLocaleString()}</span>
+      render: (m) => <span className={`font-black tracking-tight ${m.saldo < 0 ? 'text-red-600' : 'text-[#1e3a8a]'}`}>{formatCurrency(m.saldo)}</span>
     }
   ];
 

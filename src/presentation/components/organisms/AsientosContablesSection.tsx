@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import Modal from './Modal';
 import { useModuleAccess } from '../../../application/hooks/useModuleAccess';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface AsientosContablesSectionProps {
   tipoDocumento: 'FacturaVenta' | 'FacturaCompra' | 'ReciboCaja' | 'ComprobanteEgreso';
@@ -118,10 +119,10 @@ export const AsientosContablesSection: React.FC<AsientosContablesSectionProps> =
                           )}
                         </td>
                         <td className="px-6 py-3 text-right font-black text-emerald-600 bg-emerald-50/10">
-                          {m.debito > 0 ? `$${m.debito.toLocaleString()}` : ''}
+                          {m.debito > 0 ? formatCurrency(m.debito) : ''}
                         </td>
                         <td className="px-6 py-3 text-right font-black text-rose-600 bg-rose-50/10">
-                          {m.credito > 0 ? `$${m.credito.toLocaleString()}` : ''}
+                          {m.credito > 0 ? formatCurrency(m.credito) : ''}
                         </td>
                       </tr>
                     ))}

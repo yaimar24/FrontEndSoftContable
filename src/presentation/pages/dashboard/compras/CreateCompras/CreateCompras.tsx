@@ -10,6 +10,7 @@ import StatusModal from '../../../../components/organisms/StatusModal';
 import { useComprasForm } from '../../../../../application/hooks/useComprasForm';
 import { searchProductos } from '../../../../../data/services/producto/productoService';
 import type { FacturaCompraDetalleCreateDTO, TipoItemCompraEnum, PagoEgresoCreate } from '../../../../../domain/models/FacturaCompra';
+import { formatCurrency } from '../../../../../utils/formatters';
 
 interface Props {
   onBack: () => void;
@@ -161,18 +162,18 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
         <div className="flex items-center gap-4">
           <div className="text-right mr-4">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Estimado</p>
-            <p className="text-xl font-black text-indigo-600">${Math.round(currentTotal).toLocaleString()}</p>
+            <p className="text-xl font-black text-indigo-600">{formatCurrency(Math.round(currentTotal))}</p>
           </div>
           {(formData.pagos || []).length > 0 && (
             <div className="text-right mr-4 border-l pl-4 border-slate-200">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Abonado</p>
-              <p className="text-xl font-black text-blue-600">${Math.round(currentTotalPagos).toLocaleString()}</p>
+              <p className="text-xl font-black text-blue-600">{formatCurrency(Math.round(currentTotalPagos))}</p>
             </div>
           )}
           {(formData.pagos || []).length > 0 && saldoPendiente > 0 && (
             <div className="text-right mr-4 border-l pl-4 border-slate-200">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Saldo</p>
-              <p className="text-xl font-black text-amber-600">${Math.round(saldoPendiente).toLocaleString()}</p>
+              <p className="text-xl font-black text-amber-600">{formatCurrency(Math.round(saldoPendiente))}</p>
             </div>
           )}
           <Button
@@ -208,6 +209,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 onChange={(e) => handleChange({ target: { name: 'numeroReferencia', value: e.target.value } } as any)}
                 icon={Hash}
                 placeholder="Factura del Proveedor"
+                maxLength={30}
                 required
                 error={errors.numeroReferencia}
               />
@@ -245,6 +247,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                 value={formData.observaciones || ""}
                 onChange={(e) => handleChange({ target: { name: 'observaciones', value: e.target.value } } as any)}
                 placeholder="Nota u observación de la factura"
+                maxLength={250}
               />
             </div>
           </section>
@@ -307,7 +310,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                               const res = await searchProductos(q, 2, true); // tipoUso 2 = Compra
                               return res.success && res.data ? res.data : [];
                             }}
-                            getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0})`}
+                            getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} (${formatCurrency(p.precios?.[0]?.valor)})`}
                             getKey={(p: any) => p.id}
                             onSelect={(p: any) => {
                               const newDetalles = [...formData.detalles];
@@ -338,6 +341,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                               handleDetallesChange(newDetalles);
                             }}
                             placeholder="Ej. Servicio de consultoría"
+                            maxLength={120}
                             required
                             error={errors[`detalle_${index}_descripcion`]}
                           />
@@ -401,12 +405,15 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           name="cantidad"
                           type="number"
                           min={0}
-                          step="0.01"
+                          max={999}
+                          step="1"
+                          maxLength={3}
+                          onlyNumbers
                           value={detalle.cantidad === 0 ? '' : detalle.cantidad}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
                             const val = e.target.value;
-                            newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Number(val));
+                            newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Math.trunc(Number(val)));
                             handleDetallesChange(newDetalles);
                           }}
                           placeholder="0"
@@ -418,7 +425,11 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           name="valorUnitario"
                           type="number"
                           min={0}
+                          max={10000000}
                           step="0.01"
+                          maxLength={8}
+                          onlyNumbers
+                          allowDecimals
                           value={detalle.valorUnitario === 0 ? '' : (detalle.valorUnitario || '')}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
@@ -437,6 +448,9 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           min={0}
                           max={100}
                           step="0.01"
+                          maxLength={21}
+                          onlyNumbers
+                          allowDecimals
                           value={detalle.porcentajeDescuento === 0 ? '' : detalle.porcentajeDescuento}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const newDetalles = [...formData.detalles];
@@ -449,7 +463,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                         <div className="flex flex-col justify-end">
                           <label className="text-[10px] uppercase font-bold text-slate-500 mb-1">Subtotal</label>
                           <div className="bg-emerald-50 text-emerald-700 font-bold p-3 rounded-xl border border-emerald-100 text-center">
-                            ${Math.round((detalle.cantidad * (detalle.valorUnitario || 0)) - ((detalle.cantidad * (detalle.valorUnitario || 0)) * ((detalle.porcentajeDescuento || 0) / 100))).toLocaleString()}
+                            {formatCurrency(Math.round((detalle.cantidad * (detalle.valorUnitario || 0)) - ((detalle.cantidad * (detalle.valorUnitario || 0)) * ((detalle.porcentajeDescuento || 0) / 100))))}
                           </div>
                         </div>
                       </div>
@@ -499,6 +513,8 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                   type="number"
                   min={1}
                   max={365}
+                  maxLength={21}
+                  onlyNumbers
                   value={formData.diasCredito || ''}
                   onChange={(e: any) => handleChange({ target: { name: 'diasCredito', value: Number(e.target.value) || null } } as any)}
                   required
@@ -544,6 +560,9 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                         label="Monto Recibido"
                         name="monto"
                         type="number"
+                        maxLength={21}
+                        onlyNumbers
+                        allowDecimals
                         value={pago.monto || ""}
                         onChange={(e) => {
                           const newPagos = [...formData.pagos!];
@@ -566,6 +585,7 @@ const CreateCompras: React.FC<Props> = ({ onBack, initialCompraId }) => {
                           handlePagosChange(newPagos);
                         }}
                         placeholder="Nro. cheque, trans., etc."
+                        maxLength={40}
                       />
 
                       <InputField

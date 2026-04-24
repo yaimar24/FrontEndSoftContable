@@ -8,6 +8,7 @@ import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { ComprobanteContableRead } from '../../../domain/models/Contabilidad';
 import { Eye, FileText, PlusCircle } from 'lucide-react';
+import { formatCurrency } from '../../../utils/formatters';
 import LoadingOverlay from '../../components/shared/LoadingOverlay';
 import { useTutorial } from '../../../application/context/TutorialContext';
 
@@ -131,8 +132,8 @@ const matchTipo = filterTipo ? c.tipoComprobante === filterTipo : true;
       header: 'Debito / Credito',
       render: (item) => (
         <div className="flex flex-col">
-          <span className="text-emerald-600 font-black text-xs">${item.totalDebito.toLocaleString()}</span>
-          <span className="text-rose-600 font-black text-[10px]">${item.totalCredito.toLocaleString()}</span>
+          <span className="text-emerald-600 font-black text-xs">{formatCurrency(item.totalDebito)}</span>
+          <span className="text-rose-600 font-black text-[10px]">{formatCurrency(item.totalCredito)}</span>
         </div>
       )
     },

@@ -126,6 +126,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                   onChange={handleChange}
                   icon={Package}
                   required
+                  maxLength={80}
                   error={errors.nombre}
                 />
               </div>
@@ -136,6 +137,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 onChange={handleChange}
                 icon={Tag}
                 required
+                maxLength={30}
                 error={errors.sku}
               />
               <SelectField
@@ -176,13 +178,17 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                 label="Valor"
                 name="valor"
                 type="number"
+                max={10000000}
+                maxLength={8}
+                onlyNumbers
+                allowDecimals
                 value={formData.precios?.[0]?.valor || 0}
                 onChange={(e) => {
                   const newPrecios = [...(formData.precios || [])];
                   if (newPrecios.length === 0) {
                     newPrecios.push({ nombreLista: "General", valor: 0, incluyeIva: false });
                   }
-                  newPrecios[0].valor = Number(e.target.value);
+                  newPrecios[0].valor = Math.max(0, Number(e.target.value));
                   handleChange({
                     target: { name: "precios", value: newPrecios as unknown },
                   });

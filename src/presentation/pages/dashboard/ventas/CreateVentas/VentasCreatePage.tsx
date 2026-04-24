@@ -11,6 +11,7 @@ import { getNombreColegioFromToken } from "../../../../../utils/jwt";
 import { buscarTerceros } from "../../../../../data/services/terceros/terceroService";
 import { searchProductos } from "../../../../../data/services/producto/productoService";
 import type { FacturaDetalleCreateDTO, ReciboCajaCreate } from "../../../../../domain/models/Venta";
+import { formatCurrency } from '../../../../../utils/formatters';
 
 interface Props {
   initialData?: any;
@@ -137,18 +138,18 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
         <div className="flex items-center gap-4">
           <div className="text-right mr-4">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Estimado</p>
-            <p className="text-xl font-black text-emerald-600">${Math.round(currentTotal).toLocaleString()}</p>
+            <p className="text-xl font-black text-emerald-600">{formatCurrency(Math.round(currentTotal))}</p>
           </div>
           {(formData.pagos || []).length > 0 && (
             <div className="text-right mr-4 border-l pl-4 border-slate-200">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Abonado</p>
-              <p className="text-xl font-black text-blue-600">${Math.round(currentTotalPagos).toLocaleString()}</p>
+              <p className="text-xl font-black text-blue-600">{formatCurrency(Math.round(currentTotalPagos))}</p>
             </div>
           )}
           {(formData.pagos || []).length > 0 && saldoPendiente > 0 && (
              <div className="text-right mr-4 border-l pl-4 border-slate-200">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Saldo</p>
-              <p className="text-xl font-black text-amber-600">${Math.round(saldoPendiente).toLocaleString()}</p>
+              <p className="text-xl font-black text-amber-600">{formatCurrency(Math.round(saldoPendiente))}</p>
             </div>
           )}
             <Button 
@@ -275,7 +276,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                             const res = await searchProductos(q, 1, true); // tipoUso 1 = Venta
                             return res.success && res.data ? res.data : [];
                           }}
-                          getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}
+                          getDisplayValue={(p: any) => `${p.sku || 'S/N'} - ${p.nombre} (${formatCurrency(p.precios?.[0]?.valor)}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion}%)` : ''}`}
                           getKey={(p: any) => p.id}
                           onSelect={(p: any) => {
                             const newDetalles = [...formData.detalles];
@@ -327,12 +328,15 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         name="cantidad"
                         type="number"
                         min={0}
-                        step="0.01"
+                        max={999}
+                        step="1"
+                        maxLength={3}
+                        onlyNumbers
                         value={detalle.cantidad === 0 ? '' : detalle.cantidad}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
                           const val = e.target.value;
-                          newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Number(val));
+                          newDetalles[index].cantidad = val === '' ? 0 : Math.max(0, Math.trunc(Number(val)));
                           handleDetallesChange(newDetalles);
                         }}
                         required
@@ -344,7 +348,11 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         name="valorUnitario"
                         type="number"
                         min={0}
+                        max={10000000}
                         step="0.01"
+                        maxLength={8}
+                        onlyNumbers
+                        allowDecimals
                         value={detalle.valorUnitario === 0 ? '' : detalle.valorUnitario}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
@@ -363,6 +371,9 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         min={0}
                         max={100}
                         step="0.01"
+                        maxLength={21}
+                        onlyNumbers
+                        allowDecimals
                         value={detalle.porcentajeDescuento === 0 ? '' : detalle.porcentajeDescuento}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newDetalles = [...formData.detalles];
@@ -411,7 +422,7 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
             </div>
 
-            {condicionPago === 'CREDITO' ? ( <div className='grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50'> <InputField label='Días de Crédito' name='diasCredito' type='number' min={1} max={365} value={formData.diasCredito || ''} onChange={(e: any) => handleChange({ target: { name: 'diasCredito', value: Number(e.target.value) || null } } as any)} required error={errors.diasCredito} /> <div className='flex flex-col justify-center'> <p className='text-sm font-medium p-2 mt-[26px] bg-white rounded-lg border border-emerald-200 text-center text-slate-600'>Vencimiento: {formData.diasCredito ? new Date(new Date(formData.fechaElaboracion + 'T12:00:00').getTime() + (formData.diasCredito * 24 * 60 * 60 * 1000)).toLocaleDateString() : 'Ingresa días'} </p> </div> <div className='col-span-1 md:col-span-2 text-center mt-2 p-3 bg-amber-50 border border-amber-100 rounded-xl'> <p className='text-xs text-amber-600 font-medium'>Factura a Crédito. Quedará en estado Pendiente.</p> </div> </div> ) : (
+            {condicionPago === 'CREDITO' ? ( <div className='grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50'> <InputField label='Días de Crédito' name='diasCredito' type='number' min={1} max={365} maxLength={21} onlyNumbers value={formData.diasCredito || ''} onChange={(e: any) => handleChange({ target: { name: 'diasCredito', value: Number(e.target.value) || null } } as any)} required error={errors.diasCredito} /> <div className='flex flex-col justify-center'> <p className='text-sm font-medium p-2 mt-[26px] bg-white rounded-lg border border-emerald-200 text-center text-slate-600'>Vencimiento: {formData.diasCredito ? new Date(new Date(formData.fechaElaboracion + 'T12:00:00').getTime() + (formData.diasCredito * 24 * 60 * 60 * 1000)).toLocaleDateString() : 'Ingresa días'} </p> </div> <div className='col-span-1 md:col-span-2 text-center mt-2 p-3 bg-amber-50 border border-amber-100 rounded-xl'> <p className='text-xs text-amber-600 font-medium'>Factura a Crédito. Quedará en estado Pendiente.</p> </div> </div> ) : (
               <div className="space-y-4">
                 {formData.pagos?.map((pago: ReciboCajaCreate, index: number) => (
                   <div key={index} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
@@ -435,6 +446,9 @@ const VentasCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
                         label="Monto Recibido"
                         name="monto"
                         type="number"
+                        maxLength={21}
+                        onlyNumbers
+                        allowDecimals
                         value={pago.monto || ""}
                         onChange={(e) => {
                           const newPagos = [...formData.pagos!];

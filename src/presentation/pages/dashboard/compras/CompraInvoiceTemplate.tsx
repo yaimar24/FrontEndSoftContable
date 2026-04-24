@@ -2,6 +2,7 @@ import React from 'react';
 import type { FacturaCompraReadDTO } from '../../../../domain/models/FacturaCompra';
 import { getNombreColegioFromToken, getLogoUrlFromToken } from '../../../../utils/jwt';
 import { useAuth } from '../../../../application/hooks/useAuth';
+import { formatCurrency, formatDate } from '../../../../utils/formatters';
 
 interface CompraInvoiceTemplateProps {
   factura: FacturaCompraReadDTO | null;
@@ -27,20 +28,6 @@ export const CompraInvoiceTemplate: React.FC<CompraInvoiceTemplateProps> = ({ fa
 
   const rawLogoUrl = localStorage.getItem('logoUrl') || getLogoUrlFromToken(token);
   const logoUrl = rawLogoUrl ? (rawLogoUrl.startsWith('http') ? new URL(new URL(rawLogoUrl).pathname, window.location.origin).toString() : rawLogoUrl) : null;
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-CO', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hour12: true
-    }).format(date);
-  };
-
-  const formatCurrency = (val?: number) => {
-    return (val || 0).toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
-  };
 
   const expirationDate = new Date(factura.fechaElaboracion || new Date());
   expirationDate.setDate(expirationDate.getDate() + 30);
