@@ -5,6 +5,7 @@ import SearchBar from "../../../components/molecules/SearchBar";
 import { Table } from "../../../components/organisms/Table";
 import type { ProductoReadDTO } from "../../../../domain/models/Producto";
 import { useFilter } from "../../../../application/hooks/useGenericFilter";
+import { formatCurrency } from '../../../../utils/formatters';
 import { 
   exportToExcel, 
   exportToPDF, 
@@ -54,7 +55,7 @@ const ProductosList: React.FC<Props> = ({  data = [], onEdit , isServer, paginat
       { header: "CATEGORÍA", dataKey: "categoriaNombre" },
       { 
         header: "PRECIO BASE", 
-        dataKey: (p) => p.precios[0]?.valor ? `$${p.precios[0].valor.toLocaleString()}` : "$0" 
+        dataKey: (p) => p.precios[0]?.valor ? formatCurrency(p.precios[0].valor) : "$0" 
       },
       { header: "TIPO", dataKey: (p) => (p.esServicio ? "SERVICIO" : "PRODUCTO") },
       { header: "IVA", dataKey: (p) => p.impuestoCargoNombre || "EXENTO" },
@@ -91,7 +92,7 @@ const ProductosList: React.FC<Props> = ({  data = [], onEdit , isServer, paginat
     {
       header: "Precio Base",
       render: (p: ProductoReadDTO) => (
-        <span className="font-bold text-slate-700">${p.precios[0]?.valor.toLocaleString()}</span>
+        <span className="font-bold text-slate-700">{formatCurrency(p.precios[0]?.valor)}</span>
       )
     },
     {

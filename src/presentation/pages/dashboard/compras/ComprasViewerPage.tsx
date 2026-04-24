@@ -13,6 +13,7 @@ import { FileText, Banknote, ShoppingCart, CheckCircle, Edit2, Download, ArrowLe
 import { Link } from 'react-router-dom';
 import NotasFacturaSection from '../notas/NotasFacturaSection';
 import NotaCreatePage from '../notas/NotaCreatePage';
+import { formatCurrency } from '../../../../utils/formatters';
 
 const ComprasViewerPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -103,11 +104,6 @@ const ComprasViewerPage: React.FC = () => {
   if (compra.estadoId === 3) badgeColor = "bg-amber-100 text-amber-600"; // Pendiente
   if (compra.estadoId === 4) badgeColor = "bg-blue-100 text-blue-600"; // Parcial
   if (compra.estadoId === 5) badgeColor = "bg-emerald-100 text-emerald-600"; // Pagado
-
-  const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null) return '$ 0';
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value);
-  };
 
   return (
     <div className="bg-slate-50 min-h-screen pb-12">

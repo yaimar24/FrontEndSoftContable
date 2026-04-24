@@ -1,4 +1,4 @@
-import { type ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface InputFieldProps {
@@ -46,10 +46,112 @@ const InputField: React.FC<InputFieldProps> = ({
   step,
   autoComplete,
 }) => {
+  const isNumericInput = type === 'number' || onlyNumbers;
+
+  const expandScientificNotation = (rawValue: string) => {
+    if (!/[eE]/.test(rawValue)) {
+      return rawValue;
+    }
+
+    const [coefficient, exponentPart] = rawValue.toLowerCase().split('e');
+    const exponent = Number(exponentPart);
+
+    if (!Number.isFinite(exponent)) {
+      return rawValue;
+    }
+
+    const isNegative = coefficient.startsWith('-');
+    const unsignedCoefficient = isNegative ? coefficient.slice(1) : coefficient;
+    const [integerPart, decimalPart = ''] = unsignedCoefficient.split('.');
+    const digits = `${integerPart}${decimalPart}`.replace(/^0+(?=\d)/, '') || '0';
+    const decimalIndex = integerPart.length;
+    const targetIndex = decimalIndex + exponent;
+
+    let expanded = '';
+
+    if (targetIndex <= 0) {
+      expanded = `0.${'0'.repeat(Math.abs(targetIndex))}${digits}`;
+    } else if (targetIndex >= digits.length) {
+      expanded = `${digits}${'0'.repeat(targetIndex - digits.length)}`;
+    } else {
+      expanded = `${digits.slice(0, targetIndex)}.${digits.slice(targetIndex)}`;
+    }
+
+    return isNegative ? `-${expanded}` : expanded;
+  };
+
+  const normalizeDisplayValue = (rawValue: string | number | boolean) => {
+    if (!isNumericInput) {
+      return String(rawValue);
+    }
+
+    return expandScientificNotation(String(rawValue));
+  };
+
+  const externalDisplayValue = value === undefined || value === null ? '' : normalizeDisplayValue(value);
+
+  const [displayValue, setDisplayValue] = useState(externalDisplayValue);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const sanitizeNumericValue = (rawValue: string) => {
+    let sanitizedValue = rawValue.replace(/[eE+-]/g, '');
+
+    if (allowDecimals) {
+      sanitizedValue = sanitizedValue.replace(/,/g, '.').replace(/[^\d.]/g, '');
+
+      const firstDotIndex = sanitizedValue.indexOf('.');
+      if (firstDotIndex !== -1) {
+        const integerPart = sanitizedValue.slice(0, firstDotIndex + 1);
+        const decimalPart = sanitizedValue.slice(firstDotIndex + 1).replace(/\./g, '');
+        sanitizedValue = `${integerPart}${decimalPart}`;
+      }
+    } else {
+      sanitizedValue = sanitizedValue.replace(/\D/g, '');
+    }
+
+    // Limitar dígitos enteros a 15 para evitar pérdida de precisión con Number de JS
+    const MAX_SAFE_DIGITS = 15;
+    const effectiveMaxLength = maxLength && maxLength > 0 ? Math.min(maxLength, MAX_SAFE_DIGITS) : MAX_SAFE_DIGITS;
+
+    if (allowDecimals) {
+      const dotIndex = sanitizedValue.indexOf('.');
+      if (dotIndex !== -1) {
+        const intPart = sanitizedValue.slice(0, dotIndex).slice(0, effectiveMaxLength);
+        const decPart = sanitizedValue.slice(dotIndex + 1);
+        sanitizedValue = `${intPart}.${decPart}`;
+      } else {
+        sanitizedValue = sanitizedValue.slice(0, effectiveMaxLength);
+      }
+    } else {
+      sanitizedValue = sanitizedValue.slice(0, effectiveMaxLength);
+    }
+
+    return sanitizedValue;
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isNumericInput) {
+      onChange(e);
+      return;
+    }
+
+    const sanitizedValue = sanitizeNumericValue(e.target.value);
+    setDisplayValue(sanitizedValue);
+
+    if (sanitizedValue !== e.target.value) {
+      e.target.value = sanitizedValue;
+    }
+
+    onChange({
+      ...e,
+      target: { ...e.target, value: sanitizedValue },
+      currentTarget: { ...e.currentTarget, value: sanitizedValue },
+    } as ChangeEvent<HTMLInputElement>);
+  };
 
   // Filtro de teclado para proteger el campo
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (onlyNumbers) {
+    if (isNumericInput) {
       const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'];
       
       // Si permitimos decimales, dejamos pasar el punto o la coma
@@ -79,20 +181,32 @@ const InputField: React.FC<InputFieldProps> = ({
         )}
 
         <input
-          type={type === 'password' && showToggle ? (showPassword ? 'text' : 'password') : type}
+           type={type === 'password' && showToggle ? (showPassword ? 'text' : 'password') : isNumericInput ? 'text' : type}
           name={name}
           {...(type === 'checkbox' 
              ? { checked: !!value } 
-             : { value: value === undefined || value === null ? '' : String(value) }
+             : { value: isNumericInput ? (isFocused ? displayValue : externalDisplayValue) : externalDisplayValue }
           )}
-          onChange={onChange}
+          onChange={handleInputChange}
+          onFocus={() => {
+            if (isNumericInput) {
+              setDisplayValue(externalDisplayValue);
+            }
+            setIsFocused(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            if (isNumericInput) {
+              setDisplayValue(externalDisplayValue);
+            }
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           maxLength={maxLength}
           min={min}
           max={max}
           step={step}
-          inputMode={onlyNumbers ? (allowDecimals ? "decimal" : "numeric") : undefined}
+          inputMode={isNumericInput ? (allowDecimals ? "decimal" : "numeric") : undefined}
           className={`w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 outline-none transition-all
             ${Icon ? 'pl-11' : ''}
             ${showToggle ? 'pr-11' : ''}

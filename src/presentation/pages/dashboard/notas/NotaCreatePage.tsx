@@ -282,7 +282,7 @@ const NotaCreatePage: React.FC<Props> = ({
                               const res = await searchProductos(q, tipoUso, true);
                               return res.success && res.data ? res.data : [];
                             }}
-                            getDisplayValue={(p: ProductoConImpuestos) => `${p.sku || 'S/N'} - ${p.nombre} ($${p.precios?.[0]?.valor?.toLocaleString() || 0}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo || p.tarifaIva || 0}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion || 0}%)` : ''}`}
+                            getDisplayValue={(p: ProductoConImpuestos) => `${p.sku || 'S/N'} - ${p.nombre} (${formatCurrency(p.precios?.[0]?.valor)}) ${p.impuestoCargoNombre ? `| Cargo: ${p.impuestoCargoNombre} (${p.tarifaCargo || p.tarifaIva || 0}%)` : ''} ${p.retencionNombre ? `| Ret: ${p.retencionNombre} (${p.tarifaRetencion || 0}%)` : ''}`}
                             getKey={(p: ProductoReadDTO) => p.id}
                             onSelect={(p: ProductoConImpuestos) => {
                               const updated = [...formData.detalles];
@@ -332,9 +332,10 @@ const NotaCreatePage: React.FC<Props> = ({
                           <input
                             type="number"
                             min={1}
+                            max={999}
                             step="any"
                             value={det.cantidad}
-                            onChange={(e) => updateDetalle(index, "cantidad", Number(e.target.value))}
+                            onChange={(e) => updateDetalle(index, "cantidad", Math.max(0, Math.trunc(Number(e.target.value))))}
                             className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-sm outline-none focus:ring-1 focus:ring-blue-500"
                           />
                           {errors[`detalle_${index}_cantidad`] && (
@@ -345,9 +346,10 @@ const NotaCreatePage: React.FC<Props> = ({
                           <input
                             type="number"
                             min={0}
+                            max={10000000}
                             step="any"
                             value={det.valorUnitario}
-                            onChange={(e) => updateDetalle(index, "valorUnitario", Number(e.target.value))}
+                            onChange={(e) => updateDetalle(index, "valorUnitario", Math.max(0, Number(e.target.value)))}
                             className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-right text-sm outline-none focus:ring-1 focus:ring-blue-500"
                           />
                           {errors[`detalle_${index}_valor`] && (

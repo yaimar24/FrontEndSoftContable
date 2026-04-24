@@ -4,6 +4,7 @@ import { Table, type Column } from '../../components/organisms/Table';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoContableRead } from '../../../domain/models/Contabilidad';
 import LoadingOverlay from '../../components/shared/LoadingOverlay';
+import { formatCurrency } from '../../../utils/formatters';
 
 export const ContabilidadDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,11 +52,11 @@ export const ContabilidadDetailPage = () => {
     },
     {
       header: 'Débito',
-      render: (m) => <span className="text-emerald-700 font-bold">${m.debito.toLocaleString()}</span>
+      render: (m) => <span className="text-emerald-700 font-bold">{formatCurrency(m.debito)}</span>
     },
     {
       header: 'Crédito',
-      render: (m) => <span className="text-rose-600 font-bold">${m.credito.toLocaleString()}</span>
+      render: (m) => <span className="text-rose-600 font-bold">{formatCurrency(m.credito)}</span>
     }
   ];
 
@@ -118,11 +119,11 @@ export const ContabilidadDetailPage = () => {
           </span>
           <span className="flex justify-between sm:flex-col sm:text-right gap-4 sm:gap-1 z-10 w-full sm:w-auto items-end">
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-100">Débito</span> 
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-emerald-700">${comprobanteDetail.totalDebito.toLocaleString()}</span>
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-emerald-700">{formatCurrency(comprobanteDetail.totalDebito)}</span>
           </span>
           <span className="flex justify-between sm:flex-col sm:text-right gap-4 sm:gap-1 z-10 w-full sm:w-auto items-end">
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-rose-50 text-rose-600 px-2 py-0.5 rounded border border-rose-100">Crédito</span> 
-            <span className="text-xl sm:text-2xl font-black tracking-tight text-rose-700">${comprobanteDetail.totalCredito.toLocaleString()}</span>
+            <span className="text-xl sm:text-2xl font-black tracking-tight text-rose-700">{formatCurrency(comprobanteDetail.totalCredito)}</span>
           </span>
         </div>
       </div>

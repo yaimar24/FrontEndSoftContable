@@ -7,6 +7,7 @@ import PageHeader from "../../../../components/organisms/PageHeader";
 import { ArrowLeft, Printer, Banknote } from "lucide-react";
 import Button from "../../../../components/atoms/Button";
 import { AsientosContablesSection } from "../../../../components/organisms/AsientosContablesSection";
+import { formatCurrency } from '../../../../../utils/formatters';
 
 export const EgresoViewer = () => {
   const { id } = useParams<{ id: string }>();
@@ -128,7 +129,7 @@ export const EgresoViewer = () => {
 
           <div className="mt-8 bg-slate-50 border-t-4 border-slate-800 p-6 rounded-xl text-right">
             <p className="text-slate-500 uppercase tracking-widest text-[10px] font-black mb-2">Monto Pagado</p>
-            <p className="text-5xl font-black text-slate-800 tracking-tighter">${egreso.monto?.toLocaleString()}</p>
+            <p className="text-5xl font-black text-slate-800 tracking-tighter">{formatCurrency(egreso.monto)}</p>
           </div>
         </div>
       </div>

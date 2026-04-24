@@ -15,6 +15,7 @@ import { CompraInvoiceTemplate } from './CompraInvoiceTemplate';
 import PageHeader from "../../../components/organisms/PageHeader";
 import { useTutorial } from '../../../../application/context/TutorialContext';
 import { getCompraEstadoInfo } from '../../../../utils/statusHelpers';
+import { formatCurrency } from '../../../../utils/formatters';
 
 const ComprasPage: React.FC = () => {
   const navigate = useNavigate();
@@ -187,7 +188,7 @@ const ComprasPage: React.FC = () => {
     {
       header: "Total Neto",
       render: (v: FacturaCompraReadDTO) => (
-        <span className="font-bold text-slate-700">${v.totalNeto?.toLocaleString()}</span>
+        <span className="font-bold text-slate-700">{formatCurrency(v.totalNeto)}</span>
       )
     },
     {
@@ -195,7 +196,7 @@ const ComprasPage: React.FC = () => {
       render: (v: FacturaCompraReadDTO) => {
         const saldo = v.saldo ?? 0;
         return (
-          <span className={`font-bold ${saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>${saldo.toLocaleString()}</span>
+          <span className={`font-bold ${saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>{formatCurrency(saldo)}</span>
         );
       }
     },

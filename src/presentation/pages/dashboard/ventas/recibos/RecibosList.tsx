@@ -8,8 +8,7 @@ import { useGlobalLoading as useLoading } from "../../../../../application/conte
 import { Eye, FileText, Banknote } from "lucide-react";
 import SearchBar from "../../../../components/molecules/SearchBar";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
-import { useTutorial } from "../../../../../application/context/TutorialContext";
-
+import { useTutorial } from "../../../../../application/context/TutorialContext";import { formatCurrency } from '../../../../../utils/formatters';
 export const RecibosList = () => {
   const [data, setData] = useState<ReciboCajaRead[]>([]);
   const { show, hide } = useLoading();
@@ -85,7 +84,7 @@ export const RecibosList = () => {
     {
       header: "Monto",
       render: (v: ReciboCajaRead) => (
-        <span className="font-bold text-slate-700">${v.monto?.toLocaleString()}</span>
+        <span className="font-bold text-slate-700">{formatCurrency(v.monto)}</span>
       )
     },
     {

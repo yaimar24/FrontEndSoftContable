@@ -7,6 +7,7 @@ import StatusModal from '../../components/organisms/StatusModal';
 import { useContabilidad } from '../../../application/hooks/useContabilidad';
 import type { MovimientoContableCreate } from '../../../domain/models/Contabilidad';
 import { useTutorial } from '../../../application/context/TutorialContext';
+import { formatCurrency } from '../../../utils/formatters';
 
 export const ContabilidadNuevoPage = () => {
   const navigate = useNavigate();
@@ -246,19 +247,19 @@ export const ContabilidadNuevoPage = () => {
           <div className="flex gap-8 items-center bg-white py-3 px-6 rounded-2xl shadow-sm border border-[#1e3a8a]/10 w-full md:w-auto">
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Débito</p>
-              <p className="text-xl font-black tracking-tight text-emerald-600">${totales.debito.toLocaleString()}</p>
+              <p className="text-xl font-black tracking-tight text-emerald-600">{formatCurrency(totales.debito)}</p>
             </div>
             <div className="h-8 w-px bg-slate-200 mx-2"></div>
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Crédito</p>
-              <p className="text-xl font-black tracking-tight text-rose-600">${totales.credito.toLocaleString()}</p>
+              <p className="text-xl font-black tracking-tight text-rose-600">{formatCurrency(totales.credito)}</p>
             </div>
             {!isCuadrado && movimientos.length > 0 && (
               <>
                 <div className="h-8 w-px bg-rose-200 mx-2"></div>
                 <div>
                   <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1">Diferencia</p>
-                  <p className="text-lg font-black tracking-tight text-rose-600">${Math.abs(totales.debito - totales.credito).toLocaleString()}</p>
+                  <p className="text-lg font-black tracking-tight text-rose-600">{formatCurrency(Math.abs(totales.debito - totales.credito))}</p>
                 </div>
               </>
             )}

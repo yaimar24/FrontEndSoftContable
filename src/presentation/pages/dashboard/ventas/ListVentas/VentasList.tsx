@@ -7,6 +7,7 @@ import type { FacturaVentaReadDTO } from "../../../../../domain/models/Venta";
 import { useFilter } from "../../../../../application/hooks/useGenericFilter";
 import { exportToExcel, exportToPDF, type ExportConfig } from "../../../../../utils/exportUtils";
 import { getVentaEstadoInfo } from "../../../../../utils/statusHelpers";
+import { formatCurrency } from '../../../../../utils/formatters';
 
 interface Props {
   data: FacturaVentaReadDTO[];
@@ -52,7 +53,7 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
       { header: "FECHA ELABORACIÓN", dataKey: (v) => new Date(v.fechaElaboracion).toLocaleDateString() },
       { header: "FECHA REGISTRO", dataKey: (v) => v.fechaRegistro ? new Date(v.fechaRegistro).toLocaleString() : 'N/A' },
       { header: "TIPO", dataKey: "tipoFacturaNombre" },
-      { header: "TOTAL", dataKey: (v) => `$${v.totalNeto.toLocaleString()}` },
+      { header: "TOTAL", dataKey: (v) => formatCurrency(v.totalNeto) },
       { header: "ESTADO", dataKey: "estadoNombre" },
     ],
   };
@@ -90,13 +91,13 @@ const [localData, setLocalData] = useState<FacturaVentaReadDTO[]>(Array.isArray(
     {
       header: "Total Neto",
       render: (v: FacturaVentaReadDTO) => (
-        <span className="font-bold text-slate-700">${v.totalNeto?.toLocaleString()}</span>
+        <span className="font-bold text-slate-700">{formatCurrency(v.totalNeto)}</span>
       )
     },
     {
       header: "Saldo Pendiente",
       render: (v: FacturaVentaReadDTO) => (
-        <span className={`font-bold ${v.saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>${v.saldo?.toLocaleString()}</span>
+        <span className={`font-bold ${v.saldo > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>{formatCurrency(v.saldo)}</span>
       )
     },
     {
