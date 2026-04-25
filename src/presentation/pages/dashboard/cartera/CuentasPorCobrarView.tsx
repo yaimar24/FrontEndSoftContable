@@ -4,11 +4,13 @@ import SearchBar from '../../../components/molecules/SearchBar';
 import { FilterGroup } from '../../../components/molecules/FilterGroup';
 import { useCartera } from '../../../../application/hooks/useCartera';
 import type { CuentaPorCobrar } from '../../../../domain/models/Cartera';
-import { FileText, Eye } from 'lucide-react';
+import { FileText, Eye, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../../../utils/formatters';
 import { getDiasVencidosBadge, getEstadoBadgeColor as getEstadoBadge } from '../../../../utils/statusHelpers';
 import { ModuleGate } from '../../../components/shared/ModuleGate';
+import StatusModal from '../../../components/organisms/StatusModal';
+import { enviarRecordatorio } from '../../../../data/services/cartera/carteraService';
 
 export const CuentasPorCobrarView = () => {
   const navigate = useNavigate();
@@ -18,6 +20,45 @@ export const CuentasPorCobrarView = () => {
   const [filterEstado, setFilterEstado] = useState('');
   const [desde, setDesde] = useState('');
   const [hasta, setHasta] = useState('');
+
+  // Recordatorio state
+  const [confirmModal, setConfirmModal] = useState<{ show: boolean; facturaId: number; clienteNombre: string }>({ show: false, facturaId: 0, clienteNombre: '' });
+  const [resultModal, setResultModal] = useState({ show: false, success: false, message: '' });
+  const [sendingId, setSendingId] = useState<number | null>(null);
+  const [cooldowns, setCooldowns] = useState<Record<number, number>>({});
+
+  const cooldownCount = Object.keys(cooldowns).length;
+
+  useEffect(() => {
+    if (cooldownCount === 0) return;
+    const timer = setInterval(() => {
+      setCooldowns((prev) => {
+        const next: Record<number, number> = {};
+        for (const [id, val] of Object.entries(prev)) {
+          if (val > 1) next[Number(id)] = val - 1;
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownCount]);
+
+  const handleSendRecordatorio = async () => {
+    const { facturaId } = confirmModal;
+    setConfirmModal({ show: false, facturaId: 0, clienteNombre: '' });
+    setSendingId(facturaId);
+    try {
+      const res = await enviarRecordatorio(facturaId);
+      setResultModal({ show: true, success: res.success, message: res.message });
+      if (res.success) {
+        setCooldowns((prev) => ({ ...prev, [facturaId]: 60 }));
+      }
+    } catch (err) {
+      setResultModal({ show: true, success: false, message: (err as Error).message || 'Error al enviar recordatorio' });
+    } finally {
+      setSendingId(null);
+    }
+  };
 
   useEffect(() => {
     const estadoNum = filterEstado !== '' ? Number(filterEstado) : undefined;
@@ -91,8 +132,22 @@ export const CuentasPorCobrarView = () => {
       header: 'Acciones',
       className: 'text-right',
       render: (item) => (
-        <ModuleGate route="/dashboard/ventas">
-          <div className="flex justify-end">
+        <div className="flex justify-end gap-1.5">
+          {item.saldo > 0 && item.estado !== 'Anulada' && item.estado !== 'Pagada' && (
+            <button
+              onClick={() => setConfirmModal({ show: true, facturaId: item.facturaId, clienteNombre: item.clienteNombre })}
+              disabled={sendingId === item.facturaId || !!cooldowns[item.facturaId]}
+              className="p-2.5 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              title={cooldowns[item.facturaId] ? `Espera ${cooldowns[item.facturaId]}s` : "Enviar recordatorio"}
+            >
+              {sendingId === item.facturaId ? (
+                <div className="w-3.5 h-3.5 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+              ) : (
+                <Mail size={15} strokeWidth={2.5} />
+              )}
+            </button>
+          )}
+          <ModuleGate route="/dashboard/ventas">
             <button
               onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
               className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
@@ -100,8 +155,8 @@ export const CuentasPorCobrarView = () => {
             >
               <Eye size={15} strokeWidth={2.5} />
             </button>
-          </div>
-        </ModuleGate>
+          </ModuleGate>
+        </div>
       )
     }
   ];
@@ -147,6 +202,25 @@ export const CuentasPorCobrarView = () => {
           <Table data={filteredData} columns={columns} />
         )}
       </div>
+
+      {/* Modal confirmar recordatorio */}
+      <StatusModal
+        show={confirmModal.show}
+        type="confirm"
+        message={`¿Enviar recordatorio de pago a ${confirmModal.clienteNombre}?`}
+        onConfirm={handleSendRecordatorio}
+        onClose={() => setConfirmModal({ show: false, facturaId: 0, clienteNombre: '' })}
+        confirmText="Enviar"
+        cancelText="Cancelar"
+      />
+
+      {/* Modal resultado */}
+      <StatusModal
+        show={resultModal.show}
+        success={resultModal.success}
+        message={resultModal.message}
+        onClose={() => setResultModal((m) => ({ ...m, show: false }))}
+      />
     </div>
   );
 };

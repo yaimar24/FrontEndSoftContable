@@ -134,16 +134,24 @@ const LoginForm = () => {
         </form>
 
         {/* Footer */}
-        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 text-center space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            ¿No tienes cuenta?
-          </p>
+        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 text-center space-y-3">
           <button
-            onClick={() => navigate("/register")}
-            className="text-sm font-black text-[#1e3a8a] hover:text-emerald-600 transition-colors uppercase"
+            onClick={() => navigate("/forgot-password")}
+            className="text-xs font-bold text-slate-400 hover:text-[#1e3a8a] transition-colors uppercase tracking-widest"
           >
-            Regístrate ahora
+            ¿Olvidaste tu contraseña?
           </button>
+          <div className="space-y-1">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              ¿No tienes cuenta?
+            </p>
+            <button
+              onClick={() => navigate("/register")}
+              className="text-sm font-black text-[#1e3a8a] hover:text-emerald-600 transition-colors uppercase"
+            >
+              Regístrate ahora
+            </button>
+          </div>
         </div>
       </div>
 
