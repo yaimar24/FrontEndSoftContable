@@ -9,6 +9,8 @@ import Dashboard from "@/presentation/pages/dashboard/Dashboard";
 
 // Lazy-loaded pages
 const LoginForm = lazy(() => import("@/presentation/pages/login/LoginForm"));
+const ForgotPasswordPage = lazy(() => import("@/presentation/pages/login/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/presentation/pages/login/ResetPasswordPage"));
 const RegisterForm = lazy(() => import("@/presentation/pages/register/RegisterForm").then(m => ({ default: m.RegisterForm })));
 const DashboardHome = lazy(() => import("@/presentation/pages/dashboard/DashboardHome"));
 const PerfilForm = lazy(() => import("@/presentation/pages/dashboard/perfil/PerfilPage"));
@@ -42,6 +44,8 @@ const AppRoutes = () => (
         <Routes>
           {/* RUTAS PÚBLICAS */}
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<RegisterForm />} />
 
           {/* RUTAS PROTEGIDAS */}

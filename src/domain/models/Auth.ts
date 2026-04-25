@@ -11,3 +11,13 @@ export interface LoginData {
 }
 
 export type LoginResponse = ApiResponse<LoginData>;
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  codigo: string;
+  nuevaPassword: string;
+}

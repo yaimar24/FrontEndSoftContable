@@ -49,3 +49,7 @@ export const getResumenPorCliente = async (): Promise<ApiResponse<ResumenCliente
 export const getHistorico = async (fecha: string): Promise<ApiResponse<HistoricoCartera>> => {
   return await apiClient(`/api/Cartera/historico?fecha=${fecha}`);
 };
+
+export const enviarRecordatorio = async (facturaId: number): Promise<ApiResponse<string>> => {
+  return await apiClient(`/api/Cartera/recordatorio/${facturaId}`, { method: 'POST' });
+};
