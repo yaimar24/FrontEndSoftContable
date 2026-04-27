@@ -48,6 +48,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => {
   const isNumericInput = type === 'number' || onlyNumbers;
 
+  // Mantenemos tu lógica original de Notación Científica
   const expandScientificNotation = (rawValue: string) => {
     if (!/[eE]/.test(rawValue)) {
       return rawValue;
@@ -84,15 +85,15 @@ const InputField: React.FC<InputFieldProps> = ({
     if (!isNumericInput) {
       return String(rawValue);
     }
-
     return expandScientificNotation(String(rawValue));
   };
 
+  // Esta es la fuente de verdad corregida
   const externalDisplayValue = value === undefined || value === null ? '' : normalizeDisplayValue(value);
 
-  const [displayValue, setDisplayValue] = useState(externalDisplayValue);
   const [isFocused, setIsFocused] = useState(false);
 
+  // Mantenemos tu sanitizador original
   const sanitizeNumericValue = (rawValue: string) => {
     let sanitizedValue = rawValue.replace(/[eE+-]/g, '');
 
@@ -109,7 +110,6 @@ const InputField: React.FC<InputFieldProps> = ({
       sanitizedValue = sanitizedValue.replace(/\D/g, '');
     }
 
-    // Limitar dígitos enteros a 15 para evitar pérdida de precisión con Number de JS
     const MAX_SAFE_DIGITS = 15;
     const effectiveMaxLength = maxLength && maxLength > 0 ? Math.min(maxLength, MAX_SAFE_DIGITS) : MAX_SAFE_DIGITS;
 
@@ -136,30 +136,19 @@ const InputField: React.FC<InputFieldProps> = ({
     }
 
     const sanitizedValue = sanitizeNumericValue(e.target.value);
-    setDisplayValue(sanitizedValue);
 
-    if (sanitizedValue !== e.target.value) {
-      e.target.value = sanitizedValue;
-    }
+    // Actualizamos el valor directamente en el evento
+    e.target.value = sanitizedValue;
 
-    onChange({
-      ...e,
-      target: { ...e.target, value: sanitizedValue },
-      currentTarget: { ...e.currentTarget, value: sanitizedValue },
-    } as ChangeEvent<HTMLInputElement>);
+    onChange(e);
   };
 
-  // Filtro de teclado para proteger el campo
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (isNumericInput) {
       const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'];
-      
-      // Si permitimos decimales, dejamos pasar el punto o la coma
       if (allowDecimals && (e.key === '.' || e.key === ',')) return;
-      
       if (allowedKeys.includes(e.key)) return;
 
-      // Bloquear si no es número
       if (!/[0-9]/.test(e.key)) {
         e.preventDefault();
       }
@@ -181,25 +170,16 @@ const InputField: React.FC<InputFieldProps> = ({
         )}
 
         <input
-           type={type === 'password' && showToggle ? (showPassword ? 'text' : 'password') : isNumericInput ? 'text' : type}
+          type={type === 'password' && showToggle ? (showPassword ? 'text' : 'password') : isNumericInput ? 'text' : type}
           name={name}
+          // RESPETAMOS TU LÓGICA DE CHECKBOX ORIGINAL
           {...(type === 'checkbox' 
-             ? { checked: !!value } 
-             : { value: isNumericInput ? (isFocused ? displayValue : externalDisplayValue) : externalDisplayValue }
+              ? { checked: !!value } 
+              : { value: externalDisplayValue } // Quitamos el ternario de isFocused que causaba el bug
           )}
           onChange={handleInputChange}
-          onFocus={() => {
-            if (isNumericInput) {
-              setDisplayValue(externalDisplayValue);
-            }
-            setIsFocused(true);
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-            if (isNumericInput) {
-              setDisplayValue(externalDisplayValue);
-            }
-          }}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           maxLength={maxLength}
@@ -219,7 +199,6 @@ const InputField: React.FC<InputFieldProps> = ({
           autoComplete={autoComplete}
         />
 
-        {/* Toggle password */}
         {showToggle && setShowPassword && type === 'password' && (
           <button
             type="button"
