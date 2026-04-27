@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { type ChangeEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface InputFieldProps {
@@ -91,7 +91,6 @@ const InputField: React.FC<InputFieldProps> = ({
   // Esta es la fuente de verdad corregida
   const externalDisplayValue = value === undefined || value === null ? '' : normalizeDisplayValue(value);
 
-  const [isFocused, setIsFocused] = useState(false);
 
   // Mantenemos tu sanitizador original
   const sanitizeNumericValue = (rawValue: string) => {
@@ -178,8 +177,6 @@ const InputField: React.FC<InputFieldProps> = ({
               : { value: externalDisplayValue } // Quitamos el ternario de isFocused que causaba el bug
           )}
           onChange={handleInputChange}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           maxLength={maxLength}
