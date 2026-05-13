@@ -34,6 +34,7 @@ const ContabilidadConfiguracionPage = lazy(() => import("@/presentation/pages/co
 const ContabilidadLibroAuxiliarPage = lazy(() => import("@/presentation/pages/contabilidad/ContabilidadLibroAuxiliarPage").then(m => ({ default: m.ContabilidadLibroAuxiliarPage })));
 const SeguridadPage = lazy(() => import("@/presentation/pages/dashboard/seguridad/SeguridadPage"));
 const CarteraPage = lazy(() => import("@/presentation/pages/dashboard/cartera/CarteraPage"));
+const CuentasPorPagarPage = lazy(() => import("@/presentation/pages/dashboard/cuentasPorPagar/CuentasPorPagarPage"));
 const NotasPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotasPage"));
 const NotaViewerPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotaViewerPage"));
 
@@ -71,6 +72,7 @@ const AppRoutes = () => (
               <Route path="asientos-contables/:id" element={<ContabilidadDetailPage />} />
               <Route path="seguridad" element={<SeguridadPage />} />
               <Route path="cartera" element={<CarteraPage />} />
+              <Route path="cuentas-por-pagar" element={<CuentasPorPagarPage />} />
               <Route path="notas" element={<NotasPage />} />
               <Route path="notas/:id" element={<NotaViewerPage />} />
             </Route>
