@@ -4,17 +4,14 @@ import SearchBar from '../../../components/molecules/SearchBar';
 import { FilterGroup } from '../../../components/molecules/FilterGroup';
 import { useCuentasPorPagar } from '../../../../application/hooks/useCuentasPorPagar';
 import type { CuentaPorPagar } from '../../../../domain/models/CuentasPorPagar';
-import { FileText, Eye, Mail } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { FileText } from 'lucide-react';
 import { formatCurrency } from '../../../../utils/formatters';
 import { getDiasVencidosBadge, getEstadoBadgeColor as getEstadoBadge } from '../../../../utils/statusHelpers';
-import { ModuleGate } from '../../../components/shared/ModuleGate';
 import StatusModal from '../../../components/organisms/StatusModal';
 export const enviarRecordatorioPago = async (_id: number) => ({ success: true, message: "Recordatorio enviado" }); 
 // import { getCuentasPorPagar } from '../../../../data/services/cuentasPorPagar/cuentasPorPagarService';
 
 export const CuentasPorPagarView = () => {
-  const navigate = useNavigate();
   const { cuentas, loading, fetchCuentasPorPagar } = useCuentasPorPagar();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,7 +22,7 @@ export const CuentasPorPagarView = () => {
   // Recordatorio state
   const [confirmModal, setConfirmModal] = useState<{ show: boolean; facturaId: number; proveedorNombre: string }>({ show: false, facturaId: 0, proveedorNombre: '' });
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: '' });
-  const [sendingId, setSendingId] = useState<number | null>(null);
+  const [, setSendingId] = useState<number | null>(null);
   const [cooldowns, setCooldowns] = useState<Record<number, number>>({});
 
   const cooldownCount = Object.keys(cooldowns).length;
