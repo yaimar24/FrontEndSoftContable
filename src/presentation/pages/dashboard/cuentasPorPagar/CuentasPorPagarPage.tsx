@@ -152,7 +152,7 @@ const CuentasPorPagarPage = () => {
       <div className="tuto-header-cuentasPorPagar">
         <PageHeader
           icon={Landmark}
-          title="CuentasPorPagar"
+          title="Cuentas Por Pagar"
           subtitle="Gestión de cuentas por pagar"
           switcher={
             <div className="tuto-cuentasPorPagar-tabs flex flex-wrap gap-1">

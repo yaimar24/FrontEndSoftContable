@@ -18,6 +18,8 @@ import {
   Shield,
   Landmark,
   type LucideIcon,
+  
+  ContactRound,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthContext from "../../../application/context/AuthContext";
@@ -51,8 +53,8 @@ const MENU_ITEMS: MenuItem[] = [
   { path: "/dashboard/ventas", name: "Ventas", icon: ShoppingBag, hasSubItems: true, moduloId: 2 },
   { path: "/dashboard/ventas/recibos", name: "Recibos", icon: ShoppingBag, isSubItem: true, parent: "/dashboard/ventas", moduloId: 2 },
   { path: "/dashboard/cartera", name: "Cartera", icon: Landmark, moduloId: 10 },
-  { path: "/dashboard/cuentas-por-pagar", name: "Cuentas por pagar", icon: Landmark, moduloId: 11 },
   { path: "/dashboard/factura-compra", name: "Compras", icon: Receipt, hasSubItems: true, moduloId: 3 },
+  { path: "/dashboard/cuentas-por-pagar", name: "Cuentas por pagar", icon: ContactRound, moduloId: 11 },
   { path: "/dashboard/factura-compra/egresos", name: "Egresos", icon: Receipt, isSubItem: true, parent: "/dashboard/factura-compra", moduloId: 3 },
   { path: "/dashboard/asientos-contables", name: "Comprobantes contables", icon: BookOpen, hasSubItems: true, moduloId: 4 },
   { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },

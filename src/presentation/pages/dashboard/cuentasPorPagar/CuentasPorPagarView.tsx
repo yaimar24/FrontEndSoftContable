@@ -129,37 +129,23 @@ export const CuentasPorPagarView = () => {
         );
       }
     },
-    {
-      header: 'Acciones',
-      className: 'text-right',
-      render: (item) => (
-        <div className="flex justify-end gap-1.5">
-          {item.saldo > 0 && item.estado !== 'Anulada' && item.estado !== 'Pagada' && (
-            <button
-              onClick={() => setConfirmModal({ show: true, facturaId: item.facturaId, proveedorNombre: item.proveedorNombre })}
-              disabled={sendingId === item.facturaId || !!cooldowns[item.facturaId]}
-              className="p-2.5 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              title={cooldowns[item.facturaId] ? `Espera ${cooldowns[item.facturaId]}s` : "Enviar recordatorio"}
-            >
-              {sendingId === item.facturaId ? (
-                <div className="w-3.5 h-3.5 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
-              ) : (
-                <Mail size={15} strokeWidth={2.5} />
-              )}
-            </button>
-          )}
-          <ModuleGate route="/dashboard/ventas">
-            <button
-              onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
-              className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
-              title="Ver Factura"
-            >
-              <Eye size={15} strokeWidth={2.5} />
-            </button>
-          </ModuleGate>
-        </div>
-      )
-    }
+    // {
+    //   header: 'Acciones',
+    //   className: 'text-right',
+    //   render: (item) => (
+    //     <div className="flex justify-end gap-1.5">
+    //       <ModuleGate route="/dashboard/ventas">
+    //         <button
+    //           onClick={() => navigate(`/dashboard/ventas/${item.facturaId}`)}
+    //           className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-600 hover:text-white transition-all shadow-sm"
+    //           title="Ver Factura"
+    //         >
+    //           <Eye size={15} strokeWidth={2.5} />
+    //         </button>
+    //       </ModuleGate>
+    //     </div>
+    //   )
+    // }
   ];
 
   return (
