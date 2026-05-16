@@ -1,5 +1,5 @@
 import type { ElementType } from 'react';
-import { ShieldCheck, FileText, ShoppingCart, Calculator, Users, Package, BookOpen, Lock, Landmark } from 'lucide-react';
+import { ShieldCheck, FileText, ShoppingCart, Calculator, Users, Package, BookOpen, Lock, Landmark, ContactRound } from 'lucide-react';
 
 export const MODULE_ICON: Record<number, { icon: ElementType; color: string }> = {
   2:  { icon: FileText,    color: 'text-blue-500' },
@@ -11,11 +11,12 @@ export const MODULE_ICON: Record<number, { icon: ElementType; color: string }> =
   8:  { icon: ShieldCheck, color: 'text-slate-500' },
   9:  { icon: Lock,        color: 'text-rose-500' },
   10: { icon: Landmark,    color: 'text-teal-500' },
+  11: { icon: ContactRound,    color: 'text-teal-500' },
 };
 
 export const MODULE_LABEL: Record<number, string> = {
   2: 'Ventas', 3: 'Compras', 4: 'Contabilidad', 5: 'Terceros',
-  6: 'Productos', 7: 'PUC', 8: 'Perfil', 9: 'Seguridad', 10: 'Cartera',
+  6: 'Productos', 7: 'PUC', 8: 'Perfil', 9: 'Seguridad', 10: 'Cartera', 11: 'Cuentas por pagar',
 };
 
 export const PLAN_BADGE: Record<string, string> = {

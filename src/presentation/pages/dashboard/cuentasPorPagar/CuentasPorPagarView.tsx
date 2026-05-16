@@ -169,9 +169,9 @@ export const CuentasPorPagarView = () => {
           <FilterGroup
             options={[
               { label: 'Todos', id: '' },
-              { label: 'Pendiente', id: '1' },
-              { label: 'Pagada', id: '4' },
-              { label: 'Anulada', id: '5' },
+              { label: 'Pendiente', id: '3' },
+              { label: 'Pagada', id: '5' },
+              { label: 'Anulada', id: '2' },
             ]}
             activeId={filterEstado}
             onChange={setFilterEstado}
