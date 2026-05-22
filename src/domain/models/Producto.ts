@@ -13,7 +13,7 @@ export interface ProductoReadDTO {
   sku: string | null;
   esServicio: boolean;
   esInventariable: boolean;
-  categoriaProductoId: number; 
+  categoriaId: number; 
   categoriaNombre: string;
   unidadMedidaNombre: string;
   impuestoCargoNombre: string;

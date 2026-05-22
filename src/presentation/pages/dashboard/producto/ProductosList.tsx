@@ -37,7 +37,7 @@ const ProductosList: React.FC<Props> = ({  data = [], onEdit , isServer, paginat
     customFilters: {
       categoria: (item, value) => {
         if (value === "all") return true;
-        return item.categoriaProductoId === Number(value);
+        return item.categoriaId === Number(value);
       },
     },
   });
