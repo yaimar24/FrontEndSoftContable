@@ -41,7 +41,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
     const newErrors: Record<string, string> = {};
     if (!formData.nombre?.trim()) newErrors.nombre = "Requerido";
     if (!formData.sku?.trim()) newErrors.sku = "Requerido";
-    if (!formData.categoriaProductoId) newErrors.categoriaProductoId = "Requerido";
+    if (!formData.categoriaId) newErrors.categoriaProductoId = "Requerido";
     if (!formData.tipoUso) newErrors.tipoUso = "Requerido";
     if (formData.precios?.[0]?.valor === undefined || formData.precios[0].valor === null || formData.precios[0].valor < 0) {
       newErrors.valor = "Requerido";
@@ -142,13 +142,13 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               />
               <SelectField
                 label="Categoría"
-                name="categoriaProductoId"
-                value={formData.categoriaProductoId}
+                name="categoriaId"
+                value={formData.categoriaId}
                 onChange={handleChange}
                 options={Array.isArray(parametros?.categorias) ? parametros.categorias : []}
                 displayExpr={(c: Record<string, unknown>) => c.nombre as string}
                 required
-                error={errors.categoriaProductoId}
+                error={errors.categoriaId}
               />
               <SelectField
                 label="Tipo de Uso"

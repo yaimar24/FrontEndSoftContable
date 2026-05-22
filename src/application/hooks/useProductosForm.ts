@@ -5,7 +5,7 @@ import type { ProductoCreateDTO } from '../../domain/models/Producto';
 
 interface ProductoFormData extends Partial<ProductoCreateDTO> {
   id?: string;
-  categoriaProductoId?: number;
+  categoriaId?: number;
   cuentaIngresoNombre?: string;
   cuentaCostoNombre?: string;
   cuentaInventarioNombre?: string;
@@ -22,7 +22,7 @@ interface ProductoParametros {
 export const useProductosForm = (initialData?: ProductoFormData) => {
   const [formData, setFormData] = useState<ProductoFormData>(initialData || {
     nombre: "", sku: "", codigoBarras: "", esServicio: true,
-    esInventariable: false, visibleEnFacturas: true, categoriaProductoId: 1,
+    esInventariable: false, visibleEnFacturas: true, categoriaId: 1,
     unidadMedidaDianId: 1, impuestoCargoId: 1, tipoUso: 1, precios: [{ nombreLista: "General", valor: 0, incluyeIva: false }]
   });
 
@@ -43,7 +43,7 @@ export const useProductosForm = (initialData?: ProductoFormData) => {
     const checked = 'checked' in e.target ? (e.target as HTMLInputElement).checked : undefined;
     
     let parsedValue: unknown = value;
-    if (name === 'tipoUso' || name === 'categoriaId' || name === 'unidadMedidaDianId' || name === 'impuestoCargoId' || name === 'retencionId' || name === 'categoriaProductoId') {
+    if (name === 'tipoUso' || name === 'categoriaId' || name === 'unidadMedidaDianId' || name === 'impuestoCargoId' || name === 'retencionId' || name === 'categoriaId') {
        parsedValue = value ? Number(value) : value;
     }
     
