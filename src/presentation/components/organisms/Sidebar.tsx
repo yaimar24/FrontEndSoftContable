@@ -60,6 +60,7 @@ const MENU_ITEMS: MenuItem[] = [
   { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
+  { path: "/dashboard/empleados", name: "Empleados", icon: Users, moduloId: 10 },
   { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 9 },
 ];
 
