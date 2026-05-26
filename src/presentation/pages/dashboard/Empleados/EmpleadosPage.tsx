@@ -4,6 +4,7 @@ import EmpleadosList from "./ListEmpleados/EmpleadosList";
 import EmpleadosCreatePage from "./CreateEmpleados/EmpleadosCreatePage";
 import { useState, useEffect } from "react";
 import { getEmpleados } from "@/data/services/empleado/empleadoService";
+import { Users } from "lucide-react";
 
 const EmpleadosPage = () => {
 
@@ -42,10 +43,36 @@ const EmpleadosPage = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] p-5 space-y-4">
 
-      <PageHeader
-        title="Gestión de Empleados"
-      />
 
+    <PageHeader
+  title="Gestión de Empleados"
+  subtitle={`${totalCount} registros activos`}
+  icon = {Users}
+  switcher={
+    <>
+      <button
+        onClick={() => { setSelectedEmpleado(null); setView("lista"); }}
+        className={`px-4 py-2 rounded-[1.2rem] text-xs font-black uppercase tracking-widest transition-all ${
+          view === "lista"
+            ? "bg-blue-600 text-white shadow"
+            : "text-slate-400 hover:text-slate-600"
+        }`}
+      >
+        Lista de empleados
+      </button>
+      <button
+        onClick={() => { setSelectedEmpleado(null); setView("formulario"); }}
+        className={`px-4 py-2 rounded-[1.2rem] text-xs font-black uppercase tracking-widest transition-all ${
+          view === "formulario"
+            ? "bg-blue-600 text-white shadow"
+            : "text-slate-400 hover:text-slate-600"
+        }`}
+      >
+        + Crear empleado
+      </button>
+    </>
+  }
+/>
       {view === 'lista' ? (
         <EmpleadosList
           data={empleados}
