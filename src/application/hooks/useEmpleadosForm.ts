@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 
+
 import type {
   EmpleadoCreateDTO,
-  EmpleadoUpdateDTO,
-  RegistroEmpleadoParametrosDTO
+  EmpleadoUpdateDTO
 } from "../../domain/models/Empleado";
+import type { Parametros } from "../../domain/models/Parametros";
 
 import {
   crearEmpleado,
   updateEmpleado
 } from "../../data/services/empleado/empleadoService";
+import { getParametros } from "../../data/services/colegio/parametrosService";
 
 interface ResultModal {
   show: boolean;
@@ -52,8 +54,8 @@ export const useEmpleadosForm = (
 
   const [errors, setErrors] = useState<any>({});
 
-  const [parametros, setParametros] =
-    useState<RegistroEmpleadoParametrosDTO>();
+
+  const [parametros, setParametros] = useState<Parametros>();
 
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -63,6 +65,15 @@ export const useEmpleadosForm = (
       success: false,
       message: "",
     });
+
+
+  useEffect(() => {
+    getParametros().then((res) => {
+      if (res.success && res.data) {
+        setParametros(res.data);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (initialData) {
