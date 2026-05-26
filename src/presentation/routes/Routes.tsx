@@ -6,6 +6,7 @@ import LoadingOverlay from "../components/shared/LoadingOverlay";
 
 // Layout (no lazy - siempre necesario)
 import Dashboard from "@/presentation/pages/dashboard/Dashboard";
+import EmpleadosPage from "../pages/dashboard/Empleados/EmpleadosPage";
 
 // Lazy-loaded pages
 const LoginForm = lazy(() => import("@/presentation/pages/login/LoginForm"));
@@ -73,6 +74,8 @@ const AppRoutes = () => (
               <Route path="seguridad" element={<SeguridadPage />} />
               <Route path="cartera" element={<CarteraPage />} />
               <Route path="cuentas-por-pagar" element={<CuentasPorPagarPage />} />
+              <Route path="empleados" element={<EmpleadosPage />} />
+      
               <Route path="notas" element={<NotasPage />} />
               <Route path="notas/:id" element={<NotaViewerPage />} />
             </Route>
