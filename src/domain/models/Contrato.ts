@@ -16,15 +16,3 @@ id: string;
 activo?: boolean;
 }
 
-export const defaultContratoValues: ContratoCreateDTO = {
-colegioId: "",
-empleadoId: "",
-cargoId: 0,
-centroCostoId: 0,
-tipoContrato: "Indefinido",
-salarioBase: 0,
-fechaInicio: "",
-fechaFin: "",
-auxilioTransporte: false,
-aplicaHorasExtra: false,
-};
