@@ -1,4 +1,3 @@
-import type { DetallecontratoLaboral } from "../DetalleContratoLaboral";
 import type {
   Municipio,
   TipoIdentificacion
@@ -36,7 +35,6 @@ export type EmpleadoCreateDTO = {
 
   municipioOficinaId: number;
   direccionOficina: string;
-  detalleContratoLaboral?: DetallecontratoLaboral[]
 }
 
 
