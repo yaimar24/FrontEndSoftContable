@@ -1,3 +1,4 @@
+import type { DetallecontratoLaboral } from "../DetalleContratoLaboral";
 import type {
   Municipio,
   TipoIdentificacion
@@ -14,7 +15,6 @@ export interface MedioPago {
 }
 
 export type EmpleadoCreateDTO = {
-  colegioId: string;
 
   nombres: string;
   apellidos: string;
@@ -36,7 +36,9 @@ export type EmpleadoCreateDTO = {
 
   municipioOficinaId: number;
   direccionOficina: string;
+  detalleContratoLaboral?: DetallecontratoLaboral[]
 }
+
 
 export type EmpleadoUpdateDTO = EmpleadoCreateDTO & {
   id: string;

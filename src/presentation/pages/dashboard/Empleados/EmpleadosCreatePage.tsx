@@ -11,7 +11,6 @@ interface EmpleadosCreatePageProps {
 }
 
 const defaultValues: EmpleadoCreateDTO = {
-  colegioId: "",
   nombres: "",
   apellidos: "",
   tipoIdentificacionId: 0,

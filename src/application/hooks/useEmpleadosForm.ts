@@ -20,7 +20,6 @@ interface ResultModal {
 }
 
 const initialState: EmpleadoCreateDTO = {
-  colegioId: "",
 
   nombres: "",
   apellidos: "",
