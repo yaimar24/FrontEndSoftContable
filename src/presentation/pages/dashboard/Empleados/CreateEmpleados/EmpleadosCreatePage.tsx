@@ -1,20 +1,26 @@
 
-
 import React from "react";
 import type { EmpleadoUpdateDTO } from "@/domain/models/Empleado";
 import InputField from "@/presentation/components/atoms/InputField";
 import SelectField from "@/presentation/components/atoms/SelectField";
 import StatusModal from "@/presentation/components/organisms/StatusModal";
 import { useEmpleadosForm } from "@/application/hooks/useEmpleadosForm";
-import { User, Hash, Mail, Phone, MapPin, Banknote, Building2, Save, ArrowLeft } from "lucide-react";
+import { User, Hash, Mail, Phone, MapPin, Banknote, Building2, Save, ArrowLeft, Briefcase, Plus } from "lucide-react";
 import Button from "@/presentation/components/atoms/Button";
 
 interface EmpleadosCreatePageProps {
-  initialData?: EmpleadoUpdateDTO | null;
+  initialData?: (EmpleadoUpdateDTO & { id?: string }) | null;
   onBack: () => void;
+  onSuccessSave: (id: string) => void;
+  onManageContract: () => void; // <--- Propiedad agregada para solucionar el error de TypeScript
 }
 
-const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, onBack }) => {
+const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ 
+  initialData, 
+  onBack, 
+  onSuccessSave,
+  onManageContract // <--- Desestructuración de la nueva propiedad
+}) => {
   const isEditing = !!initialData;
   const {
     formData,
@@ -34,7 +40,7 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
       {/* Sticky header */}
       <div className="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">
         <div className="flex items-center gap-4">
-          <button onClick={onBack} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors">
+          <button onClick={onBack} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors" type="button">
             <ArrowLeft size={20} className="text-slate-500" />
           </button>
           <h1 className="text-lg font-black text-slate-800 uppercase flex items-center gap-2 tracking-tight">
@@ -65,7 +71,7 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
               displayExpr={t => t.nombre}
               required
               error={errors.tipoIdentificacionId}
-                placeholder="Seleccione tipo de documento"
+              placeholder="Seleccione tipo de documento"
             />
             <div className="flex gap-3">
               <div className="flex-1">
@@ -117,33 +123,57 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
           </div>
         </section>
 
-        {/* Residencia */}
-        <section className="bg-white p-6 rounded-2xl border border-slate-100 space-y-4 shadow-sm h-full">
-          <div className="flex flex-col gap-1 pb-2 border-b border-slate-50">
-            <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-              <MapPin size={16} className="text-blue-600"/> Residencia
-            </h3>
-          </div>
-          <SelectField
-            label="Municipio de Residencia"
-            name="municipioResidenciaId"
-            value={formData.municipioResidenciaId}
-            onChange={handleChange}
-            options={parametros?.municipios || []}
-            displayExpr={m => m.nombre}
-            required
-            error={errors.municipioResidenciaId}
+        {/* Residencia & Contratación Laboral (Exclusivo en Editar) */}
+        <div className="space-y-5 flex flex-col justify-between">
+          <section className="bg-white p-6 rounded-2xl border border-slate-100 space-y-4 shadow-sm flex-1">
+            <div className="flex flex-col gap-1 pb-2 border-b border-slate-50">
+              <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                <MapPin size={16} className="text-blue-600"/> Residencia
+              </h3>
+            </div>
+            <SelectField
+              label="Municipio de Residencia"
+              name="municipioResidenciaId"
+              value={formData.municipioResidenciaId}
+              onChange={handleChange}
+              options={parametros?.municipios || []}
+              displayExpr={m => m.nombre}
+              required
+              error={errors.municipioResidenciaId}
               placeholder="Seleccione municipio"
-          />
-          <InputField
-            label="Dirección de Residencia"
-            name="direccionResidencia"
-            value={formData.direccionResidencia}
-            onChange={handleChange}
-            error={errors.direccionResidencia}
-            icon={MapPin}
-          />
-        </section>
+            />
+            <InputField
+              label="Dirección de Residencia"
+              name="direccionResidencia"
+              value={formData.direccionResidencia}
+              onChange={handleChange}
+              error={errors.direccionResidencia}
+              icon={MapPin}
+            />
+          </section>
+
+          {/* Esta sección se renderiza ÚNICAMENTE al editar porque el ID del empleado ya existe */}
+          {isEditing && (
+            <section className="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-6 rounded-2xl border border-blue-100/70 space-y-4 shadow-sm animate-in zoom-in-95 duration-300">
+              <div className="flex flex-col gap-1 pb-2 border-b border-blue-100">
+                <h3 className="text-xs font-black text-blue-700 uppercase tracking-widest flex items-center gap-2">
+                  <Briefcase size={16} className="text-blue-600"/> Contratación Laboral
+                </h3>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Este empleado ya posee registro base. Presiona el siguiente botón para crear o modificar los términos de su contrato de trabajo.
+              </p>
+              <button
+                type="button"
+                onClick={onManageContract}
+                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 px-4 rounded-xl transition-all shadow-md shadow-blue-200 hover:shadow-lg active:scale-[0.98]"
+              >
+                <Plus size={16} />
+                Crear / Editar Contrato
+              </button>
+            </section>
+          )}
+        </div>
 
         {/* Bancaria y oficina */}
         <section className="bg-white p-6 rounded-2xl border border-slate-100 space-y-4 shadow-sm h-full">
@@ -194,7 +224,7 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
             options={parametros?.municipios || []}
             displayExpr={m => m.nombre}
             error={errors.municipioOficinaId}
-              placeholder="Seleccione municipio"
+            placeholder="Seleccione municipio"
           />
           <InputField
             label="Dirección de Oficina"
@@ -220,7 +250,10 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
         message={resultModal.message}
         onClose={() => {
           setResultModal((m) => ({ ...m, show: false }));
-          if (resultModal.success) onBack();
+          if (resultModal.success) {
+            const createdId = initialData?.id;
+            onSuccessSave(createdId || '');
+          }
         }}
       />
     </div>
@@ -228,3 +261,4 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
 };
 
 export default EmpleadosCreatePage;
+
