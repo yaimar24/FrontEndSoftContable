@@ -7,6 +7,7 @@ import LoadingOverlay from "../components/shared/LoadingOverlay";
 // Layout (no lazy - siempre necesario)
 import Dashboard from "@/presentation/pages/dashboard/Dashboard";
 import EmpleadosPage from "../pages/dashboard/Empleados/EmpleadosPage";
+import ContratoCreatePage from "../pages/dashboard/Empleados/CreateEmpleados/ContratoCreatePage";
 
 // Lazy-loaded pages
 const LoginForm = lazy(() => import("@/presentation/pages/login/LoginForm"));
@@ -49,7 +50,16 @@ const AppRoutes = () => (
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register" element={<RegisterForm />} />
-
+<Route
+  path="/contratoCreate"
+  element={
+    <ContratoCreatePage
+      empleadoId="a422f1dc-ae9b-4d9f-b72c-1650f1bc89e7"
+      onBack={() => window.history.back()}
+      onFinish={() => window.history.back()}
+    />
+  }
+/>
           {/* RUTAS PROTEGIDAS */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />}>
