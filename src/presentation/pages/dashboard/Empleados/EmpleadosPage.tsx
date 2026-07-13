@@ -50,24 +50,25 @@ const EmpleadosPage = () => {
           title="Gestión de Empleados"
           subtitle={`${totalCount} registros activos`}
           icon={Users}
-          switcher={
-            <>
-              <button
-                onClick={() => { setSelectedEmpleado(null); setView("lista"); }}
-                className={`tuto-btn-terceros-lista flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
-                  ${view === 'lista' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-400 hover:text-slate-600'}`}
-              >
-                <Users size={14} /> Lista de empleados
-              </button>
-              <button
-                onClick={() => { setSelectedEmpleado(null); setView("formulario"); }}
-                className={`tuto-btn-terceros-formulario flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
-                  ${view === 'formulario' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-400 hover:text-slate-600'}`}
-              >
-                <Users size={14} /> + Crear empleado
-              </button>
-            </>
-          }
+      switcher={
+  <>
+    <button
+      onClick={() => { setSelectedEmpleado(null); setView("lista"); }}
+      className={`tuto-btn-terceros-lista flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
+        ${view === 'lista' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-400 hover:text-slate-600'}`}
+    >
+      <Users size={14} /> Lista de empleados
+    </button>
+    
+    <button
+      onClick={() => { setSelectedEmpleado(null); setView("formulario"); }}
+      className={`tuto-btn-terceros-formulario flex items-center gap-2 px-6 py-2.5 rounded-[1.1rem] text-[10px] font-black uppercase tracking-widest transition-all
+        ${view === 'formulario' && !selectedEmpleado ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-slate-400 hover:text-slate-600'}`}
+    >
+      <Users size={14} /> + Crear empleado
+    </button>
+  </>
+}
         />
       )}
 
