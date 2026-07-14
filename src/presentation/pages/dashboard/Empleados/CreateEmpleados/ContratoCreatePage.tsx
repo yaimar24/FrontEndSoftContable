@@ -9,15 +9,15 @@ import { Briefcase, Calendar, DollarSign, Save, ArrowLeft, Hash, ShieldCheck } f
 import Button from "@/presentation/components/atoms/Button";
 
 import {
-  getTipoContratoOptions,
-  getTipoCotizanteOptions,
-  getSubtipoCotizanteOptions,
-  getEpsOptions,
-  getFondoPensionOptions,
-  getArlOptions,
-  getClaseRiesgoOptions,
-  getCajaCompensacionOptions,
-  getFondoCesantiasOptions,
+  TipoContratoOptions,
+  TipoCotizanteOptions,
+  SubtipoCotizanteOptions,
+  EpsOptions,
+  FondoPensionOptions,
+  ArlOptions,
+  ClaseRiesgoOptions,
+  CajaCompensacionOptions,
+  FondoCesantiasOptions,
 } from "@/domain/models/Contrato";
 
 interface ContratoCreatePageProps {
@@ -129,7 +129,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
             name="tipoContrato"
             value={formData.tipoContrato}
             onChange={handleChange}
-            options={getTipoContratoOptions()}
+            options={TipoContratoOptions}
             required
             placeholder="Seleccione tipo de contrato"
           />
@@ -229,7 +229,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="tipoCotizanteId"
               value={datosVisuales.tipoCotizanteId}
               onChange={handleVisualChange}
-              options={getTipoCotizanteOptions()}
+              options={TipoCotizanteOptions}
               placeholder="Seleccione tipo de cotizante"
               required
             />
@@ -238,7 +238,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="subtipoCotizanteId"
               value={datosVisuales.subtipoCotizanteId}
               onChange={handleVisualChange}
-              options={getSubtipoCotizanteOptions()}
+              options={SubtipoCotizanteOptions}
               placeholder="Seleccione subtipo"
             />
           </div>
@@ -249,7 +249,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="epsId"
               value={datosVisuales.epsId}
               onChange={handleVisualChange}
-              options={getEpsOptions()}
+              options={EpsOptions}
               placeholder="Seleccione EPS"
               required
             />
@@ -268,7 +268,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="fondoPensionId"
               value={datosVisuales.fondoPensionId}
               onChange={handleVisualChange}
-              options={getFondoPensionOptions()}
+              options={FondoPensionOptions}
               placeholder="Seleccione fondo de pensiones"
               required
             />
@@ -287,7 +287,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="arlId"
               value={datosVisuales.arlId}
               onChange={handleVisualChange}
-              options={getArlOptions()}
+              options={ArlOptions}
               placeholder="Seleccione ARL"
               required
             />
@@ -296,7 +296,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="claseRiesgo"
               value={datosVisuales.claseRiesgo}
               onChange={handleVisualChange}
-              options={getClaseRiesgoOptions()}
+              options={ClaseRiesgoOptions}
               placeholder="Seleccione clase"
             />
             <SocialSelect
@@ -315,7 +315,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="cajaCompensacionId"
               value={datosVisuales.cajaCompensacionId}
               onChange={handleVisualChange}
-              options={getCajaCompensacionOptions()}
+              options={CajaCompensacionOptions}
               placeholder="Seleccione caja de compensación"
             />
             <SocialSelect
@@ -323,7 +323,7 @@ const ContratoCreatePage: React.FC<ContratoCreatePageProps> = ({
               name="fondoCesantiasId"
               value={datosVisuales.fondoCesantiasId}
               onChange={handleVisualChange}
-              options={getFondoCesantiasOptions()}
+              options={FondoCesantiasOptions}
               placeholder="Seleccione fondo de cesantías"
             />
           </div>

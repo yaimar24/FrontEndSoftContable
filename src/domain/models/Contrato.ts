@@ -1,9 +1,10 @@
+
 export interface ContratoCreateDTO {
 colegioId: string;
 empleadoId: string;
 cargoId: number;
 centroCostoId: number;
-tipoContrato: string;
+tipoContrato: TipoContrato;
 salarioBase: number;
 fechaInicio: string;
 fechaFin?: string;
@@ -15,7 +16,8 @@ export interface ContratoUpdateDTO extends ContratoCreateDTO {
 id: string;
 }
 
-// Tipo de Contrato
+// Enums
+// Tipo de Contrato 
 export const TipoContrato = {
 Indefinido: "Indefinido",
 Fijo: "Fijo",
@@ -24,14 +26,13 @@ Aprendizaje: "Aprendizaje",
 } as const;
 export type TipoContrato = (typeof TipoContrato)[keyof typeof TipoContrato];
 
-// Tipo de Cotizante
 export const TipoCotizante = {
 NoAplica: 0,
 } as const;
 export type TipoCotizante = (typeof TipoCotizante)[keyof typeof TipoCotizante];
 
 export const SubtipoCotizante = {
-NoAplica: '0',
+NoAplica: 0,
 } as const;
 export type SubtipoCotizante = (typeof SubtipoCotizante)[keyof typeof SubtipoCotizante];
 
@@ -40,73 +41,106 @@ NoAplica: 0,
 } as const;
 export type EpsColombia = (typeof EpsColombia)[keyof typeof EpsColombia];
 
-// Fondos de Pensiones
 export const FondoPension = {
 NoAplica: 0,
 } as const;
 export type FondoPension = (typeof FondoPension)[keyof typeof FondoPension];
 
-// ARL
 export const ArlColombia = {
 NoAplica: 0,
 } as const;
 export type ArlColombia = (typeof ArlColombia)[keyof typeof ArlColombia];
-
 
 export const ClaseRiesgo = {
 ClaseI: 1,
 } as const;
 export type ClaseRiesgo = (typeof ClaseRiesgo)[keyof typeof ClaseRiesgo];
 
-// Cajas de Compensación (Incluye No Aplica)
 export const CajaCompensacion = {
 NoAplica: 0,
 } as const;
 export type CajaCompensacion = (typeof CajaCompensacion)[keyof typeof CajaCompensacion];
 
-// Fondos de Cesantías (Incluye No Aplica)
 export const FondoCesantias = {
 NoAplica: 0,
 } as const;
 export type FondoCesantias = (typeof FondoCesantias)[keyof typeof FondoCesantias];
 
+// Labels
+export const TipoContratoLabels: Record<string, string> = {
+Indefinido: "Indefinido",
+Fijo: "Fijo",
+"Obra o labor": "Obra o labor",
+Aprendizaje: "Aprendizaje",
+};
 
-export const getTipoContratoOptions = () => [
+export const TipoCotizanteLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const SubtipoCotizanteLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const EpsLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const FondoPensionLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const ArlLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const ClaseRiesgoLabels: Record<number, string> = {
+1: "Clase I - Riesgo mínimo",
+};
+
+export const CajaCompensacionLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const FondoCesantiasLabels: Record<number, string> = {
+0: "No aplica (N/A)",
+};
+
+export const TipoContratoOptions = [
 { id: TipoContrato.Indefinido, nombre: "Indefinido" },
 { id: TipoContrato.Fijo, nombre: "Fijo" },
 { id: TipoContrato.ObraLabor, nombre: "Obra o labor" },
 { id: TipoContrato.Aprendizaje, nombre: "Aprendizaje" },
-]
-
-export const getTipoCotizanteOptions = () => [
-{ id: TipoCotizante.NoAplica, nombre: "No aplica (N/A)" }
 ];
 
-export const getSubtipoCotizanteOptions = () => [
+export const TipoCotizanteOptions = [
+{ id: TipoCotizante.NoAplica, nombre: "No aplica (N/A)" },
+];
+
+export const SubtipoCotizanteOptions = [
 { id: SubtipoCotizante.NoAplica, nombre: "No aplica (N/A)" },
 ];
 
-export const getEpsOptions = () => [
+export const EpsOptions = [
 { id: EpsColombia.NoAplica, nombre: "No aplica (N/A)" },
 ];
 
-export const getFondoPensionOptions = () => [
-{ id: FondoPension.NoAplica, nombre: "No aplica (N/A)" }
+export const FondoPensionOptions = [
+{ id: FondoPension.NoAplica, nombre: "No aplica (N/A)" },
 ];
 
-export const getArlOptions = () => [
+export const ArlOptions = [
 { id: ArlColombia.NoAplica, nombre: "No aplica (N/A)" },
 ];
 
-export const getClaseRiesgoOptions = () => [
+export const ClaseRiesgoOptions = [
 { id: ClaseRiesgo.ClaseI, nombre: "Clase I - Riesgo mínimo" },
 ];
 
-export const getCajaCompensacionOptions = () => [
+export const CajaCompensacionOptions = [
 { id: CajaCompensacion.NoAplica, nombre: "No aplica (N/A)" },
 ];
 
-export const getFondoCesantiasOptions = () => [
+export const FondoCesantiasOptions = [
 { id: FondoCesantias.NoAplica, nombre: "No aplica (N/A)" },
 ];
-
