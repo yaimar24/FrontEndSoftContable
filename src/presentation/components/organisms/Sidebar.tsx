@@ -60,8 +60,13 @@ const MENU_ITEMS: MenuItem[] = [
   { path: "/dashboard/asientos-contables/nuevo", name: "Movimiento manual", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
-  { path: "/dashboard/empleados", name: "Empleados", icon: Users, moduloId: 10 },
   { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 9 },
+  
+  // Nomina / ERP
+  { path: "/dashboard/nomina", name: "Nómina", icon: Users, hasSubItems: true, moduloId: 12 },
+  { path: "/dashboard/nomina/empleados", name: "Empleados Nómina", icon: Users, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
+  { path: "/dashboard/nomina/liquidacion", name: "Liquidación", icon: Receipt, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
+  { path: "/dashboard/nomina/configuracion", name: "Catálogos", icon: FolderTree, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
 ];
 
 const SECTION_ORDER: SectionKey[] = ["principal", "operacion", "administracion"];

@@ -12,10 +12,10 @@ interface FetchOptions extends RequestInit {
  * Cliente API genérico con tipado fuerte.
  * @returns ApiResponse<T> Estructura con success, message y data
  */
-export const apiClient = async <T = unknown>(
+export const apiClientRaw = async <T = unknown>(
   endpoint: string,
   options: FetchOptions = {}
-): Promise<ApiResponse<T>> => {
+): Promise<any> => {
   const {
     useAuth = true,
     skipGlobalLoader = false,
@@ -90,3 +90,5 @@ export const apiClient = async <T = unknown>(
     }
   }
 };
+
+export const apiClient = Object.assign(apiClientRaw, { get: <T = unknown>(endpoint: string, options?: FetchOptions) => apiClientRaw<T>(endpoint, { ...options, method: 'GET' }), post: <T = unknown>(endpoint: string, body?: any, options?: FetchOptions) => apiClientRaw<T>(endpoint, { ...options, method: 'POST', body: body instanceof FormData ? body : JSON.stringify(body) }), put: <T = unknown>(endpoint: string, body?: any, options?: FetchOptions) => apiClientRaw<T>(endpoint, { ...options, method: 'PUT', body: body instanceof FormData ? body : JSON.stringify(body) }), delete: <T = unknown>(endpoint: string, options?: FetchOptions) => apiClientRaw<T>(endpoint, { ...options, method: 'DELETE' }) });

@@ -157,7 +157,8 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
             name="bancoId"
             value={formData.bancoId}
             onChange={handleChange}
-            options={parametros?.bancos || []}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            options={(parametros as any)?.bancos || []}
             displayExpr={b => b.nombre}
             error={errors.bancoId}
           />
@@ -166,7 +167,8 @@ const EmpleadosCreatePage: React.FC<EmpleadosCreatePageProps> = ({ initialData, 
             name="medioPagoId"
             value={formData.medioPagoId}
             onChange={handleChange}
-            options={parametros?.mediosPago || []}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            options={(parametros as any)?.mediosPago || []}
             displayExpr={m => m.nombre}
             error={errors.medioPagoId}
           />

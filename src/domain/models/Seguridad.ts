@@ -40,6 +40,7 @@ export interface UsuarioUpdateDTO {
 
 /** Mapa de módulo ID → ruta principal del módulo */
 export const MODULO_RUTA_MAP: Record<number, string[]> = {
+  1: ["/dashboard"], // Dashboard Home / general fallback
   2: ["/dashboard/ventas", "/dashboard/ventas/recibos"],
   3: ["/dashboard/factura-compra", "/dashboard/factura-compra/egresos"],
   4: ["/dashboard/asientos-contables"],
@@ -49,12 +50,14 @@ export const MODULO_RUTA_MAP: Record<number, string[]> = {
   8: ["/dashboard/perfil"],
   9: ["/dashboard/seguridad"],
   10: ["/dashboard/cartera"],
+  11: ["/dashboard/cuentas-por-pagar"],
+  12: ["/dashboard/nomina"]
 };
 
 /** Dada la lista de módulos del usuario, retorna la primera ruta accesible */
 export function getFirstAllowedRoute(modulos: number[]): string {
   // Dashboard home no requiere permiso y queda como fallback global.
-  const prioridad = [8, 5, 7, 6, 2, 3, 10, 4, 9];
+  const prioridad = [8, 5, 7, 6, 2, 3, 10, 4, 9, 11, 12];
   for (const moduloId of prioridad) {
     if (modulos.includes(moduloId)) {
       const rutas = MODULO_RUTA_MAP[moduloId];
@@ -69,6 +72,9 @@ export function getModuloIdForPath(pathname: string): number | null {
   // Orden de más específico a menos específico
   const routeModuleMap: { pattern: string; moduloId: number }[] = [
     { pattern: "/dashboard/seguridad", moduloId: 9 },
+    { pattern: "/dashboard/cuentas-por-pagar", moduloId: 11 },
+    { pattern: "/dashboard/nomina", moduloId: 12 },
+    { pattern: "/dashboard/empleados", moduloId: 10 },
     { pattern: "/dashboard/cartera", moduloId: 10 },
     { pattern: "/dashboard/asientos-contables", moduloId: 4 },
     { pattern: "/dashboard/factura-compra", moduloId: 3 },

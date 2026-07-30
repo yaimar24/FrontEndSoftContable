@@ -29,7 +29,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           </h1>
         </div>
 
-        <div className="flex items-center gap-4 pl-0 sm:pl-[44px]">
+        <div className="flex items-center gap-4 pl-0 sm:pl-11">
           {subtitle && (
             <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">
               {subtitle}
@@ -45,7 +45,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
         {switcher && (
-          <div className="flex bg-white p-1.5 rounded-[1.5rem] border border-slate-200 shadow-sm">
+          <div className="flex bg-white p-1.5 rounded-3xl border border-slate-200 shadow-sm">
             {switcher}
           </div>
         )}

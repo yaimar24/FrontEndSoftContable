@@ -39,6 +39,13 @@ const CuentasPorPagarPage = lazy(() => import("@/presentation/pages/dashboard/cu
 const NotasPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotasPage"));
 const NotaViewerPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotaViewerPage"));
 
+// Nomina / ERP - Nuevos Módulos
+const ConfiguracionNomina = lazy(() => import("../pages/nomina/ConfiguracionNomina").then(m => ({ default: m.ConfiguracionNomina })));
+const EmpleadosNominaList = lazy(() => import("../pages/nomina/EmpleadosNominaList").then(m => ({ default: m.EmpleadosNominaList })));
+const EmpleadoDetail = lazy(() => import("../pages/nomina/EmpleadoDetail").then(m => ({ default: m.EmpleadoDetail })));
+const LiquidacionNominaList = lazy(() => import("../pages/nomina/LiquidacionNominaList").then(m => ({ default: m.LiquidacionNominaList })));
+const LiquidacionNominaDetail = lazy(() => import("../pages/nomina/LiquidacionNominaDetail").then(m => ({ default: m.LiquidacionNominaDetail })));
+
 const AppRoutes = () => (
   <Router>
     <ErrorBoundary>
@@ -76,6 +83,15 @@ const AppRoutes = () => (
               <Route path="cuentas-por-pagar" element={<CuentasPorPagarPage />} />
               <Route path="empleados" element={<EmpleadosPage />} />
       
+              {/* Nomina */}
+              <Route path="nomina" element={<Navigate to="empleados" replace />} />
+              <Route path="nomina/configuracion" element={<ConfiguracionNomina />} />
+              <Route path="nomina/empleados" element={<EmpleadosNominaList />} />
+              <Route path="nomina/empleados/:id" element={<EmpleadoDetail />} />
+              <Route path="nomina/empleados/:id/editar" element={<EmpleadoDetail />} />
+              <Route path="nomina/liquidacion" element={<LiquidacionNominaList />} />
+              <Route path="nomina/liquidacion/:id" element={<LiquidacionNominaDetail />} />
+
               <Route path="notas" element={<NotasPage />} />
               <Route path="notas/:id" element={<NotaViewerPage />} />
             </Route>
