@@ -1,12 +1,14 @@
 interface SelectFieldProps {
   label: string;
-  name: string;
-  value: any;
-  onChange: any;
-  options: any[];
+  name?: string;
+  value: string | number;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  options: any[]; 
   error?: string;
   placeholder?: string;
-  displayExpr: (item: any) => string; 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  displayExpr?: (item: any) => string;
   required?: boolean;
   disabled?: boolean;
 }
@@ -27,9 +29,9 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, name, value, onChange,
       }`}
     >
       <option value="" disabled>{placeholder || "Selecciona una opción"}</option>
-      {options?.map((item) => (
-        <option key={item.id} value={item.id}>
-          {displayExpr(item)}
+      {options?.map((item, idx) => (
+        <option key={idx} value={String(item.id || item.value || idx)}>
+          {displayExpr ? displayExpr(item) : String(item.nombre || item.label || item.value || JSON.stringify(item))}
         </option>
       ))}
     </select>

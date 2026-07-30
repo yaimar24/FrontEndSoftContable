@@ -6,6 +6,7 @@ import LoadingOverlay from "../components/shared/LoadingOverlay";
 
 // Layout (no lazy - siempre necesario)
 import Dashboard from "@/presentation/pages/dashboard/Dashboard";
+import EmpleadosPage from "../pages/dashboard/Empleados/EmpleadosPage";
 
 // Lazy-loaded pages
 const LoginForm = lazy(() => import("@/presentation/pages/login/LoginForm"));
@@ -37,6 +38,13 @@ const CarteraPage = lazy(() => import("@/presentation/pages/dashboard/cartera/Ca
 const CuentasPorPagarPage = lazy(() => import("@/presentation/pages/dashboard/cuentasPorPagar/CuentasPorPagarPage"));
 const NotasPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotasPage"));
 const NotaViewerPage = lazy(() => import("@/presentation/pages/dashboard/notas/NotaViewerPage"));
+
+// Nomina / ERP - Nuevos Módulos
+const ConfiguracionNomina = lazy(() => import("../pages/nomina/ConfiguracionNomina").then(m => ({ default: m.ConfiguracionNomina })));
+const EmpleadosNominaList = lazy(() => import("../pages/nomina/EmpleadosNominaList").then(m => ({ default: m.EmpleadosNominaList })));
+const EmpleadoDetail = lazy(() => import("../pages/nomina/EmpleadoDetail").then(m => ({ default: m.EmpleadoDetail })));
+const LiquidacionNominaList = lazy(() => import("../pages/nomina/LiquidacionNominaList").then(m => ({ default: m.LiquidacionNominaList })));
+const LiquidacionNominaDetail = lazy(() => import("../pages/nomina/LiquidacionNominaDetail").then(m => ({ default: m.LiquidacionNominaDetail })));
 
 const AppRoutes = () => (
   <Router>
@@ -73,6 +81,17 @@ const AppRoutes = () => (
               <Route path="seguridad" element={<SeguridadPage />} />
               <Route path="cartera" element={<CarteraPage />} />
               <Route path="cuentas-por-pagar" element={<CuentasPorPagarPage />} />
+              <Route path="empleados" element={<EmpleadosPage />} />
+      
+              {/* Nomina */}
+              <Route path="nomina" element={<Navigate to="empleados" replace />} />
+              <Route path="nomina/configuracion" element={<ConfiguracionNomina />} />
+              <Route path="nomina/empleados" element={<EmpleadosNominaList />} />
+              <Route path="nomina/empleados/:id" element={<EmpleadoDetail />} />
+              <Route path="nomina/empleados/:id/editar" element={<EmpleadoDetail />} />
+              <Route path="nomina/liquidacion" element={<LiquidacionNominaList />} />
+              <Route path="nomina/liquidacion/:id" element={<LiquidacionNominaDetail />} />
+
               <Route path="notas" element={<NotasPage />} />
               <Route path="notas/:id" element={<NotaViewerPage />} />
             </Route>

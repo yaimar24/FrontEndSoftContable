@@ -5,7 +5,7 @@ interface InputFieldProps {
   label: string;
   icon?: React.ComponentType<{ size?: number; className?: string }>;
   type?: string;
-  name: string;
+  name?: string;
   value: string | number | boolean; 
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;

@@ -53,7 +53,7 @@ export const getColegioIdFromToken = (token: string | null): string | null => {
   try {
     const decoded = jwtDecode<JWTPayload>(token);
     return decoded.colegioId;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -63,7 +63,7 @@ export const getRoleFromToken = (token: string | null): string | null => {
   try {
     const decoded = jwtDecode<JWTPayload>(token);
     return decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
-  } catch (err) {
+  } catch {
     return null;
   }
 };
@@ -74,7 +74,7 @@ export const getModulosFromToken = (token: string | null): number[] => {
     const decoded = jwtDecode<JWTPayload>(token);
     if (!decoded.modulos) return [];
     return decoded.modulos.split(',').map(Number).filter((n) => !isNaN(n));
-  } catch (err) {
+  } catch {
     return [];
   }
 };
@@ -84,7 +84,7 @@ export const getRolIdFromToken = (token: string | null): number | null => {
   try {
     const decoded = jwtDecode<JWTPayload>(token);
     return decoded.rolId ? Number(decoded.rolId) : null;
-  } catch (err) {
+  } catch {
     return null;
   }
 };

@@ -61,6 +61,12 @@ const MENU_ITEMS: MenuItem[] = [
   { path: "/dashboard/asientos-contables/libro-auxiliar", name: "Auxiliar contable", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/asientos-contables/configuracion", name: "Configuración", icon: BookOpen, isSubItem: true, parent: "/dashboard/asientos-contables", moduloId: 4 },
   { path: "/dashboard/seguridad", name: "Seguridad", icon: Shield, moduloId: 9 },
+  
+  // Nomina / ERP
+  { path: "/dashboard/nomina", name: "Nómina", icon: Users, hasSubItems: true, moduloId: 12 },
+  { path: "/dashboard/nomina/empleados", name: "Empleados Nómina", icon: Users, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
+  { path: "/dashboard/nomina/liquidacion", name: "Liquidación", icon: Receipt, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
+  { path: "/dashboard/nomina/configuracion", name: "Catálogos", icon: FolderTree, isSubItem: true, parent: "/dashboard/nomina", moduloId: 12 },
 ];
 
 const SECTION_ORDER: SectionKey[] = ["principal", "operacion", "administracion"];
@@ -253,66 +259,96 @@ const Sidebar: React.FC<SidebarProps> = ({ nombreColegio, logoUrl }) => {
                   )}
 
                   <div className="space-y-1">
-                    {section.items.map((item) => {
-                      if (item.isSubItem && item.parent && !isSubMenuOpen(item.parent)) {
-                        return null;
-                      }
-
-                      return (
-                        <NavLink
-                          key={item.path}
-                          to={item.path}
-                          end={item.path === "/dashboard" || item.path === "/dashboard/asientos-contables"}
-                          className={({ isActive }) => linkClass(isActive, item.isSubItem)}
-                          style={{ display: isCollapsed && item.isSubItem ? "none" : "flex" }}
-                        >
-                          {({ isActive }) => (
-                            <>
-                              {isActive && !item.isSubItem && (
-                                <motion.div layoutId="activeTab" className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-slate-900" />
-                              )}
-
-                              {item.isSubItem ? (
-                                <div className={`ml-1 h-1.5 w-1.5 rounded-full transition-colors ${isActive ? "bg-slate-900" : "bg-slate-300 group-hover:bg-slate-400"}`} />
-                              ) : (
-                                <div
-                                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${isActive ? "bg-white text-slate-900 ring-1 ring-slate-200" : "text-slate-400 group-hover:bg-white group-hover:text-slate-700"}`}
-                                >
-                                  <item.icon size={18} strokeWidth={isActive ? 2.4 : 2} />
-                                </div>
-                              )}
-
-                              {!isCollapsed && (
-                                <motion.span
-                                  initial={{ opacity: 0, x: -6 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  className={`min-w-0 flex-1 whitespace-nowrap ${item.isSubItem ? "text-[12px] text-slate-500" : "text-[13px] font-medium"}`}
-                                >
-                                  {item.name}
-                                </motion.span>
-                              )}
-
-                              {item.hasSubItems && !isCollapsed && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => toggleSubMenu(e, item.path)}
-                                  aria-label={isSubMenuOpen(item.path) ? `Ocultar ${item.name}` : `Mostrar ${item.name}`}
-                                  className={`z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isSubMenuOpen(item.path) ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"}`}
-                                >
-                                  {isSubMenuOpen(item.path) ? <ChevronDown size={15} strokeWidth={2.8} /> : <ChevronRight size={15} strokeWidth={2.4} />}
-                                </button>
-                              )}
-
-                              {isCollapsed && (
-                                <div className="pointer-events-none absolute left-16 z-50 whitespace-nowrap rounded-lg bg-slate-950 px-2.5 py-1.5 text-[10px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-                                  {item.name}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </NavLink>
-                      );
-                    })}
+                    {section.items
+                      .filter((item) => !item.isSubItem)
+                      .map((item) => {
+                        // Render main item
+                        const mainNav = (
+                          <NavLink
+                            key={item.path}
+                            to={item.path}
+                            end={item.path === "/dashboard" || item.path === "/dashboard/asientos-contables"}
+                            className={({ isActive }) => linkClass(isActive, item.isSubItem)}
+                            style={{ display: isCollapsed && item.isSubItem ? "none" : "flex" }}
+                          >
+                            {({ isActive }) => (
+                              <>
+                                {isActive && !item.isSubItem && (
+                                  <motion.div layoutId="activeTab" className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-slate-900" />
+                                )}
+                                {item.isSubItem ? (
+                                  <div className={`ml-1 h-1.5 w-1.5 rounded-full transition-colors ${isActive ? "bg-slate-900" : "bg-slate-300 group-hover:bg-slate-400"}`} />
+                                ) : (
+                                  <div
+                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${isActive ? "bg-white text-slate-900 ring-1 ring-slate-200" : "text-slate-400 group-hover:bg-white group-hover:text-slate-700"}`}
+                                  >
+                                    <item.icon size={18} strokeWidth={isActive ? 2.4 : 2} />
+                                  </div>
+                                )}
+                                {!isCollapsed && (
+                                  <motion.span
+                                    initial={{ opacity: 0, x: -6 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className={`min-w-0 flex-1 whitespace-nowrap ${item.isSubItem ? "text-[12px] text-slate-500" : "text-[13px] font-medium"}`}
+                                  >
+                                    {item.name}
+                                  </motion.span>
+                                )}
+                                {item.hasSubItems && !isCollapsed && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => toggleSubMenu(e, item.path)}
+                                    aria-label={isSubMenuOpen(item.path) ? `Ocultar ${item.name}` : `Mostrar ${item.name}`}
+                                    className={`z-10 flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${isSubMenuOpen(item.path) ? "bg-slate-200 text-slate-700" : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"}`}
+                                  >
+                                    {isSubMenuOpen(item.path) ? <ChevronDown size={15} strokeWidth={2.8} /> : <ChevronRight size={15} strokeWidth={2.4} />}
+                                  </button>
+                                )}
+                                {isCollapsed && (
+                                  <div className="pointer-events-none absolute left-16 z-50 whitespace-nowrap rounded-lg bg-slate-950 px-2.5 py-1.5 text-[10px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                                    {item.name}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </NavLink>
+                        );
+                        // Render subitems if submenu is open
+                        const subItems = section.items.filter(
+                          (sub) => sub.isSubItem && sub.parent === item.path && isSubMenuOpen(item.path)
+                        );
+                        return (
+                          <React.Fragment key={item.path}>
+                            {mainNav}
+                            {subItems.map((sub) => (
+                              <NavLink
+                                key={sub.path}
+                                to={sub.path}
+                                className={({ isActive }) => linkClass(isActive, true)}
+                                style={{ display: isCollapsed ? "none" : "flex" }}
+                              >
+                                {({ isActive }) => (
+                                  <>
+                                    <div className={`ml-1 h-1.5 w-1.5 rounded-full transition-colors ${isActive ? "bg-slate-900" : "bg-slate-300 group-hover:bg-slate-400"}`} />
+                                    <motion.span
+                                      initial={{ opacity: 0, x: -6 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      className="min-w-0 flex-1 whitespace-nowrap text-[12px] text-slate-500"
+                                    >
+                                      {sub.name}
+                                    </motion.span>
+                                    {isCollapsed && (
+                                      <div className="pointer-events-none absolute left-16 z-50 whitespace-nowrap rounded-lg bg-slate-950 px-2.5 py-1.5 text-[10px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                                        {sub.name}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </NavLink>
+                            ))}
+                          </React.Fragment>
+                        );
+                      })}
                   </div>
                 </section>
               ))}

@@ -25,9 +25,12 @@ interface TableProps<T> {
   itemsPerPage?: number;
   isServer?: boolean;
   serverPagination?: ServerPagination;
+  onEdit?: (item: T) => void;
+  onDelete?: (item: T) => void;
+  onView?: (item: T) => void;
 }
 
-export const Table = <T,>({ columns, data, itemsPerPage = 10, isServer, serverPagination }: TableProps<T>) => {
+export const Table = <T,>({ columns, data, itemsPerPage = 10, isServer, serverPagination, onEdit, onDelete, onView }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const activePage = isServer && serverPagination ? serverPagination.page : currentPage;
@@ -106,6 +109,13 @@ export const Table = <T,>({ columns, data, itemsPerPage = 10, isServer, serverPa
                       {col.render(item)}
                     </td>
                   ))}
+                  {(onView || onEdit || onDelete) && (
+                    <td className="px-5 py-4 w-1 flex gap-2">
+                       {onView && <button onClick={() => onView(item)} className="text-blue-500 hover:text-blue-700 text-xs">Ver</button>}
+                       {onEdit && <button onClick={() => onEdit(item)} className="text-emerald-500 hover:text-emerald-700 text-xs">Editar</button>}
+                       {onDelete && <button onClick={() => onDelete(item)} className="text-red-500 hover:text-red-700 text-xs">Eliminar</button>}
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (

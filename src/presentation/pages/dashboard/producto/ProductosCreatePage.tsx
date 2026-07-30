@@ -143,7 +143,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <SelectField
                 label="Categoría"
                 name="categoriaId"
-                value={formData.categoriaId}
+                value={formData.categoriaId || ''}
                 onChange={handleChange}
                 options={Array.isArray(parametros?.categorias) ? parametros.categorias : []}
                 displayExpr={(c: Record<string, unknown>) => c.nombre as string}
@@ -153,7 +153,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <SelectField
                 label="Tipo de Uso"
                 name="tipoUso"
-                value={formData.tipoUso}
+                value={formData.tipoUso || ''}
                 onChange={handleChange}
                 options={[
                   { id: 1, nombre: 'Venta' },
@@ -244,7 +244,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <SelectField
                 label="Impuesto"
                 name="impuestoCargoId"
-                value={formData.impuestoCargoId}
+                value={formData.impuestoCargoId || ''}
                 onChange={handleChange}
                 options={Array.isArray(parametros?.impuestos) ? parametros.impuestos : []}
                 displayExpr={(i: Record<string, unknown>) => i.nombre as string}
@@ -263,7 +263,7 @@ const ProductosCreatePage: React.FC<Props> = ({ initialData, onBack }) => {
               <SelectField
                 label="Unidad DIAN"
                 name="unidadMedidaDianId"
-                value={formData.unidadMedidaDianId}
+                value={formData.unidadMedidaDianId || ''}
                 onChange={handleChange}
                 options={Array.isArray(parametros?.unidadesMedida) ? parametros.unidadesMedida : []}
                 displayExpr={(u: Record<string, unknown>) => u.nombre as string}
