@@ -77,9 +77,17 @@ export const EmpleadoDetail: React.FC = () => {
     if (e) e.preventDefault();
     if (!formData) return;
     try {
-      await saveEmpleado(formData, id !== 'nuevo' ? id : undefined);
+      const response = await saveEmpleado(formData, id !== 'nuevo' ? id : undefined);
       setResultModal({ show: true, success: true, message: 'Empleado guardado exitosamente.' });
       setShowConfirm(false);
+      
+      // Si se acaba de crear el empleado ('nuevo') redirigirlo a la url de su ID para que se quede en esta pestaña
+      if (id === 'nuevo') {
+         const newId = response?.data?.id || response?.id;
+         if (newId) {
+             navigate(`/dashboard/nomina/empleados/${newId}`, { replace: true });
+         }
+      }
     } catch (error) {
       setResultModal({ show: true, success: false, message: 'Error al guardar el empleado.' });
       setShowConfirm(false);
@@ -104,7 +112,7 @@ export const EmpleadoDetail: React.FC = () => {
       />
       <StatusModal 
         show={resultModal.show} success={resultModal.success} message={resultModal.message} 
-        onClose={() => { setResultModal(m => ({ ...m, show: false })); if (resultModal.success && id === 'nuevo') navigate('/dashboard/nomina/empleados'); }} 
+        onClose={() => { setResultModal(m => ({ ...m, show: false })); }} 
       />
 
       <div className="tuto-empleados-sticky-header flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm sticky top-4 z-20 border border-slate-100">

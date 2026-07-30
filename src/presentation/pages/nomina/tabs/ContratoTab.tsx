@@ -50,10 +50,30 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
     return [{value: '', label: placeholder}, ...items.map(i => ({ value: i.id.toString(), label: i.nombre }))];
   };
 
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+
+  useEffect(() => {
+     if (contrato?.id) {
+         setMostrarFormulario(true);
+     }
+  }, [contrato]);
+
   if (!catalogos) return <div>Cargando catálogos...</div>;
 
+  if (!mostrarFormulario) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 space-y-4">
+          <div className="bg-amber-50 text-amber-600 p-4 rounded-xl border border-amber-100 max-w-md text-center shadow-sm">
+            <h3 className="font-bold text-lg mb-1">Sin contrato registrado</h3>
+            <p className="text-sm">Actualmente el empleado no posee un contrato laboral activo en el sistema. Debes crearle uno para poder ingresarlo a la nómina y afiliarlo a la seguridad social.</p>
+          </div>
+          <Button onClick={() => setMostrarFormulario(true)} variant="primary">Crear Contrato Laboral</Button>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in duration-300">
       {error && <div className="col-span-full text-red-500 bg-red-50 p-2 rounded">{error}</div>}
       
       <div className="col-span-full border-b pb-2 mb-2 font-semibold">Información del contrato</div>

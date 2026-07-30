@@ -51,6 +51,7 @@ export const useEmpleadosNomina = () => {
       }
       
       await fetchEmpleados();
+      return res; // Retornamos la respuesta para poder acceder al res.data.id recién generado si aplica.
     } catch (e: any) {
       setError(e?.response?.data?.message || e.message);
       throw e;
