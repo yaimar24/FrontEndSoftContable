@@ -11,7 +11,12 @@ export const LiquidacionNominaList: React.FC = () => {
   const navigate = useNavigate();
   const { nominas, fetchNominas, generarNomina, error } = useLiquidacion();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ anio: new Date().getFullYear(), mes: new Date().getMonth() + 1 });
+  const [formData, setFormData] = useState({ 
+    anio: new Date().getFullYear(), 
+    mes: new Date().getMonth() + 1,
+    tipoPeriodo: 3, // 1: Semanal, 2: Quincenal, 3: Mensual
+    fechaGeneracion: new Date().toISOString().split('T')[0]
+  });
 
   useEffect(() => {
     fetchNominas();
@@ -51,6 +56,28 @@ export const LiquidacionNominaList: React.FC = () => {
         <form onSubmit={handleGenerar} className="space-y-4 pt-4">
           <InputField label="Año" type="number" required value={formData.anio} onChange={(v) => setFormData({...formData, anio: Number(v)})} />
           <InputField label="Mes" type="number" required value={formData.mes} onChange={(v) => setFormData({...formData, mes: Number(v)})} />
+          
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">Tipo Periodo</label>
+            <select 
+              className="border border-gray-300 rounded-md p-2 focus:ring-primary focus:border-primary"
+              value={formData.tipoPeriodo} 
+              onChange={(e) => setFormData({...formData, tipoPeriodo: Number(e.target.value)})}
+              required
+            >
+              <option value={1}>Semanal</option>
+              <option value={2}>Quincenal</option>
+              <option value={3}>Mensual</option>
+            </select>
+          </div>
+
+          <InputField 
+            label="Fecha Generación" 
+            type="date" 
+            required 
+            value={formData.fechaGeneracion} 
+            onChange={(v) => setFormData({...formData, fechaGeneracion: String(v)})} 
+          />
           
           <div className="flex justify-end gap-2 pt-4 border-t">
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>

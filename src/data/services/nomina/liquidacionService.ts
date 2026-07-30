@@ -3,6 +3,9 @@ import { apiClient } from '../../api/apiClient';
 export interface GenerarNominaCommand {
   anio: number;
   mes: number;
+  tipoPeriodo: number;
+  fechaGeneracion: string;
+  usuarioCreacionId?: string;
 }
 
 export const liquidacionService = {
