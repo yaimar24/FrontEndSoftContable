@@ -43,7 +43,7 @@ export const LiquidacionNominaList: React.FC = () => {
             { header: 'Estado', render: (row: any) => row.estado === 1 ? 'Borrador' : 'Cerrada' },
           ]}
           data={nominas}
-          onView={(row) => navigate(`/nomina/liquidacion/${row.id}`)}
+          onView={(row) => navigate(`/dashboard/nomina/liquidacion/${row.id}`)}
         />
       </div>
 
