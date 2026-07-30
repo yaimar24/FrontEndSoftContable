@@ -40,11 +40,15 @@ export const useLiquidacion = () => {
   const generarNomina = async (data: GenerarNominaCommand) => {
     try {
       showLoading();
+      setError(null);
       const res = await liquidacionService.generarNomina(data);
+      if (res && res.success === false) {
+        throw new Error(res.message || 'Error al generar la nómina');
+      }
       await fetchNominas();
       return res?.data || res;
     } catch (e: any) {
-      setError(e?.response?.data?.message || e.message);
+      setError(e?.response?.data?.message || e.message || 'Error al procesar la solicitud');
       throw e;
     } finally {
       hideLoading();

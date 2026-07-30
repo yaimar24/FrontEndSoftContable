@@ -27,7 +27,7 @@ export const LiquidacionNominaDetail: React.FC = () => {
       <PageHeader 
         title={`Detalle de Nómina ${currentNomina.anio}-${String(currentNomina.mes).padStart(2, '0')}`}
         subtitle={`Estado: ${currentNomina.estado === 1 ? 'Borrador' : 'Cerrada'}`}
-        actions={<Button variant="secondary" onClick={() => navigate('/nomina/liquidacion')}>Volver</Button>}
+        actions={<Button variant="secondary" onClick={() => navigate('/dashboard/nomina/liquidacion')}>Volver</Button>}
       />
 
       {error && <div className="mb-4 text-red-500 bg-red-50 p-2 rounded">{error}</div>}
