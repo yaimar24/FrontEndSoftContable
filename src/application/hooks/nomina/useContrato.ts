@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { empleadoService } from '../../../data/services/nomina/empleadoService';
 import { catalogosNominaService } from '../../../data/services/nomina/catalogosNominaService';
+import { apiClient } from '../../../data/api/apiClient';
 import type { ContratoLaboral } from '../../../domain/models/nomina/Contrato';
 import { useGlobalLoading as useLoading } from '../../context/LoadingContext';
 
@@ -32,8 +33,11 @@ export const useContrato = (empleadoId?: string) => {
       const res = await empleadoService.getCatalogosContrato();
       const cargosRes = await catalogosNominaService.getCargos();
       const centrosCostoRes = await catalogosNominaService.getCentrosCosto();
+      const parametrosRes = await apiClient("/api/Parametros/parametros", { useAuth: false });
+      
       setCatalogos({ 
         ...(res?.data || res || {}), 
+        actividadesEconomicas: parametrosRes?.data?.actividadesEconomicas || [],
         cargos: cargosRes?.data || cargosRes || [], 
         centrosCosto: centrosCostoRes?.data || centrosCostoRes || [] 
       });

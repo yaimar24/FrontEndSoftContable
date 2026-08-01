@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Users, Save, ArrowLeft } from 'lucide-react';
 import { useEmpleadosNomina } from '../../../application/hooks/nomina/useEmpleadosNomina';
 import InputField from '../../components/atoms/InputField';
@@ -20,11 +20,12 @@ import Modal from '../../components/organisms/Modal';
 export const EmpleadoDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { fetchEmpleadoById, saveEmpleado, error } = useEmpleadosNomina();
   const { saveBanco } = useCatalogosNomina();
   const { contrato, fetchContrato } = useContrato(id !== 'nuevo' ? id : undefined);
   
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'info');
   const [formData, setFormData] = useState<any>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: '' });
@@ -119,8 +120,13 @@ export const EmpleadoDetail: React.FC = () => {
       if (id === 'nuevo') {
          const newId = response?.data?.id || response?.id || response?.data?.data?.id;
          if (newId) {
-             navigate(`/dashboard/nomina/empleados/${newId}`, { replace: true });
+             navigate(`/dashboard/nomina/empleados/${newId}?tab=contrato`, { replace: true });
          }
+      } else {
+         const url = new URL(window.location.href);
+         url.searchParams.set('tab', 'contrato');
+         window.history.pushState({}, '', url);
+         window.dispatchEvent(new Event('popstate'));
       }
     } catch (error: any) {
       setResultModal({ show: true, success: false, message: error.message || 'Error al guardar el empleado.' });
@@ -141,12 +147,35 @@ export const EmpleadoDetail: React.FC = () => {
       alert("Error al guardar el banco");
     }
   };
+  // Sync activeTab when query string changes directly (e.g. from internal forwards)
+  useEffect(() => {
+    const handlePopState = () => {
+      const qs = new URLSearchParams(window.location.search);
+      const tab = qs.get('tab');
+      if (tab && tab !== activeTab) {
+        setActiveTab(tab);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'contrato' || activeTab === 'seguridadSocial' || activeTab === 'novedades') {
+      fetchContrato()
+    }
+  }, [activeTab, fetchContrato]);
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId }, { replace: true });
+  }
 
   const tabs = [
     { id: 'info', label: 'Información General' },
     { id: 'contrato', label: 'Contrato Laboral', disabled: id === 'nuevo' },
-    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || !contrato?.id },
-    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || !contrato?.id },
+    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || (!contrato?.id) },
+    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || (!contrato?.id) },
   ];
 
   if (!formData) return <div>Cargando...</div>;
@@ -189,7 +218,7 @@ export const EmpleadoDetail: React.FC = () => {
               <button
                 disabled={tab.disabled}
                 className={`inline-block p-4 border-b-2 rounded-t-lg ${tab.disabled ? 'text-gray-400 cursor-not-allowed' : activeTab === tab.id ? 'border-primary text-primary font-semibold' : 'border-transparent hover:text-gray-600 hover:border-gray-300'}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
               >
                 {tab.label}
               </button>
