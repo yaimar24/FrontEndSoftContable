@@ -68,14 +68,7 @@ export const EmpleadosNominaList: React.FC = () => {
           >
             <Edit3 size={15} strokeWidth={2.5} />
           </button>
-          
-          <button
-            title="Ver / Gestionar Módulos Anexos"
-            onClick={() => navigate(`/dashboard/nomina/empleados/${e.id}`)}
-            className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm active:scale-95"
-          >
-            <FileText size={15} strokeWidth={2.5} />
-          </button>
+        
         </div>
       ),
     },

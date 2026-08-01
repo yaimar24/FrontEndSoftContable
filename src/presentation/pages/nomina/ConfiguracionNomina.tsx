@@ -141,7 +141,7 @@ export const ConfiguracionNomina: React.FC = () => {
             <InputField
               label="Código"
               value={formData?.codigo || ''}
-              onChange={(val) => setFormData((prev: any) => ({...prev!, codigo: val}))}
+              onChange={(e: any) => setFormData((prev: any) => ({...prev!, codigo: e.target ? e.target.value : e}))}
               required
             />
           )}
@@ -149,7 +149,7 @@ export const ConfiguracionNomina: React.FC = () => {
           <InputField
             label="Nombre"
             value={formData?.nombre || ''}
-            onChange={(val) => setFormData((prev: any) => ({...prev!, nombre: val}))}
+            onChange={(e: any) => setFormData((prev: any) => ({...prev!, nombre: e.target ? e.target.value : e}))}
             required
           />
           
@@ -157,7 +157,7 @@ export const ConfiguracionNomina: React.FC = () => {
             <InputField
               label="Descripción"
               value={formData?.descripcion || ''}
-              onChange={(val) => setFormData((prev: any) => ({...prev!, descripcion: val}))}
+              onChange={(e: any) => setFormData((prev: any) => ({...prev!, descripcion: e.target ? e.target.value : e}))}
             />
           )}
 
@@ -165,7 +165,7 @@ export const ConfiguracionNomina: React.FC = () => {
             <SelectField
               label="Tipo Concepto"
               value={formData?.tipoConcepto?.toString() || '1'}
-              onChange={(val: any) => setFormData((prev: any) => ({...prev!, tipoConcepto: parseInt(val.target ? val.target.value : val)}))}
+              onChange={(e: any) => setFormData((prev: any) => ({...prev!, tipoConcepto: parseInt(e.target ? e.target.value : e)}))}
               options={[
                 { value: '1', label: 'Devengo' },
                 { value: '2', label: 'Deducción' },

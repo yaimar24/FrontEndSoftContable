@@ -13,11 +13,17 @@ import { NovedadesTab } from './tabs/NovedadesTab';
 
 import { getParametros, getParametrosFacturacion } from '../../../data/services/colegio/parametrosService';
 import { catalogosNominaService } from '../../../data/services/nomina/catalogosNominaService';
+import { useCatalogosNomina } from '../../../application/hooks/nomina/useCatalogosNomina';
+import { useContrato } from '../../../application/hooks/nomina/useContrato';
+import Modal from '../../components/organisms/Modal';
 
 export const EmpleadoDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { fetchEmpleadoById, saveEmpleado, error } = useEmpleadosNomina();
+  const { saveBanco } = useCatalogosNomina();
+  const { contrato, fetchContrato } = useContrato(id !== 'nuevo' ? id : undefined);
+  
   const [activeTab, setActiveTab] = useState('info');
   const [formData, setFormData] = useState<any>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -26,8 +32,16 @@ export const EmpleadoDetail: React.FC = () => {
   // Listas de datos
   const [tiposIdentificacion, setTiposIdentificacion] = useState<any[]>([]);
   const [municipios, setMunicipios] = useState<any[]>([]);
+  const [departamentos, setDepartamentos] = useState<any[]>([]);
   const [mediosPago, setMediosPago] = useState<any[]>([]);
   const [bancos, setBancos] = useState<any[]>([]);
+
+  // Estados locales para los selects anidados de Residencia y Oficina
+  const [departamentoResidenciaId, setDepartamentoResidenciaId] = useState<string>('');
+  const [departamentoOficinaId, setDepartamentoOficinaId] = useState<string>('');
+  
+  const [isBancoModalOpen, setIsBancoModalOpen] = useState(false);
+  const [bancoFormData, setBancoFormData] = useState({ codigo: '', nombre: '' });
   
   const [tiposCuenta] = useState([
     { id: 1, nombre: 'Ahorros' },
@@ -42,6 +56,7 @@ export const EmpleadoDetail: React.FC = () => {
         if (paramRes.success && paramRes.data) {
           setTiposIdentificacion(paramRes.data.tiposIdentificacion || []);
           setMunicipios(paramRes.data.municipios || []);
+          setDepartamentos(paramRes.data.departamentos || []);
         }
 
         const paramFactRes = await getParametrosFacturacion();
@@ -62,8 +77,20 @@ export const EmpleadoDetail: React.FC = () => {
 
   useEffect(() => {
     if (id && id !== 'nuevo') {
+      fetchContrato();
       fetchEmpleadoById(id).then(data => {
-        if(data) setFormData(data);
+        if(data) {
+          setFormData(data);
+          // Al cargar, inferimos los departamentos desde los IDs de los municipios que vengan
+          if (data.municipioResidenciaId && municipios.length > 0) {
+             const m = municipios.find(x => x.id === Number(data.municipioResidenciaId));
+             if (m) setDepartamentoResidenciaId(String(m.departamentoId));
+          }
+          if (data.municipioOficinaId && municipios.length > 0) {
+             const m = municipios.find(x => x.id === Number(data.municipioOficinaId));
+             if (m) setDepartamentoOficinaId(String(m.departamentoId));
+          }
+        }
       });
     } else {
       setFormData({
@@ -71,7 +98,7 @@ export const EmpleadoDetail: React.FC = () => {
         correoElectronico: '', numeroCelular: '', activo: true
       });
     }
-  }, [id, fetchEmpleadoById]);
+  }, [id, fetchEmpleadoById, municipios]);
 
   const handleSaveInfo = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -94,11 +121,25 @@ export const EmpleadoDetail: React.FC = () => {
     }
   };
 
+  const handleCreateBanco = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await saveBanco(bancoFormData as any);
+      setIsBancoModalOpen(false);
+      // Recargar la lista de bancos
+      const bancosRes = await catalogosNominaService.getBancos();
+      if (bancosRes?.data) setBancos(bancosRes.data);
+      else if (Array.isArray(bancosRes)) setBancos(bancosRes);
+    } catch (err) {
+      alert("Error al guardar el banco");
+    }
+  };
+
   const tabs = [
     { id: 'info', label: 'Información General' },
     { id: 'contrato', label: 'Contrato Laboral', disabled: id === 'nuevo' },
-    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' },
-    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' },
+    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || !contrato?.id },
+    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || !contrato?.id },
   ];
 
   if (!formData) return <div>Cargando...</div>;
@@ -153,6 +194,7 @@ export const EmpleadoDetail: React.FC = () => {
       <div className="bg-white rounded shadow p-6">
         {activeTab === 'info' && (
           <form onSubmit={handleSaveInfo} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Formulario info general... */}
             <InputField label="Nombres" value={formData.nombres} onChange={(e: any) => setFormData({...formData, nombres: e.target.value})} required />
             <InputField label="Apellidos" value={formData.apellidos} onChange={(e: any) => setFormData({...formData, apellidos: e.target.value})} required />
             
@@ -171,21 +213,43 @@ export const EmpleadoDetail: React.FC = () => {
             <InputField label="Dirección Residencia" value={formData.direccionResidencia || ''} onChange={(e: any) => setFormData({...formData, direccionResidencia: e.target.value})} />
             
             <SelectField 
+              label="Departamento Residencia" 
+              value={departamentoResidenciaId} 
+              onChange={(e) => {
+                setDepartamentoResidenciaId(e.target.value);
+                setFormData({...formData, municipioResidenciaId: ''});
+              }} 
+              options={departamentos}
+            />
+
+            <SelectField 
               label="Municipio Residencia" 
               value={formData.municipioResidenciaId || ''} 
               onChange={(e: any) => setFormData({...formData, municipioResidenciaId: Number(e.target.value)})} 
-              options={municipios}
-              displayExpr={(item) => `${item.nombre} - ${item.departamento}`}
+              options={municipios.filter(m => m.departamentoId === Number(departamentoResidenciaId))}
+              displayExpr={(item) => item.nombre}
+              disabled={!departamentoResidenciaId}
             />
             
             <InputField label="Dirección Oficina" value={formData.direccionOficina || ''} onChange={(e: any) => setFormData({...formData, direccionOficina: e.target.value})} />
             
+             <SelectField 
+              label="Departamento Oficina" 
+              value={departamentoOficinaId} 
+              onChange={(e) => {
+                setDepartamentoOficinaId(e.target.value);
+                setFormData({...formData, municipioOficinaId: ''});
+              }} 
+              options={departamentos}
+            />
+
             <SelectField 
               label="Municipio Oficina" 
               value={formData.municipioOficinaId || ''} 
               onChange={(e: any) => setFormData({...formData, municipioOficinaId: Number(e.target.value)})} 
-              options={municipios}
-              displayExpr={(item) => `${item.nombre} - ${item.departamento}`}
+              options={municipios.filter(m => m.departamentoId === Number(departamentoOficinaId))}
+              displayExpr={(item) => item.nombre}
+              disabled={!departamentoOficinaId}
             />
             
             <SelectField 
@@ -200,6 +264,10 @@ export const EmpleadoDetail: React.FC = () => {
               value={formData.bancoId || ''} 
               onChange={(e: any) => setFormData({...formData, bancoId: Number(e.target.value)})} 
               options={bancos}
+              onCreate={() => {
+                setBancoFormData({ codigo: '', nombre: '' });
+                setIsBancoModalOpen(true);
+              }}
             />
             
             <SelectField 
@@ -229,6 +297,19 @@ export const EmpleadoDetail: React.FC = () => {
           <NovedadesTab empleadoId={id!} />
         )}
       </div>
+      
+      {/* Modal para catálogos directos en el Formulario del Empleado */}
+      <Modal isOpen={isBancoModalOpen} onClose={() => setIsBancoModalOpen(false)} title="Crear Banco">
+        <form onSubmit={handleCreateBanco} className="space-y-4">
+           <InputField label="Código" value={bancoFormData.codigo || ''} onChange={(e: any) => setBancoFormData({...bancoFormData, codigo: e.target ? e.target.value : e})} required />
+           <InputField label="Nombre" value={bancoFormData.nombre || ''} onChange={(e: any) => setBancoFormData({...bancoFormData, nombre: e.target ? e.target.value : e})} required />
+           <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+             <Button variant="secondary" onClick={() => setIsBancoModalOpen(false)}>Cancelar</Button>
+             <Button type="submit" variant="primary">Guardar</Button>
+           </div>
+        </form>
+      </Modal>
+
     </div>
   );
 };
