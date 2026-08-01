@@ -160,15 +160,22 @@ export const EmpleadoDetail: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [activeTab]);
 
+  useEffect(() => {
+    if (activeTab === 'contrato' || activeTab === 'seguridadSocial' || activeTab === 'novedades') {
+      fetchContrato()
+    }
+  }, [activeTab, fetchContrato]);
+
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     setSearchParams({ tab: tabId }, { replace: true });
   }
+
   const tabs = [
     { id: 'info', label: 'Información General' },
     { id: 'contrato', label: 'Contrato Laboral', disabled: id === 'nuevo' },
-    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' },
-    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' },
+    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || (!contrato?.id) },
+    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || (!contrato?.id) },
   ];
 
   if (!formData) return <div>Cargando...</div>;
