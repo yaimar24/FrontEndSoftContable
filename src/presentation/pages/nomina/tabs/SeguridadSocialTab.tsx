@@ -37,7 +37,7 @@ export const SeguridadSocialTab: React.FC<Props> = ({ empleadoId }) => {
     await saveSeguridadSocial(formData);
   };
 
-  const toOptions = (items: any[], placeholder = "Seleccione...") => {
+  const toOptions = (items: any[]) => {
     if (!items) return []; // Quitamos el placeholder inyectado directamente a los datos
     return items.map(i => ({ value: i.id.toString(), label: i.nombre }));
   };
