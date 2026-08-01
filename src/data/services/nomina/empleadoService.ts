@@ -15,12 +15,12 @@ export const empleadoService = {
 
   createEmpleado: async (data: Empleado) => {
     const response = await apiClient.post('/api/empleados', data);
-    return response.data;
+    return response;
   },
 
   updateEmpleado: async (id: string, data: Empleado) => {
     const response = await apiClient.put(`/api/empleados/${id}`, data);
-    return response.data;
+    return response;
   },
 
   // Contratos

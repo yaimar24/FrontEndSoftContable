@@ -105,18 +105,25 @@ export const EmpleadoDetail: React.FC = () => {
     if (!formData) return;
     try {
       const response = await saveEmpleado(formData, id !== 'nuevo' ? id : undefined);
+      
+      if (response && response.success === false) {
+        setResultModal({ show: true, success: false, message: response.message || 'Error al guardar el empleado.' });
+        setShowConfirm(false);
+        return;
+      }
+      
       setResultModal({ show: true, success: true, message: 'Empleado guardado exitosamente.' });
       setShowConfirm(false);
       
       // Si se acaba de crear el empleado ('nuevo') redirigirlo a la url de su ID para que se quede en esta pestaña
       if (id === 'nuevo') {
-         const newId = response?.data?.id || response?.id;
+         const newId = response?.data?.id || response?.id || response?.data?.data?.id;
          if (newId) {
              navigate(`/dashboard/nomina/empleados/${newId}`, { replace: true });
          }
       }
-    } catch (error) {
-      setResultModal({ show: true, success: false, message: 'Error al guardar el empleado.' });
+    } catch (error: any) {
+      setResultModal({ show: true, success: false, message: error.message || 'Error al guardar el empleado.' });
       setShowConfirm(false);
     }
   };
@@ -167,7 +174,7 @@ export const EmpleadoDetail: React.FC = () => {
           </h1>
         </div>
         {(activeTab === 'info') && (
-          <Button onClick={() => setShowConfirm(true)} icon={Save}>
+          <Button type="submit" form="empleado-info-form" icon={Save}>
             {id === 'nuevo' ? 'Guardar' : 'Actualizar'}
           </Button>
         )}
@@ -193,7 +200,7 @@ export const EmpleadoDetail: React.FC = () => {
 
       <div className="bg-white rounded shadow p-6">
         {activeTab === 'info' && (
-          <form onSubmit={handleSaveInfo} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form id="empleado-info-form" onSubmit={handleSaveInfo} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Formulario info general... */}
             <InputField label="Nombres" value={formData.nombres} onChange={(e: any) => setFormData({...formData, nombres: e.target.value})} required />
             <InputField label="Apellidos" value={formData.apellidos} onChange={(e: any) => setFormData({...formData, apellidos: e.target.value})} required />
@@ -210,7 +217,7 @@ export const EmpleadoDetail: React.FC = () => {
             <InputField label="Documento" value={formData.numeroDocumento} onChange={(e: any) => setFormData({...formData, numeroDocumento: e.target.value})} required />
             <InputField label="Correo Electrónico" value={formData.correoElectronico} onChange={(e: any) => setFormData({...formData, correoElectronico: e.target.value})} required type="email" />
             <InputField label="Celular" value={formData.numeroCelular} onChange={(e: any) => setFormData({...formData, numeroCelular: e.target.value})} required />
-            <InputField label="Dirección Residencia" value={formData.direccionResidencia || ''} onChange={(e: any) => setFormData({...formData, direccionResidencia: e.target.value})} />
+            <InputField label="Dirección Residencia" value={formData.direccionResidencia || ''} onChange={(e: any) => setFormData({...formData, direccionResidencia: e.target.value})} required />
             
             <SelectField 
               label="Departamento Residencia" 
@@ -220,6 +227,7 @@ export const EmpleadoDetail: React.FC = () => {
                 setFormData({...formData, municipioResidenciaId: ''});
               }} 
               options={departamentos}
+              required
             />
 
             <SelectField 
@@ -229,9 +237,10 @@ export const EmpleadoDetail: React.FC = () => {
               options={municipios.filter(m => m.departamentoId === Number(departamentoResidenciaId))}
               displayExpr={(item) => item.nombre}
               disabled={!departamentoResidenciaId}
+              required
             />
             
-            <InputField label="Dirección Oficina" value={formData.direccionOficina || ''} onChange={(e: any) => setFormData({...formData, direccionOficina: e.target.value})} />
+            <InputField label="Dirección Oficina" value={formData.direccionOficina || ''} onChange={(e: any) => setFormData({...formData, direccionOficina: e.target.value})} required />
             
              <SelectField 
               label="Departamento Oficina" 
@@ -241,6 +250,7 @@ export const EmpleadoDetail: React.FC = () => {
                 setFormData({...formData, municipioOficinaId: ''});
               }} 
               options={departamentos}
+              required
             />
 
             <SelectField 
@@ -250,6 +260,7 @@ export const EmpleadoDetail: React.FC = () => {
               options={municipios.filter(m => m.departamentoId === Number(departamentoOficinaId))}
               displayExpr={(item) => item.nombre}
               disabled={!departamentoOficinaId}
+              required
             />
             
             <SelectField 
@@ -257,6 +268,7 @@ export const EmpleadoDetail: React.FC = () => {
               value={formData.medioPagoId || ''} 
               onChange={(e: any) => setFormData({...formData, medioPagoId: Number(e.target.value)})} 
               options={mediosPago}
+              required
             />
             
             <SelectField 
@@ -268,6 +280,7 @@ export const EmpleadoDetail: React.FC = () => {
                 setBancoFormData({ codigo: '', nombre: '' });
                 setIsBancoModalOpen(true);
               }}
+              required
             />
             
             <SelectField 
@@ -275,13 +288,12 @@ export const EmpleadoDetail: React.FC = () => {
               value={formData.tipoCuenta || ''} 
               onChange={(e: any) => setFormData({...formData, tipoCuenta: Number(e.target.value)})} 
               options={tiposCuenta}
+              required
             />
             
-            <InputField label="Número Cuenta" value={formData.numeroCuenta || ''} onChange={(e: any) => setFormData({...formData, numeroCuenta: e.target.value})} />
+            <InputField label="Número Cuenta" value={formData.numeroCuenta || ''} onChange={(e: any) => setFormData({...formData, numeroCuenta: e.target.value})} required />
             
-            <div className="col-span-1 md:col-span-2 flex justify-end mt-4">
-              <Button type="submit" variant="primary">Guardar Información</Button>
-            </div>
+            {/* Removed redundant button guardando with global Save */}
           </form>
         )}
 
