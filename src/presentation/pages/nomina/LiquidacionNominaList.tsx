@@ -32,6 +32,23 @@ export const LiquidacionNominaList: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  // Helper para renderizar los badges de estado
+  const renderEstadoBadge = (estado: number) => {
+    if (estado === 1) {
+      return (
+        <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+          En Proceso
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+        Cerrada
+      </span>
+    );
+  };
+
   return (
     <div className="p-6">
       <PageHeader
@@ -78,8 +95,7 @@ export const LiquidacionNominaList: React.FC = () => {
             },
             {
               header: 'Estado',
-              render: (row: any) =>
-                row.estado === 1 ? 'Borrador' : 'Cerrada',
+              render: (row: any) => renderEstadoBadge(row.estado),
             },
           ]}
           data={nominas}
@@ -166,6 +182,7 @@ export const LiquidacionNominaList: React.FC = () => {
           <div className="flex justify-end gap-2 border-t pt-4">
             <Button
               variant="secondary"
+              type="button"
               onClick={() => setIsModalOpen(false)}
             >
               Cancelar

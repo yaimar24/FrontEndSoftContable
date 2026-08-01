@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/organisms/PageHeader';
 import { useLiquidacion } from '../../../application/hooks/nomina/useLiquidacion';
-import { Table } from '../../components/organisms/Table';
+// Removed Table import since it's not used
 import Button from '../../components/atoms/Button';
 import { novedadesService } from '../../../data/services/nomina/novedadesService';
 import { ChevronDown, ChevronUp } from 'lucide-react';

@@ -3,37 +3,31 @@ export interface ContratoLaboral {
   empleadoId: string;
   cargoId: number;
   centroCostoId: number;
-  tipoContrato: string;
+  tipoContratoId: number;
   salarioBase: number;
   fechaInicio?: string;
   fechaFin?: string | null;
-  tipoCotizante: number;
-  subtipoCotizante: number;
-  eps?: number | null;
-  fondoPension?: number | null;
-  arl: number;
-  claseRiesgo: number;
-  cajaCompensacion: number;
-  fondoCesantias: number;
   auxilioTransporte: boolean;
   aplicaHorasExtra: boolean;
   cotizaSalud: boolean;
   cotizaPension: boolean;
+  porcentajeSaludEmpleado?: number;
+  porcentajePensionEmpleado?: number;
+  seguridadSocialEmpleadoId?: string | null;
   activo?: boolean;
 }
 
 export interface SeguridadSocialEmpleado {
+  id?: string;
   empleadoId: string;
   tipoCotizanteId: number;
   subtipoCotizanteId: number;
-  epsId: number;
-  porcentajeSalud: number;
-  fondoPensionId: number;
-  porcentajePension: number;
+  epsId?: number;
+  fondoPensionId?: number;
   arlId: number;
   claseRiesgo: number;
-  actividadEconomicaId: number;
-  codigoActividad: string;
+  actividadEconomicaId?: number;
+  codigoActividad?: string;
   cajaCompensacionId: number;
   fondoCesantiasId: number;
 }

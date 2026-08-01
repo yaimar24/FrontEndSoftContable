@@ -76,7 +76,13 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
     e.preventDefault();
     try {
       await saveContrato(formData);
-      alert('Contrato guardado correctamente');
+      
+      // Emit details update event or handle tab change directly
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'seguridadSocial');
+      window.history.pushState({}, '', url);
+      // We trigger a custom event so parent can listen to it if wanted without full reload
+      window.dispatchEvent(new Event('popstate'));
     } catch (e) {
       // El error ya es manejado por el hook que setea la variable global error
     }
@@ -157,7 +163,7 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
             setFormData({
                ...formData, 
                cotizaSalud: checked,
-               eps: checked ? formData.eps : null
+               porcentajeSaludEmpleado: checked ? formData.porcentajeSaludEmpleado : 0
             });
           }} />
           Cotiza Salud
@@ -168,65 +174,39 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
             setFormData({
                ...formData, 
                cotizaPension: checked,
-               fondoPension: checked ? formData.fondoPension : null
+               porcentajePensionEmpleado: checked ? formData.porcentajePensionEmpleado : 0
             });
           }} />
           Cotiza Pensión
         </label>
       </div>
-
-      <div className="col-span-full border-b pb-2 mb-2 mt-4 font-semibold">Seguridad Social base</div>
       
       {!formData.cotizaSalud && !formData.cotizaPension ? (
-         <div className="col-span-full bg-slate-50 border border-slate-200 text-slate-600 p-4 rounded-xl flex items-center justify-center italic text-sm mb-2">
+         <div className="col-span-full bg-slate-50 border border-slate-200 text-slate-600 p-4 rounded-xl flex items-center justify-center italic text-sm mb-2 mt-2">
             Este contrato no tendrá descuentos de salud/pensión en nómina.
          </div>
       ) : null}
 
-      <SelectField label="Tipo Cotizante" required
-        value={formData.tipoCotizante?.toString() || ''}
-        options={toOptions(catalogos.tipoCotizante)}
-        onChange={(e: any) => {
-           const newTipoCotizante = Number(e.target ? e.target.value : e);
-           const subtiposFiltrados = catalogos.subtipoCotizante?.filter((s: any) => 
-               !newTipoCotizante || s.tipoCotizanteId === newTipoCotizante || s.tipoCotizanteId === 0
-           ) || [];
-           
-           setFormData({
-               ...formData, 
-               tipoCotizante: newTipoCotizante,
-               // Si solo hay un subtipo cotizante luego del filtro (ej: No aplica), seleccionarlo por defecto automáticamente
-               subtipoCotizante: subtiposFiltrados.length === 1 ? subtiposFiltrados[0].id : formData.subtipoCotizante
-           });
-        }}
-      />
-      <SelectField label="Subtipo Cotizante" required
-        value={formData.subtipoCotizante?.toString() || ''}
-        options={toOptions(catalogos.subtipoCotizante?.filter((s: { tipoCotizanteId: number, [key: string]: unknown }) => 
-            !formData.tipoCotizante || s.tipoCotizanteId === Number(formData.tipoCotizante) || s.tipoCotizanteId === 0
-        ))}
-        onChange={(e: any) => setFormData({...formData, subtipoCotizante: Number(e.target ? e.target.value : e)})}
-      />
-      <SelectField 
-        label="EPS" 
-        required={formData.cotizaSalud} 
-        disabled={!formData.cotizaSalud}
-        value={formData.eps?.toString() || ''} 
-        options={toOptions(catalogos.eps)} 
-        onChange={(e: any) => setFormData({...formData, eps: Number(e.target ? e.target.value : e)})} 
-      />
-      <SelectField 
-        label="Fondo Pensión" 
-        required={formData.cotizaPension} 
-        disabled={!formData.cotizaPension}
-        value={formData.fondoPension?.toString() || ''} 
-        options={toOptions(catalogos.fondoPension)} 
-        onChange={(e: any) => setFormData({...formData, fondoPension: Number(e.target ? e.target.value : e)})} 
-      />
-      <SelectField label="ARL" required value={formData.arl?.toString() || ''} options={toOptions(catalogos.arl)} onChange={(e: any) => setFormData({...formData, arl: Number(e.target ? e.target.value : e)})} />
-      <SelectField label="Clase Riesgo" required value={formData.claseRiesgo?.toString() || ''} options={toOptions(catalogos.claseRiesgo)} onChange={(e: any) => setFormData({...formData, claseRiesgo: Number(e.target ? e.target.value : e)})} />
-      <SelectField label="Caja Compensación" required value={formData.cajaCompensacion?.toString() || ''} options={toOptions(catalogos.cajaCompensacion)} onChange={(e: any) => setFormData({...formData, cajaCompensacion: Number(e.target ? e.target.value : e)})} />
-      <SelectField label="Fondo Cesantías" required value={formData.fondoCesantias?.toString() || ''} options={toOptions(catalogos.fondoCesantias)} onChange={(e: any) => setFormData({...formData, fondoCesantias: Number(e.target ? e.target.value : e)})} />
+      <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+         <InputField 
+           label="Porcentaje Salud Empleado %" 
+           type="number" 
+           required={formData.cotizaSalud}
+           disabled={!formData.cotizaSalud}
+           min="0" max="100" step="0.01"
+           value={formData.porcentajeSaludEmpleado ?? ''} 
+           onChange={(e: any) => setFormData({...formData, porcentajeSaludEmpleado: Number(e.target ? e.target.value : e)})} 
+         />
+         <InputField 
+           label="Porcentaje Pensión Empleado %" 
+           type="number" 
+           required={formData.cotizaPension}
+           disabled={!formData.cotizaPension}
+           min="0" max="100" step="0.01"
+           value={formData.porcentajePensionEmpleado ?? ''} 
+           onChange={(e: any) => setFormData({...formData, porcentajePensionEmpleado: Number(e.target ? e.target.value : e)})} 
+         />
+      </div>
 
       <div className="col-span-full border-b pb-2 mb-2 mt-4 font-semibold">Opciones</div>
       <div className="flex gap-4">
