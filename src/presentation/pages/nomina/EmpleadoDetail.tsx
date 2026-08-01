@@ -167,8 +167,8 @@ export const EmpleadoDetail: React.FC = () => {
   const tabs = [
     { id: 'info', label: 'Información General' },
     { id: 'contrato', label: 'Contrato Laboral', disabled: id === 'nuevo' },
-    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || !contrato?.id },
-    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || !contrato?.id },
+    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' },
+    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' },
   ];
 
   if (!formData) return <div>Cargando...</div>;
