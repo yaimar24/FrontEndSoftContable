@@ -14,6 +14,7 @@ import { NovedadesTab } from './tabs/NovedadesTab';
 import { getParametros, getParametrosFacturacion } from '../../../data/services/colegio/parametrosService';
 import { catalogosNominaService } from '../../../data/services/nomina/catalogosNominaService';
 import { useCatalogosNomina } from '../../../application/hooks/nomina/useCatalogosNomina';
+import { useContrato } from '../../../application/hooks/nomina/useContrato';
 import Modal from '../../components/organisms/Modal';
 
 export const EmpleadoDetail: React.FC = () => {
@@ -21,6 +22,8 @@ export const EmpleadoDetail: React.FC = () => {
   const navigate = useNavigate();
   const { fetchEmpleadoById, saveEmpleado, error } = useEmpleadosNomina();
   const { saveBanco } = useCatalogosNomina();
+  const { contrato, fetchContrato } = useContrato(id !== 'nuevo' ? id : undefined);
+  
   const [activeTab, setActiveTab] = useState('info');
   const [formData, setFormData] = useState<any>(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -74,6 +77,7 @@ export const EmpleadoDetail: React.FC = () => {
 
   useEffect(() => {
     if (id && id !== 'nuevo') {
+      fetchContrato();
       fetchEmpleadoById(id).then(data => {
         if(data) {
           setFormData(data);
@@ -134,8 +138,8 @@ export const EmpleadoDetail: React.FC = () => {
   const tabs = [
     { id: 'info', label: 'Información General' },
     { id: 'contrato', label: 'Contrato Laboral', disabled: id === 'nuevo' },
-    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' },
-    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' },
+    { id: 'seguridadSocial', label: 'Seguridad Social', disabled: id === 'nuevo' || !contrato?.id },
+    { id: 'novedades', label: 'Novedades', disabled: id === 'nuevo' || !contrato?.id },
   ];
 
   if (!formData) return <div>Cargando...</div>;
