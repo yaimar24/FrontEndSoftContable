@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useContrato } from '../../../../application/hooks/nomina/useContrato';
+import { useCatalogosNomina } from '../../../../application/hooks/nomina/useCatalogosNomina';
 import InputField from '../../../components/atoms/InputField';
 import SelectField from '../../../components/atoms/SelectField';
 import Button from '../../../components/atoms/Button';
+import Modal from '../../../components/organisms/Modal';
 
 interface Props {
   empleadoId: string;
@@ -10,8 +12,36 @@ interface Props {
 
 export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
   const { contrato, catalogos, fetchContrato, fetchCatalogos, saveContrato, error } = useContrato(empleadoId);
+  const { saveCargo, saveCentroCosto } = useCatalogosNomina();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [formData, setFormData] = useState<any>({});
+  
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalType, setModalType] = useState<'cargo' | 'centroCosto' | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [catalogoData, setCatalogoData] = useState<any>({});
+
+  const handleCreateCatalogo = (type: 'cargo' | 'centroCosto', title: string) => {
+    setModalType(type);
+    setModalTitle(title);
+    setCatalogoData({ nombre: '', descripcion: '', codigo: '' });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveCatalogo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (modalType === 'cargo') {
+        await saveCargo(catalogoData);
+      } else if (modalType === 'centroCosto') {
+        await saveCentroCosto(catalogoData);
+      }
+      setIsModalOpen(false);
+      fetchCatalogos(); // Recargar los catálogos del contrato para ver el nuevo registro
+    } catch (e) {
+      alert("Error al guardar el catálogo");
+    }
+  };
 
   useEffect(() => {
     fetchCatalogos();
@@ -25,7 +55,7 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
     } else if (isMounted) {
       setTimeout(() => setFormData({
         empleadoId: empleadoId,
-        cargoId: '', centroCostoId: '', tipoContrato: '', salarioBase: 0,
+        cargoId: '', centroCostoId: '', tipoContratoId: '', salarioBase: 0,
         fechaInicio: '', fechaFin: '', tipoCotizante: '', subtipoCotizante: '',
         eps: '', fondoPension: '', arl: '', claseRiesgo: '', cajaCompensacion: '',
         fondoCesantias: '', auxilioTransporte: false, aplicaHorasExtra: false
@@ -46,8 +76,8 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const toOptions = (items: any[], placeholder = "Seleccione...") => {
-    if (!items) return [{value: '', label: placeholder}];
-    return [{value: '', label: placeholder}, ...items.map(i => ({ value: i.id.toString(), label: i.nombre }))];
+    if (!items) return []; // Quitamos el placeholder inyectado directamente a los datos
+    return items.map(i => ({ value: i.id.toString(), label: i.nombre }));
   };
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -92,21 +122,23 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
       />
       
       <SelectField label="Tipo Contrato" required
-        value={formData.tipoContrato || ''}
+        value={formData.tipoContratoId?.toString() || ''}
         options={toOptions(catalogos.tipoContrato)}
-        onChange={(e: any) => setFormData({...formData, tipoContrato: e.target ? e.target.value : e})}
+        onChange={(e: any) => setFormData({...formData, tipoContratoId: Number(e.target ? e.target.value : e)})}
       />
 
       <SelectField label="Cargo" required
         value={formData.cargoId?.toString() || ''}
         options={toOptions(catalogos.cargos)}
         onChange={(e: any) => setFormData({...formData, cargoId: Number(e.target ? e.target.value : e)})}
+        onCreate={() => handleCreateCatalogo('cargo', 'Crear Cargo')}
       />
 
       <SelectField label="Centro de Costo" required
         value={formData.centroCostoId?.toString() || ''}
         options={toOptions(catalogos.centrosCosto)}
         onChange={(e: any) => setFormData({...formData, centroCostoId: Number(e.target ? e.target.value : e)})}
+        onCreate={() => handleCreateCatalogo('centroCosto', 'Crear Centro de Costo')}
       />
 
       <div className="col-span-full border-b pb-2 mb-2 mt-4 font-semibold">Seguridad Social base</div>
@@ -157,6 +189,22 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
       <div className="col-span-full flex justify-end mt-4">
         <Button type="submit" variant="primary">Guardar Contrato</Button>
       </div>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalTitle}>
+        <form onSubmit={handleSaveCatalogo} className="space-y-4">
+          {modalType === 'centroCosto' && (
+             <InputField label="Código" value={catalogoData.codigo || ''} onChange={(e: any) => setCatalogoData({...catalogoData, codigo: e.target ? e.target.value : e})} required />
+          )}
+          <InputField label="Nombre" value={catalogoData.nombre || ''} onChange={(e: any) => setCatalogoData({...catalogoData, nombre: e.target ? e.target.value : e})} required />
+          {modalType === 'cargo' && (
+             <InputField label="Descripción" value={catalogoData.descripcion || ''} onChange={(e: any) => setCatalogoData({...catalogoData, descripcion: e.target ? e.target.value : e})} />
+          )}
+          <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="primary">Guardar</Button>
+          </div>
+        </form>
+      </Modal>
     </form>
   );
 };

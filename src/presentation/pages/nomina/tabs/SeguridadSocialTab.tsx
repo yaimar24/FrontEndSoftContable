@@ -38,8 +38,8 @@ export const SeguridadSocialTab: React.FC<Props> = ({ empleadoId }) => {
   };
 
   const toOptions = (items: any[], placeholder = "Seleccione...") => {
-    if (!items) return [{value: '', label: placeholder}];
-    return [{value: '', label: placeholder}, ...items.map(i => ({ value: i.id.toString(), label: i.nombre }))];
+    if (!items) return []; // Quitamos el placeholder inyectado directamente a los datos
+    return items.map(i => ({ value: i.id.toString(), label: i.nombre }));
   };
 
   if (!catalogos) return <div>Cargando catálogos...</div>;
