@@ -9,14 +9,16 @@ export interface ContratoLaboral {
   fechaFin?: string | null;
   tipoCotizante: number;
   subtipoCotizante: number;
-  eps: number;
-  fondoPension: number;
+  eps?: number | null;
+  fondoPension?: number | null;
   arl: number;
   claseRiesgo: number;
   cajaCompensacion: number;
   fondoCesantias: number;
   auxilioTransporte: boolean;
   aplicaHorasExtra: boolean;
+  cotizaSalud: boolean;
+  cotizaPension: boolean;
   activo?: boolean;
 }
 

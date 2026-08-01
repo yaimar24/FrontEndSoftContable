@@ -64,6 +64,14 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
     return () => { isMounted = false; };
   }, [contrato, empleadoId]);
 
+  // Manejar default values para cotizaSalud y cotizaPension si no vienen
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      if (formData.cotizaSalud === undefined) setFormData((prev: any) => ({ ...prev, cotizaSalud: true }));
+      if (formData.cotizaPension === undefined) setFormData((prev: any) => ({ ...prev, cotizaPension: true }));
+    }
+  }, [formData.cotizaSalud, formData.cotizaPension]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -141,7 +149,39 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
         onCreate={() => handleCreateCatalogo('centroCosto', 'Crear Centro de Costo')}
       />
 
+      <div className="col-span-full border-b pb-2 mb-2 mt-4 font-semibold">Opciones de Liquidación</div>
+      <div className="flex gap-4 col-span-full">
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={!!formData.cotizaSalud} onChange={e => {
+            const checked = e.target.checked;
+            setFormData({
+               ...formData, 
+               cotizaSalud: checked,
+               eps: checked ? formData.eps : null
+            });
+          }} />
+          Cotiza Salud
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={!!formData.cotizaPension} onChange={e => {
+            const checked = e.target.checked;
+            setFormData({
+               ...formData, 
+               cotizaPension: checked,
+               fondoPension: checked ? formData.fondoPension : null
+            });
+          }} />
+          Cotiza Pensión
+        </label>
+      </div>
+
       <div className="col-span-full border-b pb-2 mb-2 mt-4 font-semibold">Seguridad Social base</div>
+      
+      {!formData.cotizaSalud && !formData.cotizaPension ? (
+         <div className="col-span-full bg-slate-50 border border-slate-200 text-slate-600 p-4 rounded-xl flex items-center justify-center italic text-sm mb-2">
+            Este contrato no tendrá descuentos de salud/pensión en nómina.
+         </div>
+      ) : null}
 
       <SelectField label="Tipo Cotizante" required
         value={formData.tipoCotizante?.toString() || ''}
@@ -167,8 +207,22 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
         ))}
         onChange={(e: any) => setFormData({...formData, subtipoCotizante: Number(e.target ? e.target.value : e)})}
       />
-      <SelectField label="EPS" required value={formData.eps?.toString() || ''} options={toOptions(catalogos.eps)} onChange={(e: any) => setFormData({...formData, eps: Number(e.target ? e.target.value : e)})} />
-      <SelectField label="Fondo Pensión" required value={formData.fondoPension?.toString() || ''} options={toOptions(catalogos.fondoPension)} onChange={(e: any) => setFormData({...formData, fondoPension: Number(e.target ? e.target.value : e)})} />
+      <SelectField 
+        label="EPS" 
+        required={formData.cotizaSalud} 
+        disabled={!formData.cotizaSalud}
+        value={formData.eps?.toString() || ''} 
+        options={toOptions(catalogos.eps)} 
+        onChange={(e: any) => setFormData({...formData, eps: Number(e.target ? e.target.value : e)})} 
+      />
+      <SelectField 
+        label="Fondo Pensión" 
+        required={formData.cotizaPension} 
+        disabled={!formData.cotizaPension}
+        value={formData.fondoPension?.toString() || ''} 
+        options={toOptions(catalogos.fondoPension)} 
+        onChange={(e: any) => setFormData({...formData, fondoPension: Number(e.target ? e.target.value : e)})} 
+      />
       <SelectField label="ARL" required value={formData.arl?.toString() || ''} options={toOptions(catalogos.arl)} onChange={(e: any) => setFormData({...formData, arl: Number(e.target ? e.target.value : e)})} />
       <SelectField label="Clase Riesgo" required value={formData.claseRiesgo?.toString() || ''} options={toOptions(catalogos.claseRiesgo)} onChange={(e: any) => setFormData({...formData, claseRiesgo: Number(e.target ? e.target.value : e)})} />
       <SelectField label="Caja Compensación" required value={formData.cajaCompensacion?.toString() || ''} options={toOptions(catalogos.cajaCompensacion)} onChange={(e: any) => setFormData({...formData, cajaCompensacion: Number(e.target ? e.target.value : e)})} />

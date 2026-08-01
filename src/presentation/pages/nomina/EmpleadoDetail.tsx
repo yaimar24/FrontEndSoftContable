@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Users, Save, ArrowLeft } from 'lucide-react';
 import { useEmpleadosNomina } from '../../../application/hooks/nomina/useEmpleadosNomina';
 import InputField from '../../components/atoms/InputField';
@@ -20,11 +20,12 @@ import Modal from '../../components/organisms/Modal';
 export const EmpleadoDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { fetchEmpleadoById, saveEmpleado, error } = useEmpleadosNomina();
   const { saveBanco } = useCatalogosNomina();
   const { contrato, fetchContrato } = useContrato(id !== 'nuevo' ? id : undefined);
   
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'info');
   const [formData, setFormData] = useState<any>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [resultModal, setResultModal] = useState({ show: false, success: false, message: '' });
