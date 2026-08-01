@@ -3,7 +3,7 @@ import PageHeader from '../../components/organisms/PageHeader';
 import { Table } from '../../components/organisms/Table';
 import { useEmpleadosNomina } from '../../../application/hooks/nomina/useEmpleadosNomina';
 import { useNavigate } from 'react-router-dom';
-import { User, UserPlus, FileText, Edit3 } from 'lucide-react';
+import { User, UserPlus, Edit3 } from 'lucide-react';
 import SearchBar from '../../components/molecules/SearchBar';
 import { useFilter } from '../../../application/hooks/useGenericFilter';
 

@@ -75,7 +75,7 @@ export const ContratoTab: React.FC<Props> = ({ empleadoId }) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const toOptions = (items: any[], placeholder = "Seleccione...") => {
+  const toOptions = (items: any[]) => {
     if (!items) return []; // Quitamos el placeholder inyectado directamente a los datos
     return items.map(i => ({ value: i.id.toString(), label: i.nombre }));
   };
